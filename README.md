@@ -7,7 +7,7 @@ Static rebuild of the CRAYDL site for easy editing in Cursor. No WordPress, no b
 - **index.html** – Home: hero, welcome, who we serve, CTAs, clients, portfolio, FAQs, testimonials
 - **services.html** – Full services: Scan to BIM, clash detection, VDC, budgeting, permitting, marketing, production docs, interior design
 - **contact.html** – About, who we help, contact form, newsletter signup
-- **book-now.html** – Redirects to Calendly (keeps old marketing links working)
+- **book-now.html** – Redirects to HubSpot landing (craydl.com/website); keeps old marketing links working
 - **css/style.css** – All styles; edit CSS variables at the top for colors/fonts/spacing
 - **js/main.js** – Mobile menu toggle only
 - **docs/CONTENT_ARCHITECTURE.md** – Lead magnets & social in HubSpot; code/UI in repo; React hero personalization notes
@@ -18,7 +18,7 @@ Static rebuild of the CRAYDL site for easy editing in Cursor. No WordPress, no b
 
 1. **Content** – Edit the HTML files directly. Sections are clearly commented or easy to find by heading.
 2. **Colors / fonts / spacing** – In `css/style.css`, change the `:root` variables (e.g. `--color-accent`, `--font-sans`).
-3. **Links** – All external links (Calendly, social, YouTube, budget.craydl.com, app.craydl.com) are in the HTML; search for the URL or label to update.
+3. **Links** – External links (meeting landing page, social, YouTube, budget.craydl.com, app.craydl.com) are in the HTML; search for the URL or label to update.
 4. **Contact form** – The form in `contact.html` currently posts to a Formspree placeholder. To enable it:
    - Sign up at [formspree.io](https://formspree.io), create a form, and replace `YOUR_FORM_ID` in the form `action` with your form ID, or
    - Use Netlify Forms / HubSpot / your own backend and update the form `action` and `method` as needed.
@@ -56,7 +56,7 @@ For clean URLs without `.html` (e.g. `/services` instead of `/services.html`), c
 - Address: 23350 N Pima Road, Scottsdale, AZ 85255
 - Email: info@craydl.com
 - Social: Substack, YouTube, Instagram, Facebook (icon links in header/footer)
-- Calendly: calendly.com/craydl/meeting-with-adam-clone
+- Schedule a meeting (HubSpot landing): craydl.com/website
 - Google Calendar scheduling link
 - Newsletter: HubSpot form link
 - Links to budget.craydl.com and app.craydl.com
