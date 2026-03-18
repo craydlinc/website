@@ -1,3 +1,10 @@
 node_modules/
 aws/media-pipeline/lambda/node_modules/
 .DS_Store
+
+# OpenTofu / Terraform
+infra/.terraform/
+infra/.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+*.tfplan

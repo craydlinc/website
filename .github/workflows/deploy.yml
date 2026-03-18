@@ -1,0 +1,83 @@
+name: Deploy Website
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION || 'us-east-1' }}
+  TOFU_VERSION: "1.9.0"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # --- Infrastructure (only when infra/ changes) ---
+      - name: Setup OpenTofu
+        if: contains(github.event.head_commit.modified, 'infra/') || contains(github.event.head_commit.added, 'infra/')
+        uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: ${{ env.TOFU_VERSION }}
+
+      - name: Tofu Init
+        if: contains(github.event.head_commit.modified, 'infra/') || contains(github.event.head_commit.added, 'infra/')
+        working-directory: infra
+        run: tofu init -input=false
+
+      - name: Tofu Apply
+        if: contains(github.event.head_commit.modified, 'infra/') || contains(github.event.head_commit.added, 'infra/')
+        working-directory: infra
+        run: tofu apply -auto-approve -input=false
+
+      # --- Get outputs (always needed for deploy) ---
+      - name: Setup OpenTofu (for outputs)
+        if: "!(contains(github.event.head_commit.modified, 'infra/') || contains(github.event.head_commit.added, 'infra/'))"
+        uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: ${{ env.TOFU_VERSION }}
+
+      - name: Get Tofu outputs
+        id: tf
+        working-directory: infra
+        run: |
+          tofu init -input=false
+          echo "website_bucket=$(tofu output -raw website_bucket)" >> "$GITHUB_OUTPUT"
+          echo "distribution_id=$(tofu output -raw cloudfront_distribution_id)" >> "$GITHUB_OUTPUT"
+
+      # --- Deploy static site ---
+      - name: Sync site to S3
+        run: |
+          aws s3 sync . "s3://${{ steps.tf.outputs.website_bucket }}" \
+            --delete \
+            --exclude ".git/*" \
+            --exclude ".github/*" \
+            --exclude "Media/*" \
+            --exclude "infra/*" \
+            --exclude "aws/*" \
+            --exclude "docs/*" \
+            --exclude "react/*" \
+            --exclude "node_modules/*" \
+            --exclude "package.json" \
+            --exclude "package-lock.json" \
+            --exclude "README.md" \
+            --exclude ".gitignore" \
+            --exclude ".DS_Store" \
+            --exclude ".claude/*"
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id "${{ steps.tf.outputs.distribution_id }}" \
+            --paths "/*"
