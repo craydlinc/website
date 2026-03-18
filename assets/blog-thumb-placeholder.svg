@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#354F52"/>
+      <stop offset="100%" style="stop-color:#1a2527"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg)" rx="12"/>
+  <text x="320" y="190" text-anchor="middle" fill="#F0EADB" font-family="system-ui,sans-serif" font-size="28" font-weight="300" letter-spacing="0.15em">CRAYDL</text>
+</svg>
