@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 /**
  * Personalized hero: uses HubSpot cookie + server API (never call HubSpot from the browser).
- * Ensure HubSpot contact property `customer_type` matches normalized keys below.
+ * Prefer property CLIENT TYPE (API: `client_type`). This file still uses `customer_type` in the response — use craydl-app for `client_type`.
  */
 const AUDIENCE_KEYS = {
   DEVELOPER: 'developer',

@@ -99,16 +99,18 @@
           <p class="eyebrow">Reach out</p>
           <h2>Contact us</h2>
         </div>
-        <!-- Form action: replace with your form backend (Formspree, Netlify Forms, HubSpot, etc.) or use mailto -->
-        <form class="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" id="contact-form">
+        <!-- Submissions → hello@craydl.com (FormSubmit). First submission: activate link in hello@craydl.com inbox. Test via http server, not file:// -->
+        <form class="contact-form" action="https://formsubmit.co/hello@craydl.com" method="POST" id="contact-form">
           <input type="hidden" name="_subject" value="CRAYDL website contact">
+          <input type="hidden" name="_next" id="contact-form-next" value="">
+          <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true">
           <div class="form-group">
             <label for="name">Name (required)</label>
-            <input type="text" id="name" name="name" required placeholder="First Last">
+            <input type="text" id="name" name="name" required placeholder="First Last" autocomplete="name">
           </div>
           <div class="form-group">
             <label for="email">Email (required)</label>
-            <input type="email" id="email" name="email" required placeholder="you@example.com">
+            <input type="email" id="email" name="email" required placeholder="you@example.com" autocomplete="email">
           </div>
           <div class="form-group">
             <label for="interest">What are you interested in? (required)</label>
@@ -128,9 +130,15 @@
             <label for="comments">Comments</label>
             <textarea id="comments" name="comments" placeholder="Please let us know what's on your mind. Have a question for us? Ask away."></textarea>
           </div>
-          <button type="submit" class="btn btn-primary">Send message</button>
+          <p class="contact-form-error" id="contact-form-error" hidden role="alert">Something went wrong. Please email <a href="mailto:hello@craydl.com">hello@craydl.com</a> or call <a href="tel:480-716-5884">480-716-5884</a>.</p>
+          <button type="submit" class="btn btn-primary" id="contact-form-submit">Send message</button>
         </form>
-        <p class="text-center contact-form-alt" style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-text-muted);">Or email <a href="mailto:hello@craydl.com">hello@craydl.com</a> or call <a href="tel:480-716-5884">480-716-5884</a>.</p>
+        <div id="contact-thanks" class="contact-form-success" hidden tabindex="-1" role="status" aria-live="polite">
+          <p class="contact-form-success__title">Thank you.</p>
+          <p class="contact-form-success__text">You will hear back from us shortly about your inquiry.</p>
+          <p class="contact-form-success__sub"><a href="index.html">Return to home</a></p>
+        </div>
+        <p class="text-center contact-form-alt" id="contact-form-alt">Or email <a href="mailto:hello@craydl.com">hello@craydl.com</a> or call <a href="tel:480-716-5884">480-716-5884</a>.</p>
       </div>
     </section>
 
@@ -159,7 +167,7 @@
             <p>Enhance your projects with interior design integration to BIM. Seamlessly incorporate detailed interior layouts, furnishings, and finishes into your Building Information Models, ensuring cohesive design, improved collaboration, and precise execution of every detail.</p>
           </div>
         </div>
-        <p class="text-center mt-lg"><a href="https://www.craydl.com/website" target="_blank" rel="noopener" class="btn btn-primary">Have questions?</a></p>
+        <p class="text-center mt-lg"><a href="index.html#faq" class="btn btn-primary">Have questions?</a></p>
       </div>
     </section>
 
@@ -191,7 +199,7 @@
         </div>
         <div>
           <h4>Email</h4>
-          <p><a href="mailto:info@craydl.com">info@craydl.com</a></p>
+          <p><a href="mailto:hello@craydl.com">hello@craydl.com</a></p>
         </div>
         <div>
           <h4>Connect</h4>
@@ -218,5 +226,6 @@
   </footer>
 
   <script src="js/main.js"></script>
+  <script src="js/contact-form.js"></script>
 </body>
 </html>

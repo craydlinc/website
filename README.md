@@ -12,16 +12,15 @@ Static rebuild of the CRAYDL site for easy editing in Cursor. No WordPress, no b
 - **js/main.js** – Mobile menu toggle only
 - **docs/CONTENT_ARCHITECTURE.md** – Lead magnets & social in HubSpot; code/UI in repo; React hero personalization notes
 - **Media/** – High-res source images for the AWS pipeline (DAM + WebP per audience); see **docs/AWS_MEDIA_PIPELINE.md**
-- **react/** – `AudienceHero.jsx` + example `get-hubspot-contact` API for HubSpot audience-based hero copy
+- **react/** – older standalone snippet (use **craydl-app** for full Next.js + API)
+- **craydl-app/** – Next.js app: **AudienceHero** + **GET /api/get-hubspot-contact** + HubSpot tracking; see `craydl-app/README.md` and `docs/HUBSPOT_PRIVATE_APP_SETUP.md`
 
 ## Editing in Cursor
 
 1. **Content** – Edit the HTML files directly. Sections are clearly commented or easy to find by heading.
 2. **Colors / fonts / spacing** – In `css/style.css`, change the `:root` variables (e.g. `--color-accent`, `--font-sans`).
 3. **Links** – External links (meeting landing page, social, YouTube, budget.craydl.com, app.craydl.com) are in the HTML; search for the URL or label to update.
-4. **Contact form** – The form in `contact.html` currently posts to a Formspree placeholder. To enable it:
-   - Sign up at [formspree.io](https://formspree.io), create a form, and replace `YOUR_FORM_ID` in the form `action` with your form ID, or
-   - Use Netlify Forms / HubSpot / your own backend and update the form `action` and `method` as needed.
+4. **Contact form** – Submissions go to **hello@craydl.com** via [FormSubmit](https://formsubmit.co). On the **first** submission, FormSubmit emails **hello@craydl.com** an activation link—click it to start receiving inquiries. The thank-you message appears on the same page (JS); without JS, users land on `thank-you.html`. Serve the site over **http(s)** (not `file://`) so AJAX works.
 
 ## Running locally
 
