@@ -16,10 +16,10 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Configure AWS credentials (OIDC)
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
@@ -27,7 +27,7 @@ jobs:
       # --- Infrastructure (only when infra/ changes) ---
       - name: Setup OpenTofu
         if: contains(github.event.head_commit.modified, 'infra/') || contains(github.event.head_commit.added, 'infra/')
-        uses: opentofu/setup-opentofu@v1
+        uses: opentofu/setup-opentofu@v2
         with:
           tofu_version: ${{ env.TOFU_VERSION }}
 
@@ -44,7 +44,7 @@ jobs:
       # --- Get outputs (always needed for deploy) ---
       - name: Setup OpenTofu (for outputs)
         if: "!(contains(github.event.head_commit.modified, 'infra/') || contains(github.event.head_commit.added, 'infra/'))"
-        uses: opentofu/setup-opentofu@v1
+        uses: opentofu/setup-opentofu@v2
         with:
           tofu_version: ${{ env.TOFU_VERSION }}
 
