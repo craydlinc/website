@@ -91,6 +91,30 @@ resource "aws_iam_role_policy" "github_actions" {
     Version = "2012-10-17"
     Statement = [
       {
+        Sid    = "TofuStateS3"
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject",
+          "s3:ListBucket"
+        ]
+        Resource = [
+          "arn:aws:s3:::craydl-tfstate",
+          "arn:aws:s3:::craydl-tfstate/*"
+        ]
+      },
+      {
+        Sid    = "TofuStateLock"
+        Effect = "Allow"
+        Action = [
+          "dynamodb:GetItem",
+          "dynamodb:PutItem",
+          "dynamodb:DeleteItem"
+        ]
+        Resource = "arn:aws:dynamodb:${var.aws_region}:*:table/craydl-tflock"
+      },
+      {
         Sid    = "S3WebsiteDeploy"
         Effect = "Allow"
         Action = [
