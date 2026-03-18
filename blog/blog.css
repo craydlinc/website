@@ -18,36 +18,86 @@
   margin: 0;
   padding: 0;
   display: grid;
-  gap: var(--space-lg);
-  max-width: 720px;
+  gap: var(--space-xl);
+  max-width: 900px;
   margin-inline: auto;
 }
 .blog-index__item {
-  padding-bottom: var(--space-md);
+  display: grid;
+  grid-template-columns: minmax(160px, 280px) 1fr;
+  gap: var(--space-lg);
+  align-items: start;
+  padding-bottom: var(--space-lg);
   border-bottom: 1px solid var(--color-border);
 }
-.blog-index__item a {
+@media (max-width: 640px) {
+  .blog-index__item {
+    grid-template-columns: 1fr;
+  }
+  .blog-index__thumb-wrap {
+    max-width: 100%;
+  }
+}
+.blog-index__thumb-wrap {
+  display: block;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-elevated);
+}
+.blog-index__thumb-wrap:hover .blog-index__thumb {
+  transform: scale(1.03);
+}
+.blog-index__thumb {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s ease;
+}
+.blog-index__thumb-wrap--empty {
+  text-decoration: none;
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.blog-index__thumb-fallback {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.25rem;
+  letter-spacing: 0.08em;
+  color: var(--color-sage);
+  opacity: 0.6;
+}
+.blog-index__body {
+  min-width: 0;
+}
+.blog-index__title-link {
   font-family: var(--font-display);
   font-weight: 900;
   font-size: 1.2rem;
   color: var(--color-beige);
   text-decoration: none;
+  display: block;
+  line-height: 1.3;
+  margin-bottom: var(--space-xs);
 }
-.blog-index__item a:hover {
+.blog-index__title-link:hover {
   color: var(--color-powder-blue);
 }
-.blog-index__item time {
+.blog-index__body time {
   display: block;
   font-size: 0.85rem;
   color: var(--color-sage);
-  margin: var(--space-xs) 0;
+  margin: 0 0 var(--space-sm);
 }
 .blog-index__excerpt {
   margin: 0;
   font-size: 0.95rem;
   color: var(--color-beige);
-  opacity: 0.9;
-  line-height: 1.5;
+  opacity: 0.92;
+  line-height: 1.55;
 }
 
 .blog-post-main {

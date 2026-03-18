@@ -23,6 +23,35 @@ function escHtml(s) {
     .replace(/"/g, '&quot;');
 }
 
+/** Decode &#8217; &#8230; etc. so excerpts read naturally (not double-escaped). */
+function decodeHtmlEntities(text) {
+  if (!text) return '';
+  let s = String(text);
+  s = s.replace(/&#(\d+);/g, (_, n) =>
+    String.fromCodePoint(parseInt(n, 10))
+  );
+  s = s.replace(/&#x([0-9a-fA-F]+);/g, (_, h) =>
+    String.fromCodePoint(parseInt(h, 16))
+  );
+  const named = {
+    amp: '&',
+    lt: '<',
+    gt: '>',
+    quot: '"',
+    apos: "'",
+    nbsp: ' ',
+    hellip: '…',
+    mdash: '—',
+    ndash: '–',
+  };
+  s = s.replace(/&([a-z]+);/gi, (m, name) => named[name.toLowerCase()] || m);
+  return s;
+}
+
+function plainTitle(post) {
+  return decodeHtmlEntities(stripTags(post.title?.rendered || 'Untitled'));
+}
+
 const CACHE = path.join(__dirname, 'wp-page1.json');
 
 async function fetchAllPosts() {
@@ -58,12 +87,62 @@ function stripTags(html) {
 
 function excerptFromPost(post, max = 160) {
   const ex = post.excerpt?.rendered;
-  if (ex) {
-    const t = stripTags(ex);
-    return t.length > max ? t.slice(0, max - 1) + '…' : t;
+  let t = ex
+    ? decodeHtmlEntities(stripTags(ex))
+    : decodeHtmlEntities(stripTags(post.content?.rendered || ''));
+  t = t.replace(/\s+/g, ' ').trim();
+  if (t.length > max) {
+    const cut = t.slice(0, max - 1);
+    const lastSpace = cut.lastIndexOf(' ');
+    t = (lastSpace > max * 0.5 ? cut.slice(0, lastSpace) : cut) + '…';
   }
-  const c = stripTags(post.content?.rendered || '');
-  return c.length > max ? c.slice(0, max - 1) + '…' : c;
+  return t;
+}
+
+async function fetchMediaUrl(id) {
+  try {
+    const r = await fetch(`${BASE}/wp-json/wp/v2/media/${id}`, {
+      signal: AbortSignal.timeout(8000),
+      headers: { 'User-Agent': 'CRAYDL-blog-migrator/1.0' },
+    });
+    if (!r.ok) return '';
+    const m = await r.json();
+    return (
+      m.media_details?.sizes?.medium_large?.source_url ||
+      m.media_details?.sizes?.large?.source_url ||
+      m.media_details?.sizes?.medium?.source_url ||
+      m.media_details?.sizes?.thumbnail?.source_url ||
+      m.source_url ||
+      ''
+    );
+  } catch {
+    return '';
+  }
+}
+
+function firstImageFromContent(html) {
+  if (!html) return '';
+  const m = html.match(/<img[^>]+src=["']([^"']+)["']/i);
+  return m ? m[1] : '';
+}
+
+async function enrichFeaturedImages(posts) {
+  for (const post of posts) {
+    post._thumbnail = firstImageFromContent(post.content?.rendered) || '';
+  }
+  if (process.env.FETCH_WP_THUMBS !== '1') return;
+  const needThumb = posts.filter((p) => !p._thumbnail && p.featured_media);
+  const ids = [...new Set(needThumb.map((p) => p.featured_media))];
+  const mediaCache = new Map();
+  for (let i = 0; i < ids.length; i += 12) {
+    const chunk = ids.slice(i, i + 12);
+    const results = await Promise.all(chunk.map((id) => fetchMediaUrl(id)));
+    chunk.forEach((id, j) => mediaCache.set(id, results[j]));
+  }
+  for (const post of needThumb) {
+    const u = mediaCache.get(post.featured_media);
+    if (u) post._thumbnail = u;
+  }
 }
 
 function postShell(title, metaDesc, bodyHtml, canonicalUrl, datePublished, originalUrl) {
@@ -122,6 +201,8 @@ async function main() {
   console.log('Fetching posts from WordPress…');
   const posts = await fetchAllPosts();
   console.log('Found', posts.length, 'posts');
+  console.log('Loading featured images…');
+  await enrichFeaturedImages(posts);
 
   fs.mkdirSync(POSTS_DIR, { recursive: true });
 
@@ -129,7 +210,7 @@ async function main() {
 
   for (const post of posts) {
     const slug = post.slug;
-    const title = stripTags(post.title?.rendered || 'Untitled');
+    const title = plainTitle(post);
     const date = (post.date || '').split('T')[0];
     const originalUrl = post.link || `${BASE}/${slug}/`;
     const newCanonical = `https://www.craydl.com/blog/posts/${slug}.html`;
@@ -143,21 +224,29 @@ async function main() {
       slug,
       title,
       date,
-      excerpt: excerptFromPost(post, 200),
+      excerpt: excerptFromPost(post, 220),
       url: `posts/${slug}.html`,
+      thumb: post._thumbnail || '',
     });
   }
 
   indexItems.sort((a, b) => (a.date < b.date ? 1 : -1));
 
   const listHtml = indexItems
-    .map(
-      (p) => `          <li class="blog-index__item">
-            <a href="${escHtml(p.url)}">${escHtml(p.title)}</a>
-            <time datetime="${p.date}">${p.date}</time>
-            <p class="blog-index__excerpt">${escHtml(p.excerpt)}</p>
-          </li>`
-    )
+    .map((p) => {
+      const thumbSrc = p.thumb || '../assets/blog-thumb-placeholder.svg';
+      const thumb = `            <a href="${escHtml(p.url)}" class="blog-index__thumb-wrap${p.thumb ? '' : ' blog-index__thumb-wrap--placeholder'}" tabindex="-1" aria-hidden="true">
+              <img class="blog-index__thumb" src="${escHtml(thumbSrc)}" alt="" width="320" height="180" loading="lazy" decoding="async">
+            </a>`;
+      return `          <li class="blog-index__item">
+${thumb}
+            <div class="blog-index__body">
+              <a href="${escHtml(p.url)}" class="blog-index__title-link">${escHtml(p.title)}</a>
+              <time datetime="${p.date}">${p.date}</time>
+              <p class="blog-index__excerpt">${escHtml(p.excerpt)}</p>
+            </div>
+          </li>`;
+    })
     .join('\n');
 
   const indexPage = `<!DOCTYPE html>

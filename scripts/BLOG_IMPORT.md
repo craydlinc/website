@@ -33,4 +33,12 @@
 
 ## Images
 
-Post bodies still reference images on **craydl.com** (WordPress uploads). They will load until you change hosts. To host images on the new site, run a follow-up migration or replace URLs in the generated HTML.
+Post bodies still reference images on **craydl.com** (WordPress uploads). They will load until you change hosts.
+
+### Blog list thumbnails
+
+- Excerpts decode HTML entities (`’`, `…`) so text reads normally.
+- Each row shows an image: first `<img>` from post content when present, else **`assets/blog-thumb-placeholder.svg`**.
+- To fill **featured images** from WordPress for all posts (slower, needs API access):
+
+  **PowerShell:** `$env:FETCH_WP_THUMBS='1'; node scripts/import-blog.mjs`
