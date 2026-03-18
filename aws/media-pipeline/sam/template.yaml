@@ -1,0 +1,124 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: CRAYDL — Media staging → DAM originals + audience WebP on CDN
+
+Globals:
+  Function:
+    Timeout: 120
+    MemorySize: 1024
+
+Parameters:
+  WebpQuality:
+    Type: Number
+    Default: 82
+    MinValue: 50
+    MaxValue: 100
+
+Resources:
+  StagingBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      LifecycleConfiguration:
+        Rules:
+          - Id: ExpireIncoming
+            Status: Enabled
+            Prefix: incoming/
+            ExpirationInDays: 90
+
+  DamBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      VersioningConfiguration:
+        Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  CdnBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders: ['*']
+            AllowedMethods: [GET, HEAD]
+            AllowedOrigins: ['*']
+            MaxAge: 3600
+
+  CdnBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref CdnBucket
+      PolicyDocument:
+        Statement:
+          - Sid: PublicReadWebp
+            Effect: Allow
+            Principal: '*'
+            Action: 's3:GetObject'
+            Resource: !Sub '${CdnBucket.Arn}/webp/*'
+
+  MediaProcessorFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      DockerTag: craydl-media-processor
+      DockerContext: ../lambda
+      Dockerfile: Dockerfile
+    Properties:
+      PackageType: Image
+      Environment:
+        Variables:
+          STAGING_BUCKET: !Ref StagingBucket
+          DAM_BUCKET: !Ref DamBucket
+          CDN_BUCKET: !Ref CdnBucket
+          WEBP_QUALITY: !Ref WebpQuality
+          AUDIENCE_WIDTHS: '{"developer":1920,"homeowner":1200,"builder":1440,"owners_representative":1280}'
+      Policies:
+        - S3ReadPolicy:
+            BucketName: !Ref StagingBucket
+        - S3CrudPolicy:
+            BucketName: !Ref DamBucket
+        - S3CrudPolicy:
+            BucketName: !Ref CdnBucket
+      Events:
+        StagingUpload:
+          Type: S3
+          Properties:
+            Bucket: !Ref StagingBucket
+            Events: s3:ObjectCreated:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: incoming/
+
+Outputs:
+  StagingBucketName:
+    Description: Set GitHub secret MEDIA_STAGING_BUCKET to this value
+    Value: !Ref StagingBucket
+  DamBucketName:
+    Description: Private DAM (originals)
+    Value: !Ref DamBucket
+  CdnBucketName:
+    Description: Public WebP bucket (add CloudFront for HTTPS/custom domain)
+    Value: !Ref CdnBucket
+  CdnWebpUrlExample:
+    Description: Example object URL pattern
+    Value: !Sub 'https://${CdnBucket}.s3.${AWS::Region}.amazonaws.com/webp/developer/your-slug.webp'
