@@ -8,6 +8,7 @@ Static rebuild of the CRAYDL site for easy editing in Cursor. No WordPress, no b
 - **services.html** – Full services: Scan to BIM, clash detection, VDC, budgeting, permitting, marketing, production docs, interior design
 - **contact.html** – About, who we help, contact form, newsletter signup
 - **book-now.html** – Redirects to HubSpot landing (craydl.com/website); keeps old marketing links working
+- **blog/** – Blog posts migrated from WordPress (see `scripts/BLOG_IMPORT.md`)
 - **css/style.css** – All styles; edit CSS variables at the top for colors/fonts/spacing
 - **js/main.js** – Mobile menu toggle only
 - **docs/CONTENT_ARCHITECTURE.md** – Lead magnets & social in HubSpot; code/UI in repo; React hero personalization notes
