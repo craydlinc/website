@@ -290,6 +290,62 @@ img { max-width: 100%; height: auto; display: block; }
 .page-hero h1 { margin: 0 0 var(--space-xs); }
 .page-hero .sub { color: var(--color-beige); margin: 0; opacity: 0.95; }
 
+.contact-hero-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  justify-content: center;
+  align-items: center;
+  margin: var(--space-md) 0 0;
+}
+
+.email-fallback-panel {
+  max-width: 36rem;
+  margin: var(--space-md) auto 0;
+  padding: var(--space-md);
+  text-align: left;
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius);
+  color: var(--color-beige);
+}
+.email-fallback-panel p { margin: 0 0 var(--space-sm); font-size: 0.95rem; line-height: 1.5; }
+.email-fallback-panel p:last-of-type { margin-bottom: 0; }
+.email-fallback-panel a { color: var(--color-accent); }
+.email-fallback-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm) !important;
+}
+.email-fallback-address {
+  font-size: 1rem;
+  padding: 0.35rem 0.65rem;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 4px;
+  color: var(--color-beige);
+}
+.btn-sm {
+  padding: 0.45rem 0.85rem;
+  font-size: 0.875rem;
+  width: auto;
+  display: inline-block;
+}
+.email-fallback-dismiss {
+  display: block;
+  margin-top: var(--space-sm);
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  text-decoration: underline;
+  cursor: pointer;
+  font-family: inherit;
+}
+.email-fallback-dismiss:hover { color: var(--color-beige); }
+
 /* Contact form – labels and inputs Beige, spacing clear */
 .form-group { margin-bottom: var(--space-md); }
 .form-group label { display: block; margin-bottom: var(--space-xs); font-weight: 500; color: var(--color-beige); }

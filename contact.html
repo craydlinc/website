@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Urbanist:wght@900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="page-contact">
   <header class="site-header">
     <div class="container">
       <a href="index.html" class="brand-logo" aria-label="CRAYDL home">
@@ -46,11 +46,20 @@
       <div class="container">
         <p class="eyebrow">Reach out</p>
         <h1>How can we help you?</h1>
-        <p class="sub">Schedule a call or send us a message. We'll get back to you soon.</p>
-        <p>
+        <p class="sub">Schedule a call, email us, or send us a message. We'll get back to you soon.</p>
+        <p class="contact-hero-ctas">
           <a href="https://calendly.com/craydl/meeting-with-adam-clone" target="_blank" rel="noopener" class="btn btn-primary">Schedule a call</a>
           <a href="tel:480-716-5884" class="btn btn-outline">Call 480-716-5884</a>
+          <a href="mailto:hello@craydl.com?subject=CRAYDL%20inquiry" class="btn btn-outline" id="contact-email-us">Email us</a>
         </p>
+        <div id="email-manual-fallback" class="email-fallback-panel" hidden role="region" aria-labelledby="email-fallback-heading">
+          <p id="email-fallback-heading"><strong>No email app opened?</strong> Please email us at <a href="mailto:hello@craydl.com">hello@craydl.com</a> from your regular inbox or webmail.</p>
+          <p class="email-fallback-row">
+            <code class="email-fallback-address">hello@craydl.com</code>
+            <button type="button" class="btn btn-outline btn-sm" id="copy-email-address">Copy address</button>
+          </p>
+          <button type="button" class="email-fallback-dismiss" id="dismiss-email-fallback">Dismiss</button>
+        </div>
       </div>
     </section>
 
@@ -121,7 +130,7 @@
           </div>
           <button type="submit" class="btn btn-primary">Send message</button>
         </form>
-        <p class="text-center" style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-text-muted);">Or email us directly at <a href="mailto:info@craydl.com">info@craydl.com</a> or call <a href="tel:480-716-5884">480-716-5884</a>.</p>
+        <p class="text-center contact-form-alt" style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-text-muted);">Or email <a href="mailto:hello@craydl.com">hello@craydl.com</a> or call <a href="tel:480-716-5884">480-716-5884</a>.</p>
       </div>
     </section>
 
