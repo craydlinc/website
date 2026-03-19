@@ -1,4 +1,14 @@
 # -----------------------------------------------------------------------------
+# CloudFront Function — 301 redirects from old WordPress/HubSpot URLs
+# -----------------------------------------------------------------------------
+resource "aws_cloudfront_function" "redirects" {
+  name    = "${local.project}-redirects"
+  runtime = "cloudfront-js-2.0"
+  publish = true
+  code    = file("${path.module}/redirects.js")
+}
+
+# -----------------------------------------------------------------------------
 # Origin Access Control — CloudFront → S3 (no public bucket access)
 # -----------------------------------------------------------------------------
 resource "aws_cloudfront_origin_access_control" "website" {
@@ -35,6 +45,11 @@ resource "aws_cloudfront_distribution" "website" {
       cookies {
         forward = "none"
       }
+    }
+
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.redirects.arn
     }
 
     min_ttl     = 0
