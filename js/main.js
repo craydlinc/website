@@ -3,6 +3,14 @@
  * Edit or remove as needed.
  */
 (function () {
+  function closeNavDropdowns() {
+    document.querySelectorAll('.nav-dropdown.is-open').forEach(function (d) {
+      d.classList.remove('is-open');
+      var t = d.querySelector('.nav-dropdown__trigger');
+      if (t) t.setAttribute('aria-expanded', 'false');
+    });
+  }
+
   var navToggle = document.querySelector('.nav-toggle');
   var navMain = document.querySelector('#nav-main');
   if (navToggle && navMain) {
@@ -10,8 +18,34 @@
       var open = navMain.classList.toggle('is-open');
       navToggle.setAttribute('aria-expanded', open);
       navToggle.textContent = open ? '✕' : '☰';
+      if (!open) closeNavDropdowns();
     });
   }
+
+  document.querySelectorAll('.nav-dropdown__trigger').forEach(function (trigger) {
+    var dropdown = trigger.closest('.nav-dropdown');
+    if (!dropdown) return;
+    trigger.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (!window.matchMedia('(max-width: 768px)').matches) return;
+      e.preventDefault();
+      var willOpen = !dropdown.classList.contains('is-open');
+      closeNavDropdowns();
+      if (willOpen) {
+        dropdown.classList.add('is-open');
+        trigger.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('.nav-dropdown')) return;
+    closeNavDropdowns();
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeNavDropdowns();
+  });
 
   /* Contact page: mailto + fallback when no native email app opens */
   var emailUs = document.getElementById('contact-email-us');
