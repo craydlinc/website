@@ -248,6 +248,41 @@ img { max-width: 100%; height: auto; display: block; }
 .card p { margin: 0 0 var(--space-md); color: var(--color-beige); font-size: 0.95rem; opacity: 0.95; flex: 1; }
 .card a { margin-top: auto; display: inline-block; }
 
+/* VR tours */
+.vr-tour-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-lg);
+  margin-top: var(--space-md);
+}
+.vr-tour-card {
+  display: block;
+  text-decoration: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--color-surface-elevated);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.vr-tour-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-powder-blue);
+}
+.vr-tour-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+}
+.vr-tour-card__title {
+  display: block;
+  padding: 0.9rem 1rem 1rem;
+  color: var(--color-beige);
+  font-family: var(--font-display);
+  font-weight: 900;
+  letter-spacing: 0.02em;
+}
+
 /* FAQ Accordion – readable, no overlap */
 .faq-list { max-width: 800px; margin: 0 auto; }
 .faq-item { border-bottom: 1px solid var(--color-border); }
