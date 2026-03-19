@@ -4,7 +4,7 @@ Static rebuild of the CRAYDL site for easy editing in Cursor. No WordPress, no b
 
 ## Structure
 
-- **index.html** – Home: hero, welcome, who we serve, CTAs, clients, portfolio, FAQs, testimonials
+- **index.html** – Home: hero, welcome, who we serve, CTAs, clients, **New home tours** (Kuula), FAQs, testimonials
 - **services.html** – Full services: Scan to BIM, clash detection, VDC, budgeting, permitting, marketing, production docs, interior design
 - **contact.html** – About, who we help, contact form, newsletter signup
 - **book-now.html** – Redirects to HubSpot landing (craydl.com/website); keeps old marketing links working

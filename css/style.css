@@ -283,6 +283,45 @@ img { max-width: 100%; height: auto; display: block; }
   letter-spacing: 0.02em;
 }
 
+/* VR tour categories – collapsible */
+.vr-tour-accordion {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  margin-bottom: var(--space-md);
+  background: var(--color-surface-elevated);
+  overflow: hidden;
+}
+.vr-tour-accordion summary {
+  padding: var(--space-md) var(--space-lg);
+  cursor: pointer;
+  font-weight: 800;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  letter-spacing: 0.02em;
+  list-style: none;
+  color: var(--color-beige);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  user-select: none;
+}
+.vr-tour-accordion summary::-webkit-details-marker { display: none; }
+.vr-tour-accordion summary::after {
+  content: "+";
+  flex-shrink: 0;
+  color: var(--color-powder-blue);
+  font-size: 1.35rem;
+  font-weight: 400;
+  line-height: 1;
+}
+.vr-tour-accordion[open] summary::after { content: "−"; }
+.vr-tour-accordion summary:hover { color: var(--color-powder-blue); }
+.vr-tour-accordion .vr-tour-grid {
+  margin-top: 0;
+  padding: 0 var(--space-lg) var(--space-lg);
+}
+
 /* FAQ Accordion – readable, no overlap */
 .faq-list { max-width: 800px; margin: 0 auto; }
 .faq-item { border-bottom: 1px solid var(--color-border); }
@@ -342,6 +381,14 @@ img { max-width: 100%; height: auto; display: block; }
 .page-hero { padding: var(--space-xl) 0; text-align: center; background: var(--color-surface); }
 .page-hero h1 { margin: 0 0 var(--space-xs); }
 .page-hero .sub { color: var(--color-beige); margin: 0; opacity: 0.95; }
+
+.hero-cta-inline {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 2mm;
+}
 
 .contact-hero-ctas {
   display: flex;
