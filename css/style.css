@@ -1,23 +1,31 @@
 /* CRAYDL - Virtual Design Construction
-   Brand: Manrope (body), Urbanist Black (headlines). Colors: Dark Slate, Sage Green, Powder Blue, Beige (whitest for text). */
+   Brand: Manrope (body), Urbanist Black (headlines).
+   Palette: Dark Charcoal, Alabaster White, Deep Bronze, Silt Grey. */
 
 :root {
-  /* Brand palette from Craydl Brand Cheat Sheet - Beige is the whitest, used for primary text */
-  --color-dark-slate: #354F52;
-  --color-sage: #A8B5A2;
-  --color-powder-blue: #B6D0E2;
-  --color-beige: #F0EADB;
+  /* Brand palette (source swatches) */
+  --color-charcoal: #2B2D2F;
+  --color-alabaster: #F2F0E6;
+  --color-bronze: #736357;
+  --color-silt: #96968e;
 
-  /* Semantic: primary text = Beige (whitest); muted = Sage; accents = Powder Blue */
-  --color-header-bg: #2d2d2d; /* matches logo background (dark gray / charcoal) */
-  --color-bg: #1a2527;
-  --color-surface: #243336;
-  --color-surface-elevated: #2d4044;
-  --color-text: #F0EADB;
-  --color-text-muted: #A8B5A2;
-  --color-accent: #B6D0E2;
-  --color-accent-hover: #c5dce9;
-  --color-border: #354F52;
+  /* Surfaces — stepped from charcoal for layout depth */
+  --color-bg: var(--color-charcoal);
+  --color-header-bg: var(--color-charcoal);
+  --color-surface: #333537;
+  --color-surface-elevated: #3a3c3e;
+
+  /* Semantic tokens (legacy names kept for existing rules) */
+  --color-beige: var(--color-alabaster);
+  --color-text: var(--color-alabaster);
+  --color-text-muted: var(--color-silt);
+  --color-accent: var(--color-bronze);
+  --color-accent-hover: #867566;
+  --color-border: rgba(150, 150, 142, 0.28);
+
+  --color-dark-slate: var(--color-charcoal);
+  --color-sage: var(--color-silt);
+  --color-powder-blue: var(--color-bronze);
 
   --font-sans: "Manrope", system-ui, sans-serif;
   --font-display: "Urbanist", var(--font-sans);
@@ -92,7 +100,7 @@ img { max-width: 100%; height: auto; display: block; }
   top: 0;
   z-index: 100;
   background: var(--color-header-bg);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(242, 240, 230, 0.1);
   padding: var(--space-sm) 0;
   min-height: 4rem;
 }
@@ -124,7 +132,7 @@ img { max-width: 100%; height: auto; display: block; }
   padding: 0;
   border-radius: 50%;
   line-height: 0;
-  color: #ffffff;
+  color: var(--color-alabaster);
   transition: transform 0.2s ease, opacity 0.2s ease;
 }
 .social-icon:hover {
@@ -174,7 +182,7 @@ img { max-width: 100%; height: auto; display: block; }
   justify-content: center;
   align-items: center;
 }
-.contact-google-cta { margin-top: 1.25rem; font-size: 0.95rem; color: var(--color-beige-muted, rgba(245, 240, 232, 0.85)); }
+.contact-google-cta { margin-top: 1.25rem; font-size: 0.95rem; color: var(--color-beige-muted, rgba(242, 240, 230, 0.85)); }
 .contact-google-cta a { font-weight: 600; color: var(--color-beige); }
 .contact-google-cta a:hover { color: var(--color-accent); }
 .contact-google-cta .contact-google-cta__sep { opacity: 0.7; padding: 0 0.15em; }
@@ -293,10 +301,10 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .btn:last-child { margin-right: 0; }
 .btn-primary {
-  background: var(--color-powder-blue);
-  color: var(--color-dark-slate);
+  background: var(--color-bronze);
+  color: var(--color-alabaster);
 }
-.btn-primary:hover { background: var(--color-accent-hover); color: var(--color-dark-slate); text-decoration: none; }
+.btn-primary:hover { background: var(--color-accent-hover); color: var(--color-alabaster); text-decoration: none; }
 .btn-outline {
   background: transparent;
   color: var(--color-beige);
@@ -323,14 +331,14 @@ img { max-width: 100%; height: auto; display: block; }
   border-radius: var(--radius);
   overflow: hidden;
   border: 1px solid var(--color-border);
-  background: #0d1214;
+  background: #1e2022;
 }
 .home-video video {
   width: 100%;
   aspect-ratio: 16 / 9;
   display: block;
   object-fit: contain;
-  background: #000;
+  background: var(--color-charcoal);
 }
 .home-video__caption {
   padding: var(--space-sm) var(--space-md);
