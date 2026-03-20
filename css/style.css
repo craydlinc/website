@@ -401,6 +401,19 @@ img { max-width: 100%; height: auto; display: block; }
   flex-direction: column;
 }
 .card:hover { border-color: var(--color-powder-blue); }
+a.card.project-type-tile {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+}
+a.card.project-type-tile:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+a.card.project-type-tile h3 { margin: 0; }
+.tour-scroll-target { scroll-margin-top: 5.5rem; }
 .card h3 { margin: 0 0 var(--space-sm); color: var(--color-beige); }
 .card p { margin: 0 0 var(--space-md); color: var(--color-beige); font-size: 0.95rem; opacity: 0.95; flex: 1; }
 .card a { margin-top: auto; display: inline-block; }
