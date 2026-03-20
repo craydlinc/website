@@ -373,6 +373,26 @@ img { max-width: 100%; height: auto; display: block; }
   flex-direction: column;
 }
 .card:hover { border-color: var(--color-powder-blue); }
+a.card.card--tile-link {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+a.card.card--tile-link:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+a.card.card--tile-link:hover { border-color: var(--color-powder-blue); }
+.card__cta {
+  margin-top: auto;
+  display: inline-block;
+  color: var(--color-accent);
+  font-weight: 500;
+}
+a.card.card--tile-link:hover .card__cta {
+  color: var(--color-accent-hover);
+  text-decoration: underline;
+}
 a.card.project-type-tile {
   text-decoration: none;
   color: inherit;
