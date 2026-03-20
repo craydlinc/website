@@ -344,6 +344,16 @@ img { max-width: 100%; height: auto; display: block; }
 /* Sections – consistent vertical rhythm */
 .section { padding: var(--space-xl) 0; }
 .section--alt { background: var(--color-surface); }
+/* Welcome section pull quote */
+#welcome .welcome-quote {
+  margin: var(--space-md) 0 var(--space-lg);
+  padding-left: var(--space-md);
+  border-left: 3px solid var(--color-sage);
+  font-style: italic;
+  color: var(--color-text-muted);
+}
+#welcome .welcome-quote p { margin: 0; }
+
 .section-title { margin-bottom: var(--space-lg); }
 .section-title .eyebrow { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-sage); margin: 0 0 var(--space-xs); }
 .section-title h2 { margin: 0 0 0.25em; }
