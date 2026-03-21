@@ -2,6 +2,11 @@
 .blog-hero {
   text-align: center;
   padding-bottom: var(--space-lg);
+  background:
+    radial-gradient(ellipse 95% 70% at 50% 100%, var(--mist-alabaster-strong), transparent 55%),
+    var(--color-bg);
+  border-bottom: 1px solid var(--line-silt-soft);
+  box-shadow: inset 0 -1px 0 var(--line-bronze-soft);
 }
 .blog-hero h1 {
   margin-bottom: var(--space-sm);
@@ -168,4 +173,36 @@
   border-top: 1px solid var(--color-border);
   font-size: 0.9rem;
   color: var(--color-sage);
+}
+
+/* Blog index listing on alabaster band */
+.section--light .blog-lead {
+  color: rgba(43, 45, 47, 0.82);
+}
+.section--light .blog-index__title-link {
+  color: var(--color-charcoal);
+}
+.section--light .blog-index__title-link:hover {
+  color: #4a6674;
+}
+.section--light .blog-index__body time {
+  color: var(--color-bronze);
+  opacity: 0.88;
+}
+.section--light .blog-index__excerpt {
+  color: rgba(43, 45, 47, 0.78);
+  opacity: 1;
+}
+.section--light .blog-index__item {
+  border-bottom-color: var(--line-silt-soft);
+}
+.section--light .blog-index__thumb-fallback {
+  color: var(--color-bronze);
+  opacity: 0.5;
+}
+.section--light .blog-index__thumb-wrap {
+  border-color: var(--line-silt-soft);
+  box-shadow:
+    0 0 0 1px var(--line-bronze-soft),
+    inset 0 1px 0 var(--mist-alabaster);
 }
