@@ -106,4 +106,20 @@
       });
     }
   }
+
+  /* In-page anchors from nav: close dropdowns and mobile menu */
+  var navMainEl = document.querySelector('#nav-main');
+  var navToggleEl = document.querySelector('.nav-toggle');
+  document.querySelectorAll('.nav-main a[href^="#"]').forEach(function (a) {
+    a.addEventListener('click', function () {
+      closeNavDropdowns();
+      if (navMainEl && navMainEl.classList.contains('is-open') && window.matchMedia('(max-width: 768px)').matches) {
+        navMainEl.classList.remove('is-open');
+        if (navToggleEl) {
+          navToggleEl.setAttribute('aria-expanded', 'false');
+          navToggleEl.textContent = '☰';
+        }
+      }
+    });
+  });
 })();

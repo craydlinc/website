@@ -265,6 +265,12 @@ img { max-width: 100%; height: auto; display: block; }
   text-decoration: none;
   background: rgba(182, 208, 226, 0.07);
 }
+.nav-dropdown__menu--caps a {
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
 @media (min-width: 769px) {
   .nav-dropdown:hover .nav-dropdown__menu,
   .nav-dropdown:focus-within .nav-dropdown__menu {
@@ -743,6 +749,34 @@ a.card.project-type-tile h3 { margin: 0; }
   align-items: center;
   justify-content: center;
   gap: 2mm;
+}
+
+/* Stacked primary CTAs in page hero (e.g. services: video + contact) */
+.page-hero__ctas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  margin: var(--space-md) 0 0;
+}
+.page-hero__ctas .btn {
+  margin: 0;
+}
+
+/* Video / embed CTAs – match .btn-primary, single column, left-aligned with body copy */
+.section-media-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+  margin-bottom: 0;
+}
+.section-media-cta .btn {
+  margin: 0;
+}
+.section--light .section-media-cta {
+  margin-top: var(--space-md);
 }
 
 .contact-hero-ctas {
