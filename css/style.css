@@ -1,31 +1,37 @@
 /* CRAYDL - Virtual Design Construction
    Brand: Manrope (body), Urbanist Black (headlines).
-   Palette: Dark Charcoal, Alabaster White, Deep Bronze, Silt Grey. */
+   Palette: Dark Charcoal, Alabaster White, Deep Bronze, Silt (cool blue-grey).
+   Contrast: alabaster on charcoal for type; silt for links/chrome; bronze for primary CTAs. */
 
 :root {
   /* Brand palette (source swatches) */
   --color-charcoal: #2B2D2F;
   --color-alabaster: #F2F0E6;
   --color-bronze: #736357;
-  --color-silt: #96968e;
+  --color-silt: #B6D0E2;
 
-  /* Surfaces — stepped from charcoal for layout depth */
+  /* Surfaces — cool-tinted steps for crisp separation on charcoal */
   --color-bg: var(--color-charcoal);
   --color-header-bg: var(--color-charcoal);
-  --color-surface: #333537;
-  --color-surface-elevated: #3a3c3e;
+  --color-surface: #2e3236;
+  --color-surface-elevated: #353a3f;
 
   /* Semantic tokens (legacy names kept for existing rules) */
   --color-beige: var(--color-alabaster);
   --color-text: var(--color-alabaster);
-  --color-text-muted: var(--color-silt);
-  --color-accent: var(--color-bronze);
-  --color-accent-hover: #867566;
-  --color-border: rgba(150, 150, 142, 0.28);
+  /* Muted body: alabaster at lower opacity so silt can stay a sharp accent */
+  --color-text-muted: rgba(242, 240, 230, 0.7);
+
+  /* Default links & cool UI highlights */
+  --color-accent: var(--color-silt);
+  --color-accent-hover: #d0e4f2;
+  --color-bronze-hover: #867566;
+
+  --color-border: rgba(182, 208, 226, 0.22);
 
   --color-dark-slate: var(--color-charcoal);
   --color-sage: var(--color-silt);
-  --color-powder-blue: var(--color-bronze);
+  --color-powder-blue: var(--color-silt);
 
   --font-sans: "Manrope", system-ui, sans-serif;
   --font-display: "Urbanist", var(--font-sans);
@@ -100,7 +106,7 @@ img { max-width: 100%; height: auto; display: block; }
   top: 0;
   z-index: 100;
   background: var(--color-header-bg);
-  border-bottom: 1px solid rgba(242, 240, 230, 0.1);
+  border-bottom: 1px solid rgba(182, 208, 226, 0.14);
   padding: var(--space-sm) 0;
   min-height: 4rem;
 }
@@ -244,7 +250,7 @@ img { max-width: 100%; height: auto; display: block; }
 .nav-dropdown__menu a:hover {
   color: var(--color-accent);
   text-decoration: none;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(182, 208, 226, 0.07);
 }
 @media (min-width: 769px) {
   .nav-dropdown:hover .nav-dropdown__menu,
@@ -303,8 +309,9 @@ img { max-width: 100%; height: auto; display: block; }
 .btn-primary {
   background: var(--color-bronze);
   color: var(--color-alabaster);
+  box-shadow: 0 0 0 1px rgba(182, 208, 226, 0.2);
 }
-.btn-primary:hover { background: var(--color-accent-hover); color: var(--color-alabaster); text-decoration: none; }
+.btn-primary:hover { background: var(--color-bronze-hover); color: var(--color-alabaster); text-decoration: none; box-shadow: 0 0 0 1px rgba(182, 208, 226, 0.35); }
 .btn-outline {
   background: transparent;
   color: var(--color-beige);
