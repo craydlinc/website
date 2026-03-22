@@ -9,3 +9,9 @@ infra/.terraform.lock.hcl
 *.tfstate
 *.tfstate.*
 *.tfplan
+
+# Large media — upload videos directly to S3 DAM, not through git
+**/*.mp4
+**/*.mov
+**/*.webm
+**/*.avi
