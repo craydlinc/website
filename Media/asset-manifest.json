@@ -1,0 +1,121 @@
+{
+  "version": "1.0",
+  "audiences": [
+    "builder",
+    "developer",
+    "homeowner",
+    "interior_designer",
+    "architect",
+    "owners_representative"
+  ],
+  "assets": [
+    {
+      "file": "builder/Build_Video__Builder Budget Video.mp4",
+      "audience": "builder",
+      "type": "video",
+      "asset_description": "Builder Budget Video"
+    },
+    {
+      "file": "builder/build_image_idcd_kitchen.png",
+      "audience": "builder",
+      "type": "image",
+      "asset_description": "idcd_kitchen"
+    },
+    {
+      "file": "developer/dev_image_winewall keydrop - Option 1.png",
+      "audience": "developer",
+      "type": "image",
+      "asset_description": "winewall keydrop - Option 1"
+    },
+    {
+      "file": "developer/dev_image_winewall_Option 2.png",
+      "audience": "developer",
+      "type": "image",
+      "asset_description": "winewall_Option 2"
+    },
+    {
+      "file": "developer/dev_video.mp4",
+      "audience": "developer",
+      "type": "video",
+      "asset_description": ""
+    },
+    {
+      "file": "developer/dev_video_mockingbird video.mp4",
+      "audience": "developer",
+      "type": "video",
+      "asset_description": "mockingbird video"
+    },
+    {
+      "file": "developer/dev_video_theater.mp4",
+      "audience": "developer",
+      "type": "video",
+      "asset_description": "theater"
+    },
+    {
+      "file": "homeowner/Homeowner winewall keydrop_rendering_ Option 1.png",
+      "audience": "homeowner",
+      "type": "rendering",
+      "asset_description": "Option 1"
+    },
+    {
+      "file": "homeowner/Homeowner_theater.mp4",
+      "audience": "homeowner",
+      "type": "video",
+      "asset_description": "theater"
+    },
+    {
+      "file": "homeowner/Homowner_winewall - Option 2.png",
+      "audience": "homeowner",
+      "type": "image",
+      "asset_description": "winewall - Option 2"
+    },
+    {
+      "file": "homeowner/homeowner_video_mockingbird video.mp4",
+      "audience": "homeowner",
+      "type": "video",
+      "asset_description": "mockingbird video"
+    },
+    {
+      "file": "services/head_rendering_entry.png",
+      "audience": "services",
+      "type": "rendering",
+      "asset_description": "entry"
+    },
+    {
+      "file": "services/head_rendering_exterior_mockingbird.png",
+      "audience": "services",
+      "type": "rendering",
+      "asset_description": "exterior_mockingbird"
+    },
+    {
+      "file": "services/head_rendering_greatroom.png",
+      "audience": "services",
+      "type": "rendering",
+      "asset_description": "greatroom"
+    },
+    {
+      "file": "interior_designer/interior__idcd sample sheet.png",
+      "audience": "interior_designer",
+      "type": "image",
+      "asset_description": "idcd sample sheet"
+    },
+    {
+      "file": "interior_designer/interior_video_door operations and views.mp4",
+      "audience": "interior_designer",
+      "type": "video",
+      "asset_description": "door operations and views"
+    },
+    {
+      "file": "interior_designer/interior_video_full suite.mp4",
+      "audience": "interior_designer",
+      "type": "video",
+      "asset_description": "full suite"
+    },
+    {
+      "file": "interior_designer/interior_video_interior iteration_lookandfeel.mp4",
+      "audience": "interior_designer",
+      "type": "video",
+      "asset_description": "interior iteration_lookandfeel"
+    }
+  ]
+}

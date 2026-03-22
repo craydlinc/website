@@ -74,6 +74,11 @@ Resources:
             Principal: '*'
             Action: 's3:GetObject'
             Resource: !Sub '${CdnBucket.Arn}/webp/*'
+          - Sid: PublicReadVideo
+            Effect: Allow
+            Principal: '*'
+            Action: 's3:GetObject'
+            Resource: !Sub '${CdnBucket.Arn}/video/*'
 
   MediaProcessorFunction:
     Type: AWS::Serverless::Function
@@ -89,7 +94,7 @@ Resources:
           DAM_BUCKET: !Ref DamBucket
           CDN_BUCKET: !Ref CdnBucket
           WEBP_QUALITY: !Ref WebpQuality
-          AUDIENCE_WIDTHS: '{"developer":1920,"homeowner":1200,"builder":1440,"owners_representative":1280}'
+          AUDIENCE_WIDTHS: '{"developer":1440,"homeowner":1440,"builder":1440,"owners_representative":1440,"interior_designer":1440,"architect":1440}'
       Policies:
         - S3ReadPolicy:
             BucketName: !Ref StagingBucket

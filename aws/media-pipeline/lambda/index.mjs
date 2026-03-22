@@ -11,12 +11,15 @@ import { extname } from 'path';
 const s3 = new S3Client({});
 
 const IMAGE_EXT = new Set(['.jpg', '.jpeg', '.png', '.webp', '.tif', '.tiff']);
+const VIDEO_EXT = new Set(['.mp4', '.mov', '.webm', '.avi']);
 
 const DEFAULT_WIDTHS = {
-  developer: 1920,
-  homeowner: 1200,
+  developer: 1440,
+  homeowner: 1440,
   builder: 1440,
-  owners_representative: 1280,
+  owners_representative: 1440,
+  interior_designer: 1440,
+  architect: 1440,
 };
 
 function getAudienceWidths() {
@@ -69,8 +72,10 @@ export async function handler(event) {
       continue;
     }
     const ext = extname(relativePath).toLowerCase();
-    if (!IMAGE_EXT.has(ext)) {
-      console.log('Skip non-image:', key);
+    const isImage = IMAGE_EXT.has(ext);
+    const isVideo = VIDEO_EXT.has(ext);
+    if (!isImage && !isVideo) {
+      console.log('Skip unsupported format:', key);
       continue;
     }
 
@@ -94,39 +99,66 @@ export async function handler(event) {
     );
     console.log('DAM:', damKey);
 
-    const pathNoExt = relativePath.slice(0, -ext.length);
+    if (isVideo) {
+      // Videos: copy to CDN as-is (no transcoding), one copy per audience
+      const videoMime = ext === '.mp4' ? 'video/mp4'
+        : ext === '.webm' ? 'video/webm'
+        : ext === '.mov' ? 'video/quicktime'
+        : 'video/mp4';
 
-    for (const audience of audiences) {
-      const maxW = widths[audience];
-      if (!maxW) continue;
+      for (const audience of audiences) {
+        const outKey = `video/${audience}/${relativePath}`;
+        await s3.send(
+          new PutObjectCommand({
+            Bucket: cdnBucket,
+            Key: outKey,
+            Body: body,
+            ContentType: videoMime,
+            CacheControl: 'public, max-age=31536000, immutable',
+            Metadata: {
+              audience,
+              'source-sha': commitSha,
+            },
+          })
+        );
+        console.log('CDN video:', outKey);
+      }
+    } else {
+      // Images: generate WebP per audience
+      const pathNoExt = relativePath.slice(0, -ext.length);
 
-      const webpBuffer = await sharp(body)
-        .rotate()
-        .resize({
-          width: maxW,
-          withoutEnlargement: true,
-          fit: 'inside',
-        })
-        .webp({ quality: Number(process.env.WEBP_QUALITY) || 82, effort: 4 })
-        .toBuffer();
+      for (const audience of audiences) {
+        const maxW = widths[audience];
+        if (!maxW) continue;
 
-      const outKey = cdnWebpKey(audience, pathNoExt);
-      await s3.send(
-        new PutObjectCommand({
-          Bucket: cdnBucket,
-          Key: outKey,
-          Body: webpBuffer,
-          ContentType: 'image/webp',
-          CacheControl: 'public, max-age=31536000, immutable',
-          Metadata: {
-            audience,
-            'max-width': String(maxW),
-            'source-sha': commitSha,
-            etag: createHash('md5').update(body).digest('hex').slice(0, 8),
-          },
-        })
-      );
-      console.log('CDN:', outKey);
+        const webpBuffer = await sharp(body)
+          .rotate()
+          .resize({
+            width: maxW,
+            withoutEnlargement: true,
+            fit: 'inside',
+          })
+          .webp({ quality: Number(process.env.WEBP_QUALITY) || 82, effort: 4 })
+          .toBuffer();
+
+        const outKey = cdnWebpKey(audience, pathNoExt);
+        await s3.send(
+          new PutObjectCommand({
+            Bucket: cdnBucket,
+            Key: outKey,
+            Body: webpBuffer,
+            ContentType: 'image/webp',
+            CacheControl: 'public, max-age=31536000, immutable',
+            Metadata: {
+              audience,
+              'max-width': String(maxW),
+              'source-sha': commitSha,
+              etag: createHash('md5').update(body).digest('hex').slice(0, 8),
+            },
+          })
+        );
+        console.log('CDN:', outKey);
+      }
     }
   }
 

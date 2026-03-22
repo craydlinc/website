@@ -1,4 +1,4 @@
-# Sync Media/ to S3 → Lambda copies to DAM + writes 4 audience WebP trees on CDN.
+# Sync Media/ to S3 → Lambda copies to DAM + writes 6 audience WebP/video trees on CDN.
 #
 # Secrets (repo): AWS_ROLE_ARN, AWS_REGION (optional)
 
@@ -43,4 +43,5 @@ jobs:
           aws s3 sync Media/ "s3://${BUCKET}/incoming/${SHA}/" \
             --exclude "README.md" \
             --exclude ".gitkeep" \
-            --exclude ".DS_Store"
+            --exclude ".DS_Store" \
+            --exclude "asset-manifest.json"
