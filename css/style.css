@@ -353,7 +353,7 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .hero .container { display: flex; flex-direction: column; align-items: center; }
 .hero .eyebrow { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--color-sage); margin: 0 0 var(--space-sm); }
-.hero h1 { margin: 0 0 var(--space-md); max-width: 20ch; }
+.hero h1 { margin: 0 0 var(--space-md); max-width: min(40rem, 100%); }
 .hero .sub { font-size: 1.1rem; color: var(--color-text-on-dark); margin: 0 0 var(--space-lg); max-width: 42ch; line-height: 1.6; }
 .hero__copy { width: 100%; max-width: 52rem; text-align: center; }
 .hero__copy .sub { max-width: none; margin: 0 0 var(--space-md); }
