@@ -351,7 +351,37 @@ img { max-width: 100%; height: auto; display: block; }
   border-bottom: 1px solid var(--line-silt-soft);
   box-shadow: inset 0 -1px 0 var(--line-bronze-soft);
 }
-.hero .container { display: flex; flex-direction: column; align-items: center; }
+.hero .container { display: block; }
+.hero__layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xl);
+  width: 100%;
+}
+.hero__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 52rem;
+  text-align: center;
+}
+.hero__figure {
+  margin: 0;
+  width: 100%;
+  max-width: min(36rem, 100%);
+}
+.hero__image {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--radius);
+  border: 1px solid var(--line-silt);
+  box-shadow:
+    0 0 0 1px var(--line-bronze-soft),
+    0 12px 40px rgba(0, 0, 0, 0.18);
+}
 .hero .eyebrow { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--color-sage); margin: 0 0 var(--space-sm); }
 .hero h1 { margin: 0 0 var(--space-md); max-width: min(40rem, 100%); }
 .hero .sub { font-size: 1.1rem; color: var(--color-text-on-dark); margin: 0 0 var(--space-lg); max-width: 42ch; line-height: 1.6; }
@@ -360,6 +390,31 @@ img { max-width: 100%; height: auto; display: block; }
 .hero__copy .sub:last-child { margin-bottom: var(--space-lg); }
 .hero .cta-group { display: flex; gap: var(--space-md); justify-content: center; flex-wrap: wrap; margin: 0 0 var(--space-md); }
 .hero .tagline { font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--color-sage); margin: 0; }
+
+@media (min-width: 900px) {
+  .hero { text-align: left; }
+  .hero__layout {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2xl);
+  }
+  .hero__content {
+    flex: 1 1 52%;
+    min-width: 0;
+    max-width: none;
+    align-items: flex-start;
+    text-align: left;
+  }
+  .hero h1 { max-width: min(40rem, 100%); }
+  .hero__copy { text-align: left; }
+  .hero__copy .sub { max-width: 52ch; }
+  .hero .cta-group { justify-content: flex-start; }
+  .hero__figure {
+    flex: 0 1 44%;
+    max-width: min(28rem, 44%);
+  }
+}
 
 /* Home page — embedded project video */
 .home-video {
