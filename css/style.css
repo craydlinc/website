@@ -554,6 +554,39 @@ img { max-width: 100%; height: auto; display: block; }
   color: var(--color-text-on-light);
 }
 
+/* Roadmap section: narrative steps + delivery timeline graphic */
+.plan-roadmap {
+  display: grid;
+  gap: var(--space-xl);
+  align-items: start;
+}
+@media (min-width: 960px) {
+  .plan-roadmap {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: var(--space-xl) var(--space-xl);
+  }
+  .plan-roadmap__steps {
+    max-width: none;
+    margin-top: 0;
+  }
+}
+.plan-roadmap__figure {
+  margin: 0;
+}
+.plan-roadmap__figure img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--radius);
+  border: 1px solid var(--line-silt);
+}
+.plan-roadmap__caption {
+  margin: var(--space-sm) 0 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: rgba(245, 243, 238, 0.72);
+}
+
 .compare-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
