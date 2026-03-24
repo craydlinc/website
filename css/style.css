@@ -878,6 +878,13 @@ img { max-width: 100%; height: auto; display: block; }
   padding-left: 1.35rem;
   max-width: 48rem;
 }
+/* Roadmap: avoid stacking section-title margin + plan-steps top margin */
+#seven-step-plan .section-title {
+  margin-bottom: var(--space-md);
+}
+.plan-roadmap .plan-steps {
+  margin: 0 0 var(--space-lg) 0;
+}
 .plan-steps > li {
   margin-bottom: var(--space-md);
 }
@@ -1101,6 +1108,17 @@ img { max-width: 100%; height: auto; display: block; }
 .section--alt .developers-built-caption {
   color: var(--color-text-on-dark-muted, var(--color-text-muted));
 }
+
+/* See Options — subhead lines centered under H2 (beats .section-title p margin reset) */
+#see-options .section-title {
+  text-align: center;
+}
+#see-options .section-title .developers-roadmap__sub {
+  text-align: center;
+  margin: 0.5em auto 0;
+  max-width: 52ch;
+}
+
 .developers-options-figure {
   max-width: 56rem;
   margin-inline: auto;
