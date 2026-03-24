@@ -115,15 +115,15 @@
       if (showingKeyDrop) {
         optionsImg.src = keyDropSrc;
         optionsImg.alt = keyDropAlt;
-        optionsToggle.setAttribute('aria-label', 'Key drop cabinetry. Click to show wine wall option.');
+        optionsToggle.setAttribute('aria-label', 'Click to See Option');
         optionsToggle.setAttribute('aria-pressed', 'false');
-        if (optionsCaption) optionsCaption.textContent = 'Key drop';
+        if (optionsCaption) optionsCaption.textContent = 'Click to See Option';
       } else {
         optionsImg.src = wineSrc;
         optionsImg.alt = wineAlt;
-        optionsToggle.setAttribute('aria-label', 'Wine wall 12.29.25. Click to return to key drop.');
+        optionsToggle.setAttribute('aria-label', 'Click to Go Back');
         optionsToggle.setAttribute('aria-pressed', 'true');
-        if (optionsCaption) optionsCaption.textContent = 'Winewall 12.29.25';
+        if (optionsCaption) optionsCaption.textContent = 'Click to Go Back';
       }
     });
   }
