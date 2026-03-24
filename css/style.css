@@ -1175,6 +1175,13 @@ a.card.project-type-tile h3 { margin: 0; }
   margin: var(--space-md) 0 0;
 }
 
+.contact-schedule-cta {
+  margin: 0;
+}
+.contact-schedule-cta .btn {
+  margin: 0;
+}
+
 .email-fallback-panel {
   max-width: 36rem;
   margin: var(--space-md) auto 0;
