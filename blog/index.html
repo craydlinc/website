@@ -48,7 +48,27 @@
     </section>
     <section class="section section--light">
       <div class="container">
-        <ul class="blog-index">
+        <div class="blog-index-toolbar">
+          <div class="blog-index-toolbar__row">
+            <label for="blog-index-search">Search</label>
+            <div class="blog-index-search-wrap">
+              <input type="search" id="blog-index-search" class="blog-index-search" placeholder="Search titles and excerpts…" autocomplete="off" enterkeyhint="search">
+            </div>
+            <p class="blog-index-meta" aria-live="polite"><span id="blog-index-count">0</span> articles</p>
+          </div>
+          <div class="blog-index-toolbar__row blog-index-filters">
+            <span class="visually-hidden" id="blog-filter-label">Filter by topic</span>
+            <button type="button" class="blog-index-filter is-active" data-blog-filter="all" aria-pressed="true" aria-describedby="blog-filter-label">All</button>
+            <button type="button" class="blog-index-filter" data-blog-filter="bim" aria-pressed="false">BIM &amp; VDC</button>
+            <button type="button" class="blog-index-filter" data-blog-filter="twin" aria-pressed="false">Digital twin &amp; VR</button>
+            <button type="button" class="blog-index-filter" data-blog-filter="precon" aria-pressed="false">Pre-construction</button>
+            <button type="button" class="blog-index-filter" data-blog-filter="tech" aria-pressed="false">Tech &amp; process</button>
+            <button type="button" class="blog-index-filter" data-blog-filter="outlook" aria-pressed="false">Market &amp; outlook</button>
+            <button type="button" class="blog-index-filter" data-blog-filter="general" aria-pressed="false">Design &amp; stories</button>
+          </div>
+        </div>
+        <p id="blog-index-empty" class="blog-index-empty" hidden>No posts match your search and filters. Try different keywords or choose &ldquo;All.&rdquo;</p>
+        <ul class="blog-index" id="blog-index-list">
           <li class="blog-index__item">
             <a href="/blog/posts/digital-twin-technology-the-2026-guide-to-luxury-residential-construction.html" class="blog-index__thumb-wrap blog-index__thumb-wrap--empty" aria-hidden="true">
               <span class="blog-index__thumb-fallback">CRAYDL</span>
@@ -482,6 +502,7 @@
     </div>
   </footer>
   <script src="../js/main.js"></script>
+  <script src="blog-index.js"></script>
   <script src="../js/google-business-urls.js"></script>
   <!-- Start of HubSpot Embed Code -->
   <script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/47055408.js"></script>

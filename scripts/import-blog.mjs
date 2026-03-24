@@ -130,7 +130,8 @@ async function enrichFeaturedImages(posts) {
   for (const post of posts) {
     post._thumbnail = firstImageFromContent(post.content?.rendered) || '';
   }
-  if (process.env.FETCH_WP_THUMBS !== '1') return;
+  // Fetch WordPress featured images when no in-content image (skip with SKIP_WP_THUMBS=1).
+  if (process.env.SKIP_WP_THUMBS === '1') return;
   const needThumb = posts.filter((p) => !p._thumbnail && p.featured_media);
   const ids = [...new Set(needThumb.map((p) => p.featured_media))];
   const mediaCache = new Map();
@@ -143,6 +144,16 @@ async function enrichFeaturedImages(posts) {
     const u = mediaCache.get(post.featured_media);
     if (u) post._thumbnail = u;
   }
+}
+
+function classifyTopic(title) {
+  const t = (title || '').toLowerCase();
+  if (/\b(bim|vdc|clash)\b/.test(t)) return 'bim';
+  if (/\b(digital twin|twinning|virtual reality)\b/.test(t)) return 'twin';
+  if (/pre[-\s]?construction|checklist|feasibility/.test(t)) return 'precon';
+  if (/\bai\b|intelligent home|programmatic/.test(t)) return 'tech';
+  if (/wildfire|climate|sustainability|connected construction|smart building/.test(t)) return 'outlook';
+  return 'general';
 }
 
 function postShell(title, metaDesc, bodyHtml, canonicalUrl, datePublished, originalUrl) {
@@ -234,9 +245,13 @@ async function main() {
 
   const listHtml = indexItems
     .map((p) => {
-      const thumbSrc = p.thumb || '../assets/blog-thumb-placeholder.svg';
-      const thumb = `            <a href="${escHtml(p.url)}" class="blog-index__thumb-wrap${p.thumb ? '' : ' blog-index__thumb-wrap--placeholder'}" tabindex="-1" aria-hidden="true">
-              <img class="blog-index__thumb" src="${escHtml(thumbSrc)}" alt="" width="320" height="180" loading="lazy" decoding="async">
+      const topic = classifyTopic(p.title);
+      const thumb = p.thumb
+        ? `            <a href="${escHtml(p.url)}" class="blog-index__thumb-wrap" tabindex="-1" aria-hidden="true">
+              <img class="blog-index__thumb" src="${escHtml(p.thumb)}" alt="" width="320" height="180" loading="lazy" decoding="async">
+            </a>`
+        : `            <a href="${escHtml(p.url)}" class="blog-index__thumb-wrap blog-index__thumb-wrap--empty blog-index__thumb-wrap--themed blog-index__thumb-theme--${topic}" aria-hidden="true">
+              <span class="blog-index__thumb-fallback">CRAYDL</span>
             </a>`;
       return `          <li class="blog-index__item">
 ${thumb}
@@ -272,8 +287,16 @@ ${thumb}
       <button type="button" class="nav-toggle" aria-label="Toggle menu">☰</button>
       <nav class="nav-main" id="nav-main">
         <a href="../services.html">Services</a>
+        <div class="nav-dropdown">
+          <button type="button" class="nav-dropdown__trigger" aria-expanded="false" aria-controls="nav-case-studies-menu" id="nav-case-studies-trigger">Case studies</button>
+          <ul class="nav-dropdown__menu" id="nav-case-studies-menu" role="list">
+            <li><a href="https://craydl-47055408.hubspotpagebuilder.com/case-studies/the-500000-virtual-first-save-the-mockingbird-estate" target="_blank" rel="noopener noreferrer">The $500K &quot;Virtual First&quot; Save — Mockingbird Estate</a></li>
+            <li><a href="https://craydl-47055408.hubspotpagebuilder.com/case-studies/168000dollarinsurancepolicy" target="_blank" rel="noopener noreferrer">The $168,000 Insurance Policy</a></li>
+            <li><a href="https://craydl-47055408.hubspotpagebuilder.com/case-studies/salesprocesstoexperience" target="_blank" rel="noopener noreferrer">When The Sales Process Fails To Showcase Experience</a></li>
+          </ul>
+        </div>
         <a href="../contact.html">Contact</a>
-        <a href="index.html" aria-current="page">Blog</a>
+        <a href="/blog/" aria-current="page">Blog</a>
       </nav>
       <div class="header-right">
         <a href="tel:480-716-5884" class="header-phone">480-716-5884</a>
@@ -285,25 +308,52 @@ ${thumb}
       <div class="container">
         <p class="eyebrow">Luxury custom home building insights</p>
         <h1>CRAYDL blog</h1>
-        <p class="blog-lead">Expert insights on custom home building, BIM, VDC, pre-construction, and luxury residential construction—migrated from our archive for easy reading.</p>
+        <p class="blog-lead">Articles published to craydl.com (including content from your AutoSEO workflow) appear here after you run the blog import. <a href="https://getautoseo.com/content-history" rel="noopener noreferrer">AutoSEO content history</a> is where drafts and scheduled pieces live.</p>
+        <p class="text-center mt-lg"><a href="../index.html#faq" class="btn btn-outline">Frequently Asked Questions</a></p>
       </div>
     </section>
-    <section class="section section--alt">
+    <section class="section section--light">
       <div class="container">
-        <ul class="blog-index">
+        <div class="blog-index-toolbar">
+          <div class="blog-index-toolbar__row">
+            <label for="blog-index-search">Search</label>
+            <div class="blog-index-search-wrap">
+              <input type="search" id="blog-index-search" class="blog-index-search" placeholder="Search titles and excerpts…" autocomplete="off" enterkeyhint="search">
+            </div>
+            <p class="blog-index-meta" aria-live="polite"><span id="blog-index-count">0</span> articles</p>
+          </div>
+          <div class="blog-index-toolbar__row blog-index-filters">
+            <span class="visually-hidden" id="blog-filter-label">Filter by topic</span>
+            <button type="button" class="blog-index-filter is-active" data-blog-filter="all" aria-pressed="true" aria-describedby="blog-filter-label">All</button>
+            <button type="button" class="blog-index-filter" data-blog-filter="bim" aria-pressed="false">BIM &amp; VDC</button>
+            <button type="button" class="blog-index-filter" data-blog-filter="twin" aria-pressed="false">Digital twin &amp; VR</button>
+            <button type="button" class="blog-index-filter" data-blog-filter="precon" aria-pressed="false">Pre-construction</button>
+            <button type="button" class="blog-index-filter" data-blog-filter="tech" aria-pressed="false">Tech &amp; process</button>
+            <button type="button" class="blog-index-filter" data-blog-filter="outlook" aria-pressed="false">Market &amp; outlook</button>
+            <button type="button" class="blog-index-filter" data-blog-filter="general" aria-pressed="false">Design &amp; stories</button>
+          </div>
+        </div>
+        <p id="blog-index-empty" class="blog-index-empty" hidden>No posts match your search and filters. Try different keywords or choose &ldquo;All.&rdquo;</p>
+        <ul class="blog-index" id="blog-index-list">
 ${listHtml}
         </ul>
+        <p class="text-center mt-lg"><a href="../index.html#faq" class="btn btn-outline">Frequently Asked Questions</a></p>
       </div>
     </section>
   </main>
   <footer class="site-footer">
     <div class="container">
       <div class="footer-bottom">
-        <p><a href="../contact.html">Contact us</a> · © CRAYDL.</p>
+        <p><a href="../contact.html">Contact us</a> · <a href="https://share.google/x3mnlkSWDH6OtMTFJ" target="_blank" rel="noopener noreferrer" data-craydl-google="profile">Google listing</a> · <a href="https://share.google/x3mnlkSWDH6OtMTFJ" target="_blank" rel="noopener noreferrer" data-craydl-google="review">Review us</a> · © CRAYDL.</p>
       </div>
     </div>
   </footer>
   <script src="../js/main.js"></script>
+  <script src="blog-index.js"></script>
+  <script src="../js/google-business-urls.js"></script>
+  <!-- Start of HubSpot Embed Code -->
+  <script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/47055408.js"></script>
+  <!-- End of HubSpot Embed Code -->
 </body>
 </html>`;
 
