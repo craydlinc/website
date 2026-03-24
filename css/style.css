@@ -888,6 +888,17 @@ img { max-width: 100%; height: auto; display: block; }
   background: var(--color-silt);
   box-shadow: 0 0 0 2px var(--line-silt-soft);
 }
+.trenches-list li.trenches-list__cta-row {
+  padding-left: 0;
+  margin-top: var(--space-xs);
+  margin-bottom: var(--space-md);
+}
+.trenches-list li.trenches-list__cta-row::before {
+  display: none;
+}
+.trenches-list li.trenches-list__cta-row .btn {
+  margin: 0;
+}
 
 .story-quote {
   margin: var(--space-md) 0 var(--space-lg);
