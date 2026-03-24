@@ -736,6 +736,28 @@ img { max-width: 100%; height: auto; display: block; }
   font-weight: 700;
 }
 
+/* Predictable Project roadmap — center subhead + list under H2 */
+#predictable-project-roadmap .section-title {
+  text-align: center;
+}
+#predictable-project-roadmap .section-title .developers-roadmap__sub {
+  text-align: center;
+  margin: 0.5em auto 0;
+  max-width: 52ch;
+  margin-inline: auto;
+}
+#predictable-project-roadmap .developers-roadmap-list {
+  text-align: center;
+  list-style-position: inside;
+  padding-left: 0;
+  max-width: min(68ch, 100%);
+  margin-inline: auto;
+}
+#predictable-project-roadmap .developers-roadmap-list li {
+  text-align: center;
+  padding-left: 0;
+}
+
 /* Developers — platform band (dark + silt CTA + check grid) */
 .btn-silt {
   background: #c8dae8;
@@ -883,7 +905,7 @@ img { max-width: 100%; height: auto; display: block; }
   margin-bottom: var(--space-md);
 }
 .plan-roadmap .plan-steps {
-  margin: 0 0 var(--space-lg) 0;
+  margin: 0;
 }
 .plan-steps > li {
   margin-bottom: var(--space-md);
@@ -902,13 +924,13 @@ img { max-width: 100%; height: auto; display: block; }
 /* Roadmap section: narrative steps + delivery timeline graphic */
 .plan-roadmap {
   display: grid;
-  gap: var(--space-xl);
+  row-gap: var(--space-md);
+  column-gap: var(--space-xl);
   align-items: start;
 }
 @media (min-width: 960px) {
   .plan-roadmap {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
-    gap: var(--space-xl) var(--space-xl);
   }
   .plan-roadmap__steps {
     max-width: none;
@@ -1145,11 +1167,13 @@ img { max-width: 100%; height: auto; display: block; }
   color: var(--color-text-on-dark-muted, var(--color-text-muted));
 }
 
-/* See Options — subhead lines centered under H2 (beats .section-title p margin reset) */
-#see-options .section-title {
+/* See Options & Signature Capabilities — subhead lines centered under H2 (beats .section-title p margin reset) */
+#see-options .section-title,
+#signature-capabilities .section-title {
   text-align: center;
 }
-#see-options .section-title .developers-roadmap__sub {
+#see-options .section-title .developers-roadmap__sub,
+#signature-capabilities .section-title .developers-roadmap__sub {
   text-align: center;
   margin: 0.5em auto 0;
   max-width: 52ch;
