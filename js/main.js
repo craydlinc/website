@@ -43,8 +43,42 @@
     closeNavDropdowns();
   });
 
+  var timelineLightbox = document.getElementById('timeline-lightbox');
+  var timelineZoomTrigger = document.querySelector('.plan-roadmap__zoom');
+  var lightboxDismissSelector = '[data-lightbox-dismiss]';
+
+  function openTimelineLightbox() {
+    if (!timelineLightbox) return;
+    timelineLightbox.hidden = false;
+    timelineLightbox.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    var closeBtn = timelineLightbox.querySelector('.image-lightbox__close');
+    if (closeBtn) closeBtn.focus();
+  }
+
+  function closeTimelineLightbox() {
+    if (!timelineLightbox || timelineLightbox.hidden) return false;
+    timelineLightbox.hidden = true;
+    timelineLightbox.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    if (timelineZoomTrigger) timelineZoomTrigger.focus();
+    return true;
+  }
+
+  if (timelineLightbox && timelineZoomTrigger) {
+    timelineZoomTrigger.addEventListener('click', function () {
+      openTimelineLightbox();
+    });
+    timelineLightbox.addEventListener('click', function (e) {
+      if (e.target.closest(lightboxDismissSelector)) closeTimelineLightbox();
+    });
+  }
+
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') closeNavDropdowns();
+    if (e.key === 'Escape') {
+      if (closeTimelineLightbox()) return;
+      closeNavDropdowns();
+    }
   });
 
   /* Contact page: mailto + fallback when no native email app opens */
@@ -121,5 +155,32 @@
         }
       }
     });
+  });
+
+  /* FAQ: open the matching <details> when the URL hash targets its id */
+  function openFaqFromHash() {
+    var id = window.location.hash.slice(1);
+    if (!id) return;
+    var el = document.getElementById(id);
+    if (el && el.tagName === 'DETAILS') {
+      el.open = true;
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }
+  window.addEventListener('hashchange', openFaqFromHash);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', openFaqFromHash);
+  } else {
+    openFaqFromHash();
+  }
+
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="#faq-"]');
+    if (!a) return;
+    var id = a.getAttribute('href').slice(1);
+    window.setTimeout(function () {
+      var el = document.getElementById(id);
+      if (el && el.tagName === 'DETAILS') el.open = true;
+    }, 0);
   });
 })();
