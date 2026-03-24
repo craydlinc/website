@@ -12,6 +12,7 @@ infra/.terraform.lock.hcl
 
 # Large media — upload videos directly to S3 DAM, not through git
 **/*.mp4
+!assets/craydl-mock-walkthrough-ig.mp4
 **/*.mov
 **/*.webm
 **/*.avi

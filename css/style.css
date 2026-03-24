@@ -607,6 +607,22 @@ img { max-width: 100%; height: auto; display: block; }
   border: 0;
   display: block;
 }
+/* Native MP4 (e.g. IG-style walkthrough) — aspect follows source; CTAs may sit above */
+.home-video--native {
+  margin-top: var(--space-lg);
+}
+.home-video--native .home-video__embed--native {
+  aspect-ratio: auto;
+}
+.home-video--native video.home-video__video {
+  aspect-ratio: auto;
+  width: 100%;
+  height: auto;
+  max-height: min(90vh, 1000px);
+  margin: 0 auto;
+  object-fit: contain;
+  vertical-align: top;
+}
 .home-video__caption {
   padding: var(--space-sm) var(--space-md);
   font-size: 0.9rem;
@@ -901,8 +917,113 @@ img { max-width: 100%; height: auto; display: block; }
   max-width: 48rem;
 }
 /* Roadmap: avoid stacking section-title margin + plan-steps top margin */
-#seven-step-plan .section-title {
+#seven-step-plan .section-title,
+#homeowner-process .section-title {
   margin-bottom: var(--space-md);
+}
+
+/* Homeowners — pre-construction steps + check benefits (replaces 7-step roadmap on homeowners.html) */
+.homeowner-process__steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  margin-bottom: var(--space-xl);
+}
+.homeowner-process__step {
+  margin: 0;
+  padding-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--line-silt);
+}
+.homeowner-process__step:last-of-type {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.homeowner-process__step-title {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+  letter-spacing: -0.02em;
+  color: var(--color-text-on-light);
+  margin: 0 0 0.5em;
+}
+.homeowner-process__step-lede {
+  color: var(--color-text-on-light);
+  margin: 0 0 var(--space-sm);
+  max-width: 52rem;
+}
+.homeowner-process__step-cta {
+  margin: 0 0 var(--space-md);
+}
+.homeowner-process__step-cta a {
+  font-weight: 600;
+  text-decoration: underline;
+}
+.homeowner-process__step-action {
+  margin: var(--space-md) 0 0;
+}
+.homeowner-process__figure {
+  margin: var(--space-md) 0 0;
+  max-width: min(56rem, 100%);
+}
+.homeowner-process__screenshot {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+  border: 1px solid var(--line-silt);
+  box-shadow:
+    0 0 0 1px var(--line-bronze-soft),
+    0 10px 32px rgba(0, 0, 0, 0.12);
+}
+.homeowner-process-benefits {
+  list-style: none;
+  margin: var(--space-xl) 0 0;
+  padding: var(--space-lg) 0 0;
+  border-top: 1px solid var(--line-silt);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-lg) var(--space-xl);
+  align-items: start;
+}
+@media (max-width: 52rem) {
+  .homeowner-process-benefits {
+    grid-template-columns: 1fr;
+  }
+}
+.homeowner-process-benefits__item {
+  display: flex;
+  gap: var(--space-md);
+  align-items: flex-start;
+  margin: 0;
+}
+.homeowner-process-benefits__icon {
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  background: var(--color-silt);
+  color: var(--color-onyx);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.2em;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+.homeowner-process-benefits__icon svg {
+  display: block;
+}
+.homeowner-process-benefits__copy h3 {
+  margin: 0 0 0.4em;
+  font-size: 1.05rem;
+  font-weight: 700;
+  font-family: var(--font-sans);
+  letter-spacing: 0;
+  color: var(--color-text-on-light);
+}
+.homeowner-process-benefits__copy p {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: rgba(43, 45, 47, 0.88);
 }
 .plan-roadmap .plan-steps {
   margin: 0;
