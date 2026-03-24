@@ -85,9 +85,45 @@
   var developersVideoTitle = document.getElementById('developers-video-lightbox-title');
   var developersVideoPlayer = document.getElementById('developers-video-lightbox-player');
   var lastDevelopersVideoTrigger = null;
+  var developersPlaylistUrls = null;
+  var developersPlaylistIndex = 0;
+  var developersPlaylistBaseTitle = null;
+
+  function setDevelopersVideoHeading(baseTitle, index, total) {
+    if (!developersVideoTitle) return;
+    var base = baseTitle || 'Video';
+    if (total > 1) {
+      developersVideoTitle.textContent = base + ' (' + (index + 1) + ' of ' + total + ')';
+    } else {
+      developersVideoTitle.textContent = base;
+    }
+  }
+
+  function onDevelopersVideoEnded() {
+    if (!developersPlaylistUrls || !developersVideoPlayer) return;
+    developersPlaylistIndex += 1;
+    if (developersPlaylistIndex < developersPlaylistUrls.length) {
+      developersVideoPlayer.src = developersPlaylistUrls[developersPlaylistIndex];
+      setDevelopersVideoHeading(developersPlaylistBaseTitle, developersPlaylistIndex, developersPlaylistUrls.length);
+      developersVideoPlayer.setAttribute('title', (developersPlaylistBaseTitle || 'Video') + ' — part ' + (developersPlaylistIndex + 1));
+      developersVideoPlayer.play().catch(function () {});
+    } else {
+      clearDevelopersPlaylistState();
+    }
+  }
+
+  function clearDevelopersPlaylistState() {
+    if (developersVideoPlayer) {
+      developersVideoPlayer.removeEventListener('ended', onDevelopersVideoEnded);
+    }
+    developersPlaylistUrls = null;
+    developersPlaylistIndex = 0;
+    developersPlaylistBaseTitle = null;
+  }
 
   function closeDevelopersVideoLightbox() {
     if (!developersVideoLightbox || developersVideoLightbox.hidden) return false;
+    clearDevelopersPlaylistState();
     developersVideoLightbox.hidden = true;
     developersVideoLightbox.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
@@ -102,8 +138,9 @@
 
   function openDevelopersVideoLightbox(src, title, trigger) {
     if (!developersVideoLightbox || !developersVideoPlayer) return;
+    clearDevelopersPlaylistState();
     lastDevelopersVideoTrigger = trigger || null;
-    if (developersVideoTitle) developersVideoTitle.textContent = title || 'Video';
+    setDevelopersVideoHeading(title || 'Video', 0, 1);
     developersVideoPlayer.setAttribute('title', title || 'Capability demo');
     developersVideoPlayer.src = src;
     developersVideoLightbox.hidden = false;
@@ -114,10 +151,37 @@
     developersVideoPlayer.play().catch(function () {});
   }
 
+  function openDevelopersVideoPlaylist(urls, title, trigger) {
+    if (!developersVideoLightbox || !developersVideoPlayer || !urls || urls.length === 0) return;
+    clearDevelopersPlaylistState();
+    lastDevelopersVideoTrigger = trigger || null;
+    developersPlaylistUrls = urls;
+    developersPlaylistIndex = 0;
+    developersPlaylistBaseTitle = title || 'Video';
+    setDevelopersVideoHeading(developersPlaylistBaseTitle, 0, urls.length);
+    developersVideoPlayer.setAttribute('title', (developersPlaylistBaseTitle || 'Video') + ' — part 1');
+    developersVideoPlayer.src = urls[0];
+    developersVideoLightbox.hidden = false;
+    developersVideoLightbox.removeAttribute('aria-hidden');
+    document.body.style.overflow = 'hidden';
+    var closeVBtn = developersVideoLightbox.querySelector('.image-lightbox__close');
+    if (closeVBtn) closeVBtn.focus();
+    developersVideoPlayer.addEventListener('ended', onDevelopersVideoEnded);
+    developersVideoPlayer.play().catch(function () {});
+  }
+
   document.querySelectorAll('[data-developers-video-open]').forEach(function (btn) {
     btn.addEventListener('click', function () {
-      var src = btn.getAttribute('data-video-src');
       var title = btn.getAttribute('data-video-title') || 'Video';
+      var playlist = btn.getAttribute('data-video-playlist');
+      if (playlist) {
+        var urls = playlist.split('|').map(function (s) {
+          return s.trim();
+        }).filter(Boolean);
+        if (urls.length) openDevelopersVideoPlaylist(urls, title, btn);
+        return;
+      }
+      var src = btn.getAttribute('data-video-src');
       if (src) openDevelopersVideoLightbox(src, title, btn);
     });
   });
