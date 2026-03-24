@@ -695,6 +695,44 @@ img { max-width: 100%; height: auto; display: block; }
   border-top: 1px solid var(--line-silt);
   box-shadow: none;
 }
+
+/* Developers — roadmap band (powder blue) */
+.section--light.section--roadmap {
+  background: #b9cfe0;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(43, 45, 47, 0.06);
+}
+.developers-roadmap .section-title {
+  margin-bottom: var(--space-md);
+}
+.developers-roadmap__sub {
+  font-size: clamp(1rem, 2.2vw, 1.125rem);
+  margin: 0.5em auto 0;
+  max-width: 52ch;
+  line-height: 1.5;
+}
+.developers-roadmap-list {
+  list-style: disc;
+  padding-left: 1.35em;
+  max-width: min(65ch, 100%);
+  margin: var(--space-md) auto 0;
+  text-align: left;
+}
+.developers-roadmap-list li {
+  margin-bottom: var(--space-md);
+  padding-left: 0.35em;
+}
+.developers-roadmap-list li:last-child {
+  margin-bottom: 0;
+}
+.developers-roadmap-list li::marker {
+  color: rgba(242, 240, 230, 0.95);
+  font-size: 0.85em;
+}
+.developers-roadmap-list strong {
+  font-weight: 700;
+}
 .section--light .welcome-tagline {
   font-size: 0.8rem;
   letter-spacing: 0.15em;
@@ -915,6 +953,95 @@ img { max-width: 100%; height: auto; display: block; }
   box-shadow:
     0 0 0 1px var(--line-silt-soft),
     0 16px 48px rgba(0, 0, 0, 0.45);
+}
+
+/* Developers page — “What is getting built” grid & options toggle */
+.developers-built-grid {
+  display: grid;
+  gap: var(--space-lg);
+  grid-template-columns: 1fr;
+  max-width: 72rem;
+  margin-inline: auto;
+}
+@media (min-width: 700px) {
+  .developers-built-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.developers-built-figure {
+  margin: 0;
+  text-align: center;
+}
+.developers-thumb {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: zoom-in;
+  border-radius: var(--radius);
+  overflow: hidden;
+  line-height: 0;
+  box-shadow:
+    0 0 0 1px var(--line-silt-soft),
+    inset 0 1px 0 rgba(255, 255, 255, 0.65);
+  transition: box-shadow 0.2s ease;
+}
+.developers-thumb:focus {
+  outline: none;
+}
+.developers-thumb:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+.developers-thumb:hover {
+  box-shadow:
+    0 0 0 1px var(--line-bronze-soft),
+    0 8px 28px rgba(0, 0, 0, 0.18);
+}
+.developers-thumb img {
+  width: 100%;
+  height: auto;
+  display: block;
+  vertical-align: bottom;
+  border-radius: var(--radius);
+}
+.developers-built-caption {
+  margin: var(--space-sm) 0 0;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+.section--alt .developers-built-caption {
+  color: var(--color-text-on-dark-muted, var(--color-text-muted));
+}
+.developers-options-figure {
+  max-width: 56rem;
+  margin-inline: auto;
+}
+.developers-options-toggle__btn {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  line-height: 0;
+}
+.developers-options-toggle__btn:focus {
+  outline: none;
+}
+.developers-options-toggle__btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: var(--radius);
+}
+.developers-options-toggle__btn img {
+  width: 100%;
+  height: auto;
+  display: block;
+  vertical-align: bottom;
 }
 .plan-roadmap__caption {
   margin: var(--space-sm) 0 0;
