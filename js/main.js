@@ -50,7 +50,7 @@
   function openTimelineLightbox() {
     if (!timelineLightbox) return;
     timelineLightbox.hidden = false;
-    timelineLightbox.setAttribute('aria-hidden', 'false');
+    timelineLightbox.removeAttribute('aria-hidden');
     document.body.style.overflow = 'hidden';
     var closeBtn = timelineLightbox.querySelector('.image-lightbox__close');
     if (closeBtn) closeBtn.focus();
