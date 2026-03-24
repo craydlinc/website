@@ -951,6 +951,24 @@ img { max-width: 100%; height: auto; display: block; }
 .section:not(.section--light) p { color: var(--color-text-on-dark); }
 .section p + .btn { margin-top: 0.5em; }
 
+/* Full-width primary CTA in body sections (consistent width across instances) */
+.section-cta-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  max-width: min(30rem, 100%);
+  margin: 0 0 1em;
+}
+.section-cta-stack:last-child {
+  margin-bottom: 0;
+}
+.section-cta-stack .btn {
+  margin: 0;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+}
+
 /* Cards – aligned content, link spacing */
 .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-lg); }
 .card {
@@ -1196,12 +1214,17 @@ a.card.project-type-tile h3 { margin: 0; }
 .page-hero__ctas {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   gap: var(--space-sm);
-  margin: var(--space-md) 0 0;
+  width: 100%;
+  max-width: min(30rem, 100%);
+  margin: var(--space-md) auto 0;
 }
 .page-hero__ctas .btn {
   margin: 0;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
 }
 
 /* Video / embed CTAs – match .btn-primary, single column, left-aligned with body copy */
