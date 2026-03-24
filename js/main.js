@@ -77,9 +77,15 @@
   var timelineZoomTrigger = document.querySelector('.plan-roadmap__zoom');
   var heroLightbox = document.getElementById('hero-lightbox');
   var heroZoomTrigger = document.querySelector('.hero__zoom');
+  var developersLightbox1 = document.getElementById('developers-lightbox-1');
+  var developersTrigger1 = document.getElementById('developers-lightbox-trigger-1');
+  var developersLightbox2 = document.getElementById('developers-lightbox-2');
+  var developersTrigger2 = document.getElementById('developers-lightbox-trigger-2');
 
   var closeHeroLightbox = wireImageLightbox(heroLightbox, heroZoomTrigger);
   var closeTimelineLightbox = wireImageLightbox(timelineLightbox, timelineZoomTrigger);
+  var closeDevelopersLightbox1 = wireImageLightbox(developersLightbox1, developersTrigger1);
+  var closeDevelopersLightbox2 = wireImageLightbox(developersLightbox2, developersTrigger2);
 
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
@@ -87,10 +93,40 @@
         closeHeroLightbox();
         return;
       }
+      if (closeDevelopersLightbox1()) return;
+      if (closeDevelopersLightbox2()) return;
       if (closeTimelineLightbox()) return;
       closeNavDropdowns();
     }
   });
+
+  /* Developers page: toggle key drop vs wine wall */
+  var optionsToggle = document.getElementById('developers-options-toggle');
+  var optionsImg = document.getElementById('developers-options-img');
+  var optionsCaption = document.getElementById('developers-options-caption');
+  if (optionsToggle && optionsImg) {
+    var keyDropSrc = 'assets/developers/key-drop.png';
+    var wineSrc = 'assets/developers/winewall-12-29-25.png';
+    var keyDropAlt = 'Interior hallway with built-in key drop cabinetry and wood finishes.';
+    var wineAlt = 'Interior hallway with glass-enclosed wine wall and warm accent lighting.';
+    var showingKeyDrop = true;
+    optionsToggle.addEventListener('click', function () {
+      showingKeyDrop = !showingKeyDrop;
+      if (showingKeyDrop) {
+        optionsImg.src = keyDropSrc;
+        optionsImg.alt = keyDropAlt;
+        optionsToggle.setAttribute('aria-label', 'Key drop cabinetry. Click to show wine wall option.');
+        optionsToggle.setAttribute('aria-pressed', 'false');
+        if (optionsCaption) optionsCaption.textContent = 'Key drop';
+      } else {
+        optionsImg.src = wineSrc;
+        optionsImg.alt = wineAlt;
+        optionsToggle.setAttribute('aria-label', 'Wine wall 12.29.25. Click to return to key drop.');
+        optionsToggle.setAttribute('aria-pressed', 'true');
+        if (optionsCaption) optionsCaption.textContent = 'Winewall 12.29.25';
+      }
+    });
+  }
 
   /* Contact page: mailto + fallback when no native email app opens */
   var emailUs = document.getElementById('contact-email-us');
