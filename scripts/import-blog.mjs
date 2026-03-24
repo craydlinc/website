@@ -308,7 +308,7 @@ ${thumb}
       <div class="container">
         <p class="eyebrow">Luxury custom home building insights</p>
         <h1>CRAYDL blog</h1>
-        <p class="blog-lead">Articles published to craydl.com (including content from your AutoSEO workflow) appear here after you run the blog import. <a href="https://getautoseo.com/content-history" rel="noopener noreferrer">AutoSEO content history</a> is where drafts and scheduled pieces live.</p>
+        <p class="blog-lead">Expert insights on custom home building, BIM, VDC, pre-construction, and luxury residential construction. Live articles from craydl.com—including those you route through <a href="https://getautoseo.com/content-history" rel="noopener noreferrer">AutoSEO</a>—are mirrored here whenever you refresh the blog from WordPress (see <code class="blog-lead-code">scripts/import-blog.mjs</code>).</p>
         <p class="text-center mt-lg"><a href="../index.html#faq" class="btn btn-outline">Frequently Asked Questions</a></p>
       </div>
     </section>
@@ -320,7 +320,7 @@ ${thumb}
             <div class="blog-index-search-wrap">
               <input type="search" id="blog-index-search" class="blog-index-search" placeholder="Search titles and excerpts…" autocomplete="off" enterkeyhint="search">
             </div>
-            <p class="blog-index-meta" aria-live="polite"><span id="blog-index-count">0</span> articles</p>
+            <p class="blog-index-meta" aria-live="polite"><span id="blog-index-count">${indexItems.length}</span> articles</p>
           </div>
           <div class="blog-index-toolbar__row blog-index-filters">
             <span class="visually-hidden" id="blog-filter-label">Filter by topic</span>
