@@ -792,7 +792,6 @@ img { max-width: 100%; height: auto; display: block; }
   flex-shrink: 0;
   width: 2.75rem;
   height: 2.75rem;
-  border-radius: 50%;
   border-radius: 999px;
   background: #b6d0e2;
   color: var(--color-onyx);
@@ -808,9 +807,8 @@ img { max-width: 100%; height: auto; display: block; }
 .developers-platform__copy h3 {
   margin: 0 0 0.5em;
   font-size: 1.125rem;
-  font-weight: 600;
-  font-family: var(--font-sans);
   font-weight: 700;
+  font-family: var(--font-sans);
   letter-spacing: 0;
   color: var(--color-alabaster);
 }
