@@ -1182,6 +1182,170 @@ a.card.project-type-tile h3 { margin: 0; }
   margin: 0;
 }
 
+/* Contact page — leadership team */
+.team-grid {
+  list-style: none;
+  margin: var(--space-lg) 0 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-xl);
+  grid-template-columns: 1fr;
+  max-width: 56rem;
+  margin-inline: auto;
+}
+@media (min-width: 600px) {
+  .team-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 960px) {
+  .team-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-lg) var(--space-xl);
+  }
+}
+.team-card {
+  text-align: center;
+  padding: 0;
+  margin: 0;
+}
+.team-card__figure {
+  margin: 0 0 var(--space-md);
+  padding: 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--line-bronze-soft);
+  box-shadow:
+    0 0 0 1px var(--line-silt-soft),
+    inset 0 1px 0 rgba(255, 255, 255, 0.65);
+  background: rgba(255, 255, 255, 0.5);
+}
+.team-card__img {
+  width: 100%;
+  height: auto;
+  display: block;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: center top;
+}
+.team-card__name {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.2rem;
+  margin: 0 0 0.35rem;
+  color: var(--color-text-on-light);
+}
+.team-card__role {
+  margin: 0 0 var(--space-sm);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-bronze);
+  letter-spacing: 0.02em;
+}
+.team-card__bio {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--color-text-on-light);
+  opacity: 0.92;
+  text-align: left;
+}
+
+.team-bio-details {
+  margin: 0;
+  text-align: left;
+  border-top: 1px solid var(--line-silt);
+  padding-top: var(--space-sm);
+}
+.team-bio-details__summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text-on-light);
+  padding: 0.25rem 0;
+  user-select: none;
+}
+.team-bio-details__summary::-webkit-details-marker {
+  display: none;
+}
+.team-bio-details__summary::marker {
+  content: "";
+}
+.team-bio-details__summary:hover {
+  color: var(--color-bronze);
+}
+.team-bio-details__summary:focus {
+  outline: none;
+}
+.team-bio-details__summary:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+.team-bio-details__toggle {
+  flex-shrink: 0;
+  font-size: 1.35rem;
+  font-weight: 300;
+  line-height: 1;
+  color: var(--color-bronze);
+  min-width: 1.25rem;
+  text-align: center;
+}
+.team-bio-details__minus {
+  display: none;
+}
+.team-bio-details[open] .team-bio-details__plus {
+  display: none;
+}
+.team-bio-details[open] .team-bio-details__minus {
+  display: inline;
+}
+.team-bio-details__body {
+  padding: var(--space-sm) 0 0;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--color-text-on-light);
+  opacity: 0.92;
+}
+.team-bio-details__body p {
+  margin: 0 0 var(--space-sm);
+  color: inherit;
+}
+.team-bio-details__body p:last-child {
+  margin-bottom: 0;
+}
+.team-bio-details__lead {
+  margin: 0 0 var(--space-sm);
+}
+.team-bio-details__list {
+  margin: 0 0 var(--space-sm);
+  padding-left: 1.25rem;
+  color: inherit;
+}
+.team-bio-details__list li {
+  margin-bottom: 0.5em;
+}
+.team-bio-details__list li:last-child {
+  margin-bottom: 0;
+}
+.team-bio-details__heading {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-bronze);
+  margin: var(--space-md) 0 var(--space-xs);
+}
+.team-bio-details__body .team-bio-details__heading:first-child {
+  margin-top: 0;
+}
+
 .email-fallback-panel {
   max-width: 36rem;
   margin: var(--space-md) auto 0;
