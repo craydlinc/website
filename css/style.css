@@ -705,12 +705,14 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .developers-roadmap .section-title {
   margin-bottom: var(--space-md);
+  text-align: center;
 }
 .developers-roadmap__sub {
   font-size: clamp(1rem, 2.2vw, 1.125rem);
   margin: 0.5em auto 0;
   max-width: 52ch;
   line-height: 1.5;
+  text-align: center;
 }
 .developers-roadmap-list {
   list-style: disc;
