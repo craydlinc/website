@@ -735,6 +735,92 @@ img { max-width: 100%; height: auto; display: block; }
 .developers-roadmap-list strong {
   font-weight: 700;
 }
+
+/* Developers — platform band (dark + silt CTA + check grid) */
+.btn-silt {
+  background: #c8dae8;
+  color: var(--color-onyx);
+  font-weight: 700;
+  box-shadow: 0 0 0 1px rgba(182, 208, 226, 0.45);
+}
+.btn-silt:hover {
+  background: #b6d0e2;
+  color: var(--color-onyx);
+  text-decoration: none;
+  box-shadow: 0 0 0 1px rgba(182, 208, 226, 0.65);
+}
+.developers-platform__intro {
+  max-width: min(48rem, 100%);
+  margin: 0 auto var(--space-xl);
+}
+.developers-platform__lede {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: clamp(1.05rem, 2.2vw, 1.25rem);
+  line-height: 1.55;
+  letter-spacing: 0;
+  color: var(--color-alabaster);
+  margin: 0 auto var(--space-md);
+  max-width: 52ch;
+}
+.developers-platform__cta-wrap {
+  margin: 0;
+}
+.developers-platform__cta-wrap .btn {
+  margin: 0;
+}
+.developers-platform__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-lg) var(--space-xl);
+  align-items: start;
+}
+@media (max-width: 52rem) {
+  .developers-platform__grid {
+    grid-template-columns: 1fr;
+  }
+}
+.developers-platform__item {
+  display: flex;
+  gap: var(--space-md);
+  align-items: flex-start;
+}
+.developers-platform__icon {
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  border-radius: 999px;
+  background: #b6d0e2;
+  color: var(--color-onyx);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.15em;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+.developers-platform__icon svg {
+  display: block;
+}
+.developers-platform__copy h3 {
+  margin: 0 0 0.5em;
+  font-size: 1.125rem;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--color-alabaster);
+}
+.developers-platform__copy p {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: rgba(242, 240, 230, 0.92);
+}
+
 .section--light .welcome-tagline {
   font-size: 0.8rem;
   letter-spacing: 0.15em;
