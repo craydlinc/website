@@ -96,14 +96,19 @@
             </div>
           </div>
           <figure class="hero__figure">
-            <img
-              src="assets/hero-mockingbird-entrance.png"
-              alt="Photorealistic visualization of a modern luxury home entrance: glass front door, stone cladding, and landscaped walkway."
-              width="1600"
-              height="900"
-              decoding="async"
-              fetchpriority="high"
-              class="hero__image">
+            <button
+              type="button"
+              class="hero__zoom"
+              aria-label="Open home entrance visualization full screen">
+              <img
+                src="assets/hero-mockingbird-entrance.png"
+                alt=""
+                width="1600"
+                height="900"
+                decoding="async"
+                fetchpriority="high"
+                class="hero__image">
+            </button>
           </figure>
         </div>
       </div>
@@ -664,6 +669,29 @@
           alt="CRAYDL project delivery timeline infographic: seven phases from feasibility through approvals, with overlapping workstreams across an estimated 5 to 16 month schedule."
           width="1024"
           height="576"
+          decoding="async"
+          class="image-lightbox__img">
+      </div>
+    </div>
+  </div>
+
+  <div
+    id="hero-lightbox"
+    class="image-lightbox"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Home entrance visualization"
+    aria-hidden="true"
+    hidden>
+    <button type="button" class="image-lightbox__backdrop" tabindex="-1" aria-hidden="true" data-lightbox-dismiss></button>
+    <div class="image-lightbox__panel">
+      <button type="button" class="image-lightbox__close" aria-label="Close full screen view" data-lightbox-dismiss>&times;</button>
+      <div class="image-lightbox__frame">
+        <img
+          src="assets/hero-mockingbird-entrance.png"
+          alt="Photorealistic visualization of a modern luxury home entrance: glass front door, stone cladding, and landscaped walkway."
+          width="1600"
+          height="900"
           decoding="async"
           class="image-lightbox__img">
       </div>

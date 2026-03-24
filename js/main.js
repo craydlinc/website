@@ -43,39 +43,50 @@
     closeNavDropdowns();
   });
 
-  var timelineLightbox = document.getElementById('timeline-lightbox');
-  var timelineZoomTrigger = document.querySelector('.plan-roadmap__zoom');
   var lightboxDismissSelector = '[data-lightbox-dismiss]';
 
-  function openTimelineLightbox() {
-    if (!timelineLightbox) return;
-    timelineLightbox.hidden = false;
-    timelineLightbox.removeAttribute('aria-hidden');
-    document.body.style.overflow = 'hidden';
-    var closeBtn = timelineLightbox.querySelector('.image-lightbox__close');
-    if (closeBtn) closeBtn.focus();
+  function wireImageLightbox(lightboxEl, triggerEl) {
+    if (!lightboxEl || !triggerEl) return function () { return false; };
+
+    function openLightbox() {
+      lightboxEl.hidden = false;
+      lightboxEl.removeAttribute('aria-hidden');
+      document.body.style.overflow = 'hidden';
+      var closeBtn = lightboxEl.querySelector('.image-lightbox__close');
+      if (closeBtn) closeBtn.focus();
+    }
+
+    function closeLightbox() {
+      if (lightboxEl.hidden) return false;
+      lightboxEl.hidden = true;
+      lightboxEl.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      triggerEl.focus();
+      return true;
+    }
+
+    triggerEl.addEventListener('click', openLightbox);
+    lightboxEl.addEventListener('click', function (e) {
+      if (e.target.closest(lightboxDismissSelector)) closeLightbox();
+    });
+
+    return closeLightbox;
   }
 
-  function closeTimelineLightbox() {
-    if (!timelineLightbox || timelineLightbox.hidden) return false;
-    timelineLightbox.hidden = true;
-    timelineLightbox.setAttribute('aria-hidden', 'true');
-    document.body.style.overflow = '';
-    if (timelineZoomTrigger) timelineZoomTrigger.focus();
-    return true;
-  }
+  var timelineLightbox = document.getElementById('timeline-lightbox');
+  var timelineZoomTrigger = document.querySelector('.plan-roadmap__zoom');
+  var heroLightbox = document.getElementById('hero-lightbox');
+  var heroZoomTrigger = document.querySelector('.hero__zoom');
 
-  if (timelineLightbox && timelineZoomTrigger) {
-    timelineZoomTrigger.addEventListener('click', function () {
-      openTimelineLightbox();
-    });
-    timelineLightbox.addEventListener('click', function (e) {
-      if (e.target.closest(lightboxDismissSelector)) closeTimelineLightbox();
-    });
-  }
+  var closeHeroLightbox = wireImageLightbox(heroLightbox, heroZoomTrigger);
+  var closeTimelineLightbox = wireImageLightbox(timelineLightbox, timelineZoomTrigger);
 
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
+      if (heroLightbox && !heroLightbox.hidden) {
+        closeHeroLightbox();
+        return;
+      }
       if (closeTimelineLightbox()) return;
       closeNavDropdowns();
     }

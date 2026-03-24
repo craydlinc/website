@@ -372,6 +372,26 @@ img { max-width: 100%; height: auto; display: block; }
   width: 100%;
   max-width: min(36rem, 100%);
 }
+.hero__zoom {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: zoom-in;
+  font: inherit;
+  color: inherit;
+  border-radius: var(--radius);
+  text-align: left;
+}
+.hero__zoom:focus {
+  outline: none;
+}
+.hero__zoom:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
 .hero__image {
   width: 100%;
   height: auto;
@@ -381,6 +401,13 @@ img { max-width: 100%; height: auto; display: block; }
   box-shadow:
     0 0 0 1px var(--line-bronze-soft),
     0 12px 40px rgba(0, 0, 0, 0.18);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.hero__zoom:hover .hero__image {
+  border-color: var(--line-silt-soft);
+  box-shadow:
+    0 0 0 1px var(--line-bronze-soft),
+    0 12px 36px rgba(0, 0, 0, 0.26);
 }
 .hero .eyebrow { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--color-sage); margin: 0 0 var(--space-sm); }
 .hero h1 { margin: 0 0 var(--space-md); max-width: min(40rem, 100%); }
@@ -388,7 +415,20 @@ img { max-width: 100%; height: auto; display: block; }
 .hero__copy { width: 100%; max-width: 52rem; text-align: center; }
 .hero__copy .sub { max-width: none; margin: 0 0 var(--space-md); }
 .hero__copy .sub:last-child { margin-bottom: var(--space-lg); }
-.hero .cta-group { display: flex; gap: var(--space-md); justify-content: center; flex-wrap: wrap; margin: 0 0 var(--space-md); }
+.hero .cta-group {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-md);
+  width: 100%;
+  max-width: min(28rem, 100%);
+  margin: 0 auto var(--space-md);
+}
+.hero .cta-group .btn {
+  width: 100%;
+  margin: 0;
+  box-sizing: border-box;
+}
 .hero .tagline { font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--color-sage); margin: 0; }
 .hero__copy .sub a {
   color: var(--color-powder-blue);
@@ -417,7 +457,10 @@ img { max-width: 100%; height: auto; display: block; }
   .hero h1 { max-width: min(40rem, 100%); }
   .hero__copy { text-align: left; }
   .hero__copy .sub { max-width: 52ch; }
-  .hero .cta-group { justify-content: flex-start; }
+  .hero .cta-group {
+    margin-left: 0;
+    margin-right: 0;
+  }
   .hero__figure {
     flex: 0 1 44%;
     max-width: min(28rem, 44%);
