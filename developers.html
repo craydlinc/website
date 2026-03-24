@@ -136,6 +136,19 @@
       </div>
     </section>
 
+    <section class="section section--light" id="signature-capabilities" aria-labelledby="signature-capabilities-heading">
+      <div class="container">
+        <div class="section-title text-center">
+          <h2 id="signature-capabilities-heading">Signature Capabilities</h2>
+          <p class="developers-roadmap__sub">Short demos from the digital twin: lot sunlight and operable openings.</p>
+        </div>
+        <div class="signature-capabilities__btns">
+          <button type="button" class="btn btn-primary" data-developers-video-open data-video-src="assets/videos/mockingbird-sunlight-analysis.mp4" data-video-title="Sunlight analysis">Sunlight analysis</button>
+          <button type="button" class="btn btn-outline" data-developers-video-open data-video-src="assets/videos/mockingbird-door-operation.mp4" data-video-title="Door operation">Door operation</button>
+        </div>
+      </div>
+    </section>
+
     <section class="section section--light section--roadmap" id="predictable-project-roadmap" aria-labelledby="roadmap-heading">
       <div class="container developers-roadmap">
         <div class="section-title text-center">
@@ -315,6 +328,24 @@
           height="900"
           decoding="async"
           class="image-lightbox__img">
+      </div>
+    </div>
+  </div>
+
+  <div
+    id="developers-video-lightbox"
+    class="image-lightbox video-lightbox"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="developers-video-lightbox-title"
+    aria-hidden="true"
+    hidden>
+    <button type="button" class="image-lightbox__backdrop" tabindex="-1" aria-hidden="true" data-lightbox-dismiss></button>
+    <div class="image-lightbox__panel">
+      <button type="button" class="image-lightbox__close" aria-label="Close video" data-lightbox-dismiss>&times;</button>
+      <div class="image-lightbox__frame image-lightbox__frame--video">
+        <h2 id="developers-video-lightbox-title" class="video-lightbox__title">Video</h2>
+        <video id="developers-video-lightbox-player" class="image-lightbox__video" controls playsinline preload="metadata" title="Capability demo"></video>
       </div>
     </div>
   </div>

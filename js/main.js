@@ -81,6 +81,52 @@
   var developersTrigger1 = document.getElementById('developers-lightbox-trigger-1');
   var developersLightbox2 = document.getElementById('developers-lightbox-2');
   var developersTrigger2 = document.getElementById('developers-lightbox-trigger-2');
+  var developersVideoLightbox = document.getElementById('developers-video-lightbox');
+  var developersVideoTitle = document.getElementById('developers-video-lightbox-title');
+  var developersVideoPlayer = document.getElementById('developers-video-lightbox-player');
+  var lastDevelopersVideoTrigger = null;
+
+  function closeDevelopersVideoLightbox() {
+    if (!developersVideoLightbox || developersVideoLightbox.hidden) return false;
+    developersVideoLightbox.hidden = true;
+    developersVideoLightbox.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    if (developersVideoPlayer) {
+      developersVideoPlayer.pause();
+      developersVideoPlayer.removeAttribute('src');
+      developersVideoPlayer.load();
+    }
+    if (lastDevelopersVideoTrigger) lastDevelopersVideoTrigger.focus();
+    return true;
+  }
+
+  function openDevelopersVideoLightbox(src, title, trigger) {
+    if (!developersVideoLightbox || !developersVideoPlayer) return;
+    lastDevelopersVideoTrigger = trigger || null;
+    if (developersVideoTitle) developersVideoTitle.textContent = title || 'Video';
+    developersVideoPlayer.setAttribute('title', title || 'Capability demo');
+    developersVideoPlayer.src = src;
+    developersVideoLightbox.hidden = false;
+    developersVideoLightbox.removeAttribute('aria-hidden');
+    document.body.style.overflow = 'hidden';
+    var closeVBtn = developersVideoLightbox.querySelector('.image-lightbox__close');
+    if (closeVBtn) closeVBtn.focus();
+    developersVideoPlayer.play().catch(function () {});
+  }
+
+  document.querySelectorAll('[data-developers-video-open]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var src = btn.getAttribute('data-video-src');
+      var title = btn.getAttribute('data-video-title') || 'Video';
+      if (src) openDevelopersVideoLightbox(src, title, btn);
+    });
+  });
+
+  if (developersVideoLightbox) {
+    developersVideoLightbox.addEventListener('click', function (e) {
+      if (e.target.closest(lightboxDismissSelector)) closeDevelopersVideoLightbox();
+    });
+  }
 
   var closeHeroLightbox = wireImageLightbox(heroLightbox, heroZoomTrigger);
   var closeTimelineLightbox = wireImageLightbox(timelineLightbox, timelineZoomTrigger);
@@ -95,6 +141,7 @@
       }
       if (closeDevelopersLightbox1()) return;
       if (closeDevelopersLightbox2()) return;
+      if (closeDevelopersVideoLightbox()) return;
       if (closeTimelineLightbox()) return;
       closeNavDropdowns();
     }
