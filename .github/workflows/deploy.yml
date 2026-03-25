@@ -57,13 +57,25 @@ jobs:
         if: steps.redirects.outputs.changed == 'true'
         run: |
           FUNC_NAME="craydl-redirects"
-          echo "Updating CloudFront Function: $FUNC_NAME"
-          ETAG=$(aws cloudfront describe-function --name "$FUNC_NAME" --query 'ETag' --output text)
-          aws cloudfront update-function \
-            --name "$FUNC_NAME" \
-            --if-match "$ETAG" \
-            --function-config '{"Comment":"Redirects and directory index rewrite","Runtime":"cloudfront-js-2.0"}' \
-            --function-code fileb://infra/redirects.js
+          FUNC_CONFIG='{"Comment":"Redirects and directory index rewrite","Runtime":"cloudfront-js-2.0"}'
+          echo "Deploying CloudFront Function: $FUNC_NAME"
+
+          # Create if it doesn't exist, otherwise update
+          if aws cloudfront describe-function --name "$FUNC_NAME" > /dev/null 2>&1; then
+            ETAG=$(aws cloudfront describe-function --name "$FUNC_NAME" --query 'ETag' --output text)
+            aws cloudfront update-function \
+              --name "$FUNC_NAME" \
+              --if-match "$ETAG" \
+              --function-config "$FUNC_CONFIG" \
+              --function-code fileb://infra/redirects.js
+          else
+            aws cloudfront create-function \
+              --name "$FUNC_NAME" \
+              --function-config "$FUNC_CONFIG" \
+              --function-code fileb://infra/redirects.js
+          fi
+
+          # Publish
           ETAG=$(aws cloudfront describe-function --name "$FUNC_NAME" --query 'ETag' --output text)
           aws cloudfront publish-function --name "$FUNC_NAME" --if-match "$ETAG"
           echo "CloudFront Function published"
