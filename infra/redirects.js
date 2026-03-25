@@ -1,4 +1,4 @@
-// CloudFront Function: redirects + directory index rewrite (e.g. /blog/ → /blog/index.html)
+// CloudFront Function: redirects + directory index rewrite (/blog/ → /blog/index.html)
 // Attached to viewer-request event on the CloudFront distribution.
 // CloudFront Functions use ES 5.1 syntax (no let/const, no arrow functions, no template literals).
 
