@@ -18,10 +18,8 @@
   var searchQuery = '';
   var totalPosts = 0;
 
-  var postsJsonUrl =
-    window.location.protocol === 'file:'
-      ? 'posts.json'
-      : '/blog/posts.json';
+  /* Listing lives at /articles/ with posts.json alongside this script */
+  var postsJsonUrl = 'posts.json';
 
   function monthKey(isoDate) {
     return (isoDate || '').slice(0, 7);
