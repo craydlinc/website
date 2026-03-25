@@ -68,6 +68,20 @@ jobs:
           echo "website_bucket=$(tofu output -raw website_bucket)" >> "$GITHUB_OUTPUT"
           echo "distribution_id=$(tofu output -raw cloudfront_distribution_id)" >> "$GITHUB_OUTPUT"
 
+      # --- Update CloudFront Function (redirects) when changed ---
+      - name: Update CloudFront Function
+        if: steps.infra.outputs.changed == 'true'
+        run: |
+          FUNC_NAME="craydl-redirects"
+          ETAG=$(aws cloudfront describe-function --name "$FUNC_NAME" --query 'ETag' --output text)
+          aws cloudfront update-function \
+            --name "$FUNC_NAME" \
+            --if-match "$ETAG" \
+            --function-config '{"Comment":"WordPress redirects + directory index","Runtime":"cloudfront-js-2.0"}' \
+            --function-code fileb://infra/redirects.js
+          ETAG=$(aws cloudfront describe-function --name "$FUNC_NAME" --query 'ETag' --output text)
+          aws cloudfront publish-function --name "$FUNC_NAME" --if-match "$ETAG"
+
       # --- Deploy static site ---
       - name: Sync site to S3
         run: |
