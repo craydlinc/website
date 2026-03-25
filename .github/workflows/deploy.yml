@@ -11,6 +11,8 @@ permissions:
 env:
   AWS_REGION: ${{ secrets.AWS_REGION || 'us-east-1' }}
   TOFU_VERSION: "1.9.0"
+  S3_BUCKET: ${{ secrets.S3_BUCKET }}
+  CF_DISTRIBUTION_ID: ${{ secrets.CF_DISTRIBUTION_ID }}
 
 jobs:
   deploy:
@@ -26,61 +28,45 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # --- Detect infra changes ---
-      - name: Check for infra changes
-        id: infra
+      # --- Get S3 bucket + distribution ID ---
+      - name: Resolve deploy targets
+        id: tf
         run: |
-          if git diff --name-only HEAD~1 HEAD | grep -q '^infra/'; then
+          if [ -n "$S3_BUCKET" ] && [ -n "$CF_DISTRIBUTION_ID" ]; then
+            echo "website_bucket=$S3_BUCKET" >> "$GITHUB_OUTPUT"
+            echo "distribution_id=$CF_DISTRIBUTION_ID" >> "$GITHUB_OUTPUT"
+          else
+            # Fall back to Tofu outputs
+            pip install opentofu-bin 2>/dev/null || true
+            cd infra && tofu init -input=false
+            echo "website_bucket=$(tofu output -raw website_bucket)" >> "$GITHUB_OUTPUT"
+            echo "distribution_id=$(tofu output -raw cloudfront_distribution_id)" >> "$GITHUB_OUTPUT"
+          fi
+
+      # --- Update CloudFront Function when redirects.js changes ---
+      - name: Check for redirects changes
+        id: redirects
+        run: |
+          if git diff --name-only HEAD~1 HEAD | grep -q 'infra/redirects.js'; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
           else
             echo "changed=false" >> "$GITHUB_OUTPUT"
           fi
 
-      # --- Infrastructure (only when infra/ changes) ---
-      - name: Setup OpenTofu
-        if: steps.infra.outputs.changed == 'true'
-        uses: opentofu/setup-opentofu@v2
-        with:
-          tofu_version: ${{ env.TOFU_VERSION }}
-
-      - name: Tofu Init
-        if: steps.infra.outputs.changed == 'true'
-        working-directory: infra
-        run: tofu init -input=false
-
-      - name: Tofu Apply
-        if: steps.infra.outputs.changed == 'true'
-        working-directory: infra
-        run: tofu apply -auto-approve -input=false
-
-      # --- Get outputs (always needed for deploy) ---
-      - name: Setup OpenTofu (for outputs)
-        if: steps.infra.outputs.changed != 'true'
-        uses: opentofu/setup-opentofu@v2
-        with:
-          tofu_version: ${{ env.TOFU_VERSION }}
-
-      - name: Get Tofu outputs
-        id: tf
-        working-directory: infra
-        run: |
-          tofu init -input=false
-          echo "website_bucket=$(tofu output -raw website_bucket)" >> "$GITHUB_OUTPUT"
-          echo "distribution_id=$(tofu output -raw cloudfront_distribution_id)" >> "$GITHUB_OUTPUT"
-
-      # --- Update CloudFront Function (redirects) when changed ---
       - name: Update CloudFront Function
-        if: steps.infra.outputs.changed == 'true'
+        if: steps.redirects.outputs.changed == 'true'
         run: |
           FUNC_NAME="craydl-redirects"
+          echo "Updating CloudFront Function: $FUNC_NAME"
           ETAG=$(aws cloudfront describe-function --name "$FUNC_NAME" --query 'ETag' --output text)
           aws cloudfront update-function \
             --name "$FUNC_NAME" \
             --if-match "$ETAG" \
-            --function-config '{"Comment":"WordPress redirects + directory index","Runtime":"cloudfront-js-2.0"}' \
+            --function-config '{"Comment":"Redirects and directory index rewrite","Runtime":"cloudfront-js-2.0"}' \
             --function-code fileb://infra/redirects.js
           ETAG=$(aws cloudfront describe-function --name "$FUNC_NAME" --query 'ETag' --output text)
           aws cloudfront publish-function --name "$FUNC_NAME" --if-match "$ETAG"
+          echo "CloudFront Function published"
 
       # --- Deploy static site ---
       - name: Sync site to S3
