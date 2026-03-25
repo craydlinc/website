@@ -1,4 +1,4 @@
-// CloudFront Function: WordPress → new site 301 redirects + directory index rewrite
+// CloudFront Function: redirects + directory index rewrite (e.g. /blog/ → /blog/index.html)
 // Attached to viewer-request event on the CloudFront distribution.
 // CloudFront Functions use ES 5.1 syntax (no let/const, no arrow functions, no template literals).
 
