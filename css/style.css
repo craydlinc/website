@@ -1536,6 +1536,16 @@ img { max-width: 100%; height: auto; display: block; }
   flex-wrap: wrap;
   gap: 0.5rem;
 }
+.card__actions .btn-outline {
+  color: #fff;
+  border-color: #fff;
+  background: transparent;
+}
+.card__actions .btn-outline:hover {
+  background: #fff;
+  color: var(--color-onyx);
+  border-color: #fff;
+}
 .card:hover {
   border-color: var(--line-silt);
   box-shadow:
