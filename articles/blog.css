@@ -73,6 +73,50 @@
   padding: var(--space-xl) 0 var(--space-2xl);
 }
 
+/* Featured Spotify episode above toolbar */
+.articles-feature-link {
+  max-width: 900px;
+  margin: 0 auto var(--space-md);
+}
+.articles-feature-link__anchor {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 100%;
+  color: rgba(255, 255, 255, 0.86);
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.45rem 0.75rem;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.articles-feature-link__anchor:hover {
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.07);
+}
+.articles-feature-link__anchor:focus-visible {
+  outline: 2px solid var(--color-powder-blue);
+  outline-offset: 2px;
+}
+.articles-feature-link__icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex: 0 0 auto;
+  color: #1ed760;
+}
+.articles-feature-link__label {
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+  white-space: nowrap;
+}
+.articles-feature-link__title {
+  font-size: 0.9rem;
+  line-height: 1.3;
+}
+
 /* ===== Toolbar: search + filters ===== */
 .blog-index-toolbar {
   max-width: 900px;
@@ -227,6 +271,18 @@
   border-color: rgba(255, 255, 255, 0.12);
 }
 @media (max-width: 640px) {
+  .articles-feature-link__anchor {
+    width: 100%;
+    border-radius: 12px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .articles-feature-link__label {
+    width: 100%;
+  }
+  .articles-feature-link__title {
+    font-size: 0.85rem;
+  }
   .blog-index__item {
     grid-template-columns: 100px 1fr;
     gap: 0.75rem;

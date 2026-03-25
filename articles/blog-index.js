@@ -17,9 +17,17 @@
   var activeFilter = 'all';
   var searchQuery = '';
   var totalPosts = 0;
-
   /* Listing lives at /articles/ with posts.json alongside this script */
   var postsJsonUrl = 'posts.json';
+
+  function sortBucket(post) {
+    return post && post.origin === 'personal' ? 0 : 1;
+  }
+
+  function safeDateValue(post) {
+    if (!post || typeof post.date !== 'string') return '';
+    return post.date;
+  }
 
   function monthKey(isoDate) {
     return (isoDate || '').slice(0, 7);
@@ -138,10 +146,18 @@
       })
       .then(function (posts) {
         if (loadingMsg) loadingMsg.hidden = true;
+        if (!Array.isArray(posts)) throw new Error('posts.json is not an array');
 
-        // Sort by date descending
+        // Skip malformed items instead of failing the whole list render.
+        posts = posts.filter(function (post) {
+          return post && typeof post.slug === 'string' && typeof post.title === 'string';
+        });
+
+        // Sort personal Substack posts first, then by date descending in each bucket.
         posts.sort(function (a, b) {
-          return b.date.localeCompare(a.date);
+          var bucketDiff = sortBucket(a) - sortBucket(b);
+          if (bucketDiff !== 0) return bucketDiff;
+          return safeDateValue(b).localeCompare(safeDateValue(a));
         });
 
         var frag = document.createDocumentFragment();
