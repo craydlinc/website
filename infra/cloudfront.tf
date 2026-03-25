@@ -24,7 +24,7 @@ resource "aws_cloudfront_origin_access_control" "website" {
 resource "aws_cloudfront_distribution" "website" {
   enabled             = true
   default_root_object = "index.html"
-  comment             = "CRAYDL website"
+  comment             = "CRAYDL website — static site"
   price_class         = "PriceClass_100" # US, Canada, Europe
 
   origin {
