@@ -155,7 +155,7 @@ function siteHeaderHtml() {
           </ul>
         </div>
         <a href="/contact.html">Contact</a>
-        <a href="/blog/" aria-current="page">Blog</a>
+        <a href="/articles/">Blog</a>
       </nav>
       <div class="header-right">
         <a href="tel:480-716-5884" class="header-phone">480-716-5884</a>
@@ -215,7 +215,7 @@ function postPageHtml({
 ${siteHeaderHtml()}
   <main class="blog-post-main">
     <article class="blog-article container">
-      <p class="blog-back"><a href="/blog/">← All posts</a></p>
+      <p class="blog-back"><a href="/articles/">← All posts</a></p>
       <h1 class="blog-post-h1">${escHtml(title)}</h1>
       <time class="blog-date" datetime="${escHtml(datePublished)}">${escHtml(datePublished)}</time>
       <div class="blog-content wp-content substack-content">${bodyHtml}</div>

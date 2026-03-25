@@ -18,10 +18,17 @@
   var searchQuery = '';
   var totalPosts = 0;
 
-  var postsJsonUrl =
-    window.location.protocol === 'file:'
-      ? 'posts.json'
-      : '/blog/posts.json';
+  /** Post HTML and posts.json live under /blog/; listing may be at /articles/ or /blog/. */
+  var postsBase = (function () {
+    if (window.location.protocol === 'file:') {
+      var path = window.location.pathname.replace(/\\/g, '/');
+      if (path.indexOf('/articles/') !== -1) return '../blog/';
+      return '';
+    }
+    return '/blog/';
+  })();
+
+  var postsJsonUrl = postsBase + 'posts.json';
 
   function monthKey(isoDate) {
     return (isoDate || '').slice(0, 7);
@@ -66,15 +73,16 @@
       (post.title + ' ' + (post.excerpt || '')).toLowerCase().replace(/\s+/g, ' ')
     );
 
+    var postUrl = postsBase + 'posts/' + post.slug + '.html';
     var thumbHTML;
     if (post.image) {
       thumbHTML =
-        '<a href="posts/' + post.slug + '.html" class="blog-index__thumb-wrap" tabindex="-1" aria-hidden="true">' +
+        '<a href="' + postUrl + '" class="blog-index__thumb-wrap" tabindex="-1" aria-hidden="true">' +
           '<img class="blog-index__thumb" src="' + escapeHTML(post.image) + '" alt="" width="320" height="180" loading="lazy" decoding="async">' +
         '</a>';
     } else {
       thumbHTML =
-        '<a href="posts/' + post.slug + '.html" class="blog-index__thumb-wrap blog-index__thumb-wrap--empty blog-index__thumb-wrap--themed blog-index__thumb-theme--' + topic + '" aria-hidden="true">' +
+        '<a href="' + postUrl + '" class="blog-index__thumb-wrap blog-index__thumb-wrap--empty blog-index__thumb-wrap--themed blog-index__thumb-theme--' + topic + '" aria-hidden="true">' +
           '<span class="blog-index__thumb-fallback">CRAYDL</span>' +
         '</a>';
     }
@@ -86,7 +94,7 @@
     li.innerHTML =
       thumbHTML +
       '<div class="blog-index__body">' +
-        '<a href="posts/' + post.slug + '.html" class="blog-index__title-link">' + escapeHTML(post.title) + '</a>' +
+        '<a href="' + postUrl + '" class="blog-index__title-link">' + escapeHTML(post.title) + '</a>' +
         '<time datetime="' + post.date + '">' + escapeHTML(formatListDate(post.date)) + '</time>' +
         sourceLine +
         '<p class="blog-index__excerpt">' + escapeHTML(post.excerpt || '') + '</p>' +
