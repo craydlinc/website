@@ -951,13 +951,6 @@ img { max-width: 100%; height: auto; display: block; }
   margin: 0 0 var(--space-sm);
   max-width: 52rem;
 }
-.homeowner-process__step-cta {
-  margin: 0 0 var(--space-md);
-}
-.homeowner-process__step-cta a {
-  font-weight: 600;
-  text-decoration: underline;
-}
 .homeowner-process__step-action {
   margin: var(--space-md) 0 0;
 }
@@ -1545,6 +1538,17 @@ img { max-width: 100%; height: auto; display: block; }
   background: #fff;
   color: var(--color-onyx);
   border-color: #fff;
+}
+.section--light .card__actions .btn-outline {
+  color: var(--color-text-on-light);
+  border-color: var(--color-onyx);
+  border-width: 2px;
+  background: transparent;
+}
+.section--light .card__actions .btn-outline:hover {
+  background: var(--color-onyx);
+  color: var(--color-alabaster);
+  border-color: var(--color-onyx);
 }
 .card:hover {
   border-color: var(--line-silt);
