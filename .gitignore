@@ -2,6 +2,7 @@ node_modules/
 aws/media-pipeline/lambda/node_modules/
 .DS_Store
 .claude/
+.wrangler/
 
 # OpenTofu / Terraform
 infra/.terraform/
