@@ -28,6 +28,9 @@
   margin-top: var(--space-md);
   margin-bottom: 0;
 }
+.blog-lead-stack .blog-lead--closing + .articles-feature-link {
+  margin-top: 15px;
+}
 .blog-lead-bullets {
   list-style: disc;
   margin: 0 auto 0;
