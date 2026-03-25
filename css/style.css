@@ -1529,6 +1529,13 @@ img { max-width: 100%; height: auto; display: block; }
     0 0 0 1px var(--line-bronze-soft),
     inset 0 1px 0 var(--mist-alabaster);
 }
+.card__actions {
+  margin-top: auto;
+  padding-top: var(--space-sm);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
 .card:hover {
   border-color: var(--line-silt);
   box-shadow:
