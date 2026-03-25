@@ -1597,7 +1597,7 @@ a.card.project-type-tile h3 { margin: 0; }
   letter-spacing: 0.12em;
 }
 #homeowner-benefits .card-grid {
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 1.25rem;
 }
 #homeowner-benefits .card {
