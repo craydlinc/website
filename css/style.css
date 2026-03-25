@@ -1539,17 +1539,6 @@ img { max-width: 100%; height: auto; display: block; }
   color: var(--color-onyx);
   border-color: #fff;
 }
-.section--light .card__actions .btn-outline {
-  color: var(--color-text-on-light);
-  border-color: var(--color-onyx);
-  border-width: 2px;
-  background: transparent;
-}
-.section--light .card__actions .btn-outline:hover {
-  background: var(--color-onyx);
-  color: var(--color-alabaster);
-  border-color: var(--color-onyx);
-}
 .card:hover {
   border-color: var(--line-silt);
   box-shadow:
