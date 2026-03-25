@@ -156,6 +156,12 @@ function handler(event) {
     };
   }
 
+  // 6. Rewrite directory paths to index.html (S3 doesn't serve directory indexes with OAC)
+  if (uri.charAt(uri.length - 1) === '/') {
+    request.uri = uri + 'index.html';
+    return request;
+  }
+
   // No redirect needed — pass through to S3
   return request;
 }
