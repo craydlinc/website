@@ -2,7 +2,8 @@
   "name": "craydl-website",
   "private": true,
   "scripts": {
-    "start": "serve . -l 3000"
+    "start": "serve . -l 3000",
+    "import-substack": "node scripts/import-substack.mjs"
   },
   "devDependencies": {
     "serve": "^14.2.4"

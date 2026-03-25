@@ -1,23 +1,36 @@
+// ---------------------------------------------------------------------------
+// AutoSEO Webhook — Cloudflare Pages Function
+// Receives article data, downloads images, commits blog post + manifest + sitemap
+// ---------------------------------------------------------------------------
+
+const WEBHOOK_TOKEN = "aseo_wh_0dc8e775b03bbf7350a10911bf058a63";
+const SITE_BASE = "https://www.craydl.com";
+
 interface Env {
-  AUTOSEO_WEBHOOK_SECRET: string;
   GITHUB_TOKEN: string;
   GITHUB_REPO: string; // "owner/repo"
   GITHUB_BRANCH?: string;
 }
 
 interface AutoSEOPayload {
-  title?: string;
-  slug?: string;
-  content?: string;
-  body?: string;
-  meta_description?: string;
-  description?: string;
-  date?: string;
-  image?: string;
-  featured_image?: string;
-  thumbnail?: string;
-  excerpt?: string;
-  [key: string]: unknown;
+  event: string;
+  id: number;
+  title: string;
+  slug: string;
+  metaDescription: string;
+  content_html: string;
+  content_markdown: string;
+  heroImageUrl: string | null;
+  heroImageAlt: string | null;
+  infographicImageUrl: string | null;
+  keywords: string[];
+  metaKeywords: string | null;
+  faqSchema: Array<{ question: string; answer: string }> | null;
+  languageCode: string;
+  status: string;
+  publishedAt: string;
+  updatedAt: string;
+  createdAt: string;
 }
 
 interface PostEntry {
@@ -26,86 +39,260 @@ interface PostEntry {
   date: string;
   excerpt: string;
   image: string | null;
+  autoseo_id?: number;
 }
+
+type GHOpts = { token: string; repo: string; branch: string };
+
+// ---------------------------------------------------------------------------
+// Main handler
+// ---------------------------------------------------------------------------
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const { request, env } = context;
 
-  // Validate bearer token
+  // 1. Read raw body for HMAC verification
+  const rawBody = await request.text();
+
+  // 2. Validate bearer token
   const auth = request.headers.get("Authorization");
-  if (!auth || auth !== `Bearer ${env.AUTOSEO_WEBHOOK_SECRET}`) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401,
-      headers: { "Content-Type": "application/json" },
-    });
+  if (!auth || auth !== `Bearer ${WEBHOOK_TOKEN}`) {
+    return jsonResponse({ error: "Unauthorized" }, 401);
   }
 
+  // 3. Optionally verify HMAC-SHA256 signature
+  const signature = request.headers.get("X-AutoSEO-Signature");
+  if (signature) {
+    const valid = await verifyHMAC(rawBody, signature, WEBHOOK_TOKEN);
+    if (!valid) {
+      return jsonResponse({ error: "Invalid signature" }, 401);
+    }
+  }
+
+  // 4. Parse payload
   let payload: AutoSEOPayload;
   try {
-    payload = await request.json();
+    payload = JSON.parse(rawBody);
   } catch {
-    return new Response(JSON.stringify({ error: "Invalid JSON" }), {
-      status: 400,
-      headers: { "Content-Type": "application/json" },
-    });
+    return jsonResponse({ error: "Invalid JSON" }, 400);
   }
 
-  const title = payload.title || "Untitled Post";
-  const body = payload.content || payload.body || "";
-  const metaDesc = payload.meta_description || payload.description || "";
-  const date = payload.date || new Date().toISOString().slice(0, 10);
-  const image = payload.image || payload.featured_image || payload.thumbnail || null;
-  const slug =
-    payload.slug ||
-    title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
+  // 5. Handle test event
+  if (payload.event === "test") {
+    return jsonResponse({ url: `${SITE_BASE}/test` }, 200);
+  }
 
-  // Build excerpt from meta description or first ~200 chars of body text
-  const excerpt =
-    payload.excerpt ||
-    metaDesc ||
-    body.replace(/<[^>]*>/g, "").slice(0, 200).trim() + "…";
-
-  const html = buildBlogPostHTML({ title, body, metaDesc, date, slug, image });
-  const filePath = `blog/posts/${slug}.html`;
   const branch = env.GITHUB_BRANCH || "main";
-  const ghOpts = { token: env.GITHUB_TOKEN, repo: env.GITHUB_REPO, branch };
+  const ghOpts: GHOpts = {
+    token: env.GITHUB_TOKEN,
+    repo: env.GITHUB_REPO,
+    branch,
+  };
 
   try {
-    // 1. Commit the blog post HTML
+    const slug = payload.slug;
+    const date = payload.publishedAt
+      ? payload.publishedAt.slice(0, 10)
+      : new Date().toISOString().slice(0, 10);
+
+    // 6. Download and commit images
+    let heroImagePath: string | null = null;
+    let infographicImagePath: string | null = null;
+
+    if (payload.heroImageUrl) {
+      heroImagePath = await downloadAndCommitImage(
+        ghOpts,
+        payload.heroImageUrl,
+        `blog/images/${slug}-hero`
+      );
+    }
+
+    if (payload.infographicImageUrl) {
+      infographicImagePath = await downloadAndCommitImage(
+        ghOpts,
+        payload.infographicImageUrl,
+        `blog/images/${slug}-infographic`
+      );
+    }
+
+    // Local image URLs (relative to site root for HTML, absolute for manifest)
+    const heroSrc = heroImagePath ? `../../${heroImagePath}` : null;
+    const heroAbsolute = heroImagePath
+      ? `${SITE_BASE}/${heroImagePath}`
+      : null;
+    const infographicSrc = infographicImagePath
+      ? `../../${infographicImagePath}`
+      : null;
+
+    // 7. Build and commit blog post HTML
+    const html = buildBlogPostHTML({
+      title: payload.title,
+      body: payload.content_html,
+      metaDesc: payload.metaDescription,
+      date,
+      slug,
+      heroImageSrc: heroSrc,
+      heroImageAlt: payload.heroImageAlt,
+      heroAbsoluteUrl: heroAbsolute,
+      infographicSrc,
+      faqSchema: payload.faqSchema,
+      keywords: payload.metaKeywords,
+      lang: payload.languageCode || "en",
+    });
+
+    const filePath = `blog/posts/${slug}.html`;
+
     await commitFileToGitHub({
       ...ghOpts,
       path: filePath,
       content: html,
-      message: `Add blog post: ${title}`,
+      message: payload.id
+        ? `Blog post [AutoSEO #${payload.id}]: ${payload.title}`
+        : `Add blog post: ${payload.title}`,
     });
 
-    // 2. Update posts.json manifest
+    // 8. Update posts.json manifest (dedup by autoseo_id)
+    const excerpt =
+      payload.metaDescription ||
+      payload.content_html.replace(/<[^>]*>/g, "").slice(0, 200).trim() +
+        "\u2026";
+
     await updatePostsManifest(ghOpts, {
       slug,
-      title,
+      title: payload.title,
       date,
       excerpt,
-      image,
+      image: heroAbsolute,
+      autoseo_id: payload.id,
     });
+
+    // 9. Update sitemap
+    await updateSitemap(ghOpts, slug);
+
+    // 10. Return published URL
+    const publishedUrl = `${SITE_BASE}/blog/posts/${slug}.html`;
+    return jsonResponse({ url: publishedUrl }, 200);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
-    return new Response(
-      JSON.stringify({ error: "GitHub commit failed", detail: message }),
-      { status: 502, headers: { "Content-Type": "application/json" } }
+    console.error("Webhook error:", message);
+    return jsonResponse(
+      { error: "Internal server error", detail: message },
+      500
     );
   }
-
-  return new Response(
-    JSON.stringify({ ok: true, slug, path: filePath }),
-    { status: 201, headers: { "Content-Type": "application/json" } }
-  );
 };
 
 // ---------------------------------------------------------------------------
-// Helpers
+// HMAC-SHA256 verification
+// ---------------------------------------------------------------------------
+
+async function verifyHMAC(
+  body: string,
+  signatureHex: string,
+  secret: string
+): Promise<boolean> {
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw",
+    enc.encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const sig = await crypto.subtle.sign("HMAC", key, enc.encode(body));
+  const computed = Array.from(new Uint8Array(sig))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+  // Constant-time-ish comparison
+  if (computed.length !== signatureHex.length) return false;
+  let diff = 0;
+  for (let i = 0; i < computed.length; i++) {
+    diff |= computed.charCodeAt(i) ^ signatureHex.charCodeAt(i);
+  }
+  return diff === 0;
+}
+
+// ---------------------------------------------------------------------------
+// Image download + commit
+// ---------------------------------------------------------------------------
+
+async function downloadAndCommitImage(
+  ghOpts: GHOpts,
+  imageUrl: string,
+  pathPrefix: string
+): Promise<string> {
+  const res = await fetch(imageUrl);
+  if (!res.ok) {
+    throw new Error(`Image download failed (${res.status}): ${imageUrl}`);
+  }
+
+  const contentType = res.headers.get("content-type") || "image/jpeg";
+  const ext = contentType.includes("png")
+    ? ".png"
+    : contentType.includes("webp")
+      ? ".webp"
+      : contentType.includes("gif")
+        ? ".gif"
+        : ".jpg";
+
+  const filePath = `${pathPrefix}${ext}`;
+  const buffer = await res.arrayBuffer();
+  const bytes = new Uint8Array(buffer);
+
+  // Base64 encode the binary image
+  let binary = "";
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  const b64 = btoa(binary);
+
+  await commitBinaryToGitHub(ghOpts, filePath, b64);
+  return filePath;
+}
+
+async function commitBinaryToGitHub(
+  ghOpts: GHOpts,
+  path: string,
+  contentBase64: string
+): Promise<void> {
+  const base = `https://api.github.com/repos/${ghOpts.repo}`;
+  const headers = {
+    Authorization: `Bearer ${ghOpts.token}`,
+    Accept: "application/vnd.github+json",
+    "Content-Type": "application/json",
+  };
+
+  let existingSha: string | undefined;
+  const getRes = await fetch(
+    `${base}/contents/${path}?ref=${ghOpts.branch}`,
+    { headers }
+  );
+  if (getRes.ok) {
+    const data = (await getRes.json()) as { sha?: string };
+    existingSha = data.sha;
+  }
+
+  const body: Record<string, string> = {
+    message: `Add image: ${path}`,
+    content: contentBase64,
+    branch: ghOpts.branch,
+  };
+  if (existingSha) body.sha = existingSha;
+
+  const putRes = await fetch(`${base}/contents/${path}`, {
+    method: "PUT",
+    headers,
+    body: JSON.stringify(body),
+  });
+
+  if (!putRes.ok) {
+    const err = await putRes.text();
+    throw new Error(`GitHub image commit ${putRes.status}: ${err}`);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Blog post HTML builder
 // ---------------------------------------------------------------------------
 
 function buildBlogPostHTML(p: {
@@ -114,23 +301,69 @@ function buildBlogPostHTML(p: {
   metaDesc: string;
   date: string;
   slug: string;
-  image: string | null;
+  heroImageSrc: string | null;
+  heroImageAlt: string | null;
+  heroAbsoluteUrl: string | null;
+  infographicSrc: string | null;
+  faqSchema: Array<{ question: string; answer: string }> | null;
+  keywords: string | null;
+  lang: string;
 }): string {
-  const escaped = (s: string) =>
-    s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  const esc = (s: string) =>
+    s
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+
+  const faqLD =
+    p.faqSchema && p.faqSchema.length
+      ? `\n  <script type="application/ld+json">${JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: p.faqSchema.map((f) => ({
+            "@type": "Question",
+            name: f.question,
+            acceptedAnswer: { "@type": "Answer", text: f.answer },
+          })),
+        })}</script>`
+      : "";
+
+  const heroBlock = p.heroImageSrc
+    ? `\n      <figure class="blog-hero-image">
+        <img src="${esc(p.heroImageSrc)}" alt="${esc(p.heroImageAlt || p.title)}" width="1200" height="630" loading="eager" decoding="async" class="blog-hero-img">
+      </figure>`
+    : "";
+
+  const infographicBlock = p.infographicSrc
+    ? `\n      <figure class="blog-infographic">
+        <img src="${esc(p.infographicSrc)}" alt="Infographic: ${esc(p.title)}" loading="lazy" decoding="async" class="blog-infographic-img">
+      </figure>`
+    : "";
 
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="${p.lang}">
 <head>
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-XXXXXXXXXX");
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${escaped(p.title)} | CRAYDL Blog</title>
-  <meta name="description" content="${escaped(p.metaDesc)}">
-  <link rel="canonical" href="https://www.craydl.com/blog/posts/${p.slug}.html">
+  <title>${esc(p.title)} | CRAYDL Blog</title>
+  <meta name="description" content="${esc(p.metaDesc)}">${p.keywords ? `\n  <meta name="keywords" content="${esc(p.keywords)}">` : ""}
+  <link rel="canonical" href="${SITE_BASE}/blog/posts/${p.slug}.html">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="${escaped(p.title)}">
-  <meta property="og:description" content="${escaped(p.metaDesc)}">
-  <meta property="og:url" content="https://www.craydl.com/blog/posts/${p.slug}.html">${p.image ? `\n  <meta property="og:image" content="${escaped(p.image)}">` : ""}
+  <meta property="og:title" content="${esc(p.title)}">
+  <meta property="og:description" content="${esc(p.metaDesc)}">
+  <meta property="og:url" content="${SITE_BASE}/blog/posts/${p.slug}.html">${p.heroAbsoluteUrl ? `\n  <meta property="og:image" content="${esc(p.heroAbsoluteUrl)}">` : ""}
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="${esc(p.title)}">
+  <meta name="twitter:description" content="${esc(p.metaDesc)}">${p.heroAbsoluteUrl ? `\n  <meta name="twitter:image" content="${esc(p.heroAbsoluteUrl)}">` : ""}${faqLD}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Urbanist:wght@900&display=swap" rel="stylesheet">
@@ -158,10 +391,10 @@ function buildBlogPostHTML(p: {
     <article class="blog-article container">
       <p class="blog-back"><a href="../index.html">&larr; All posts</a></p>
       <time class="blog-date" datetime="${p.date}">${p.date}</time>
-      <h1>${escaped(p.title)}</h1>
+      <h1>${esc(p.title)}</h1>${heroBlock}
       <div class="blog-content wp-content">
 ${p.body}
-      </div>
+      </div>${infographicBlock}
     </article>
   </main>
   <footer class="site-footer">
@@ -176,23 +409,23 @@ ${p.body}
   <!-- Start of HubSpot Embed Code -->
   <script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/47055408.js"></script>
   <!-- End of HubSpot Embed Code -->
+  <script src="../../js/utm-persist.js"></script>
 </body>
 </html>`;
 }
 
+// ---------------------------------------------------------------------------
+// Posts manifest (posts.json) — dedup by autoseo_id
+// ---------------------------------------------------------------------------
+
 async function updatePostsManifest(
-  ghOpts: { token: string; repo: string; branch: string },
+  ghOpts: GHOpts,
   newPost: PostEntry
 ): Promise<void> {
   const base = `https://api.github.com/repos/${ghOpts.repo}`;
-  const headers = {
-    Authorization: `Bearer ${ghOpts.token}`,
-    Accept: "application/vnd.github+json",
-    "Content-Type": "application/json",
-  };
+  const headers = ghHeaders(ghOpts.token);
   const manifestPath = "blog/posts.json";
 
-  // Fetch current manifest
   let posts: PostEntry[] = [];
   let existingSha: string | undefined;
 
@@ -204,35 +437,29 @@ async function updatePostsManifest(
     const data = (await getRes.json()) as { sha?: string; content?: string };
     existingSha = data.sha;
     if (data.content) {
-      const decoded = atob(data.content.replace(/\n/g, ""));
-      posts = JSON.parse(decoded) as PostEntry[];
+      posts = JSON.parse(atob(data.content.replace(/\n/g, ""))) as PostEntry[];
     }
   }
 
-  // Remove existing entry with same slug (update case)
-  posts = posts.filter((p) => p.slug !== newPost.slug);
+  // Dedup: remove existing entry with same autoseo_id OR same slug
+  posts = posts.filter(
+    (p) =>
+      p.slug !== newPost.slug &&
+      !(newPost.autoseo_id && p.autoseo_id === newPost.autoseo_id)
+  );
 
-  // Add the new post at the beginning
   posts.unshift(newPost);
-
-  // Sort by date descending
   posts.sort((a, b) => b.date.localeCompare(a.date));
 
   const content = JSON.stringify(posts, null, 2);
-  const encoded = btoa(
-    new TextEncoder()
-      .encode(content)
-      .reduce((s, b) => s + String.fromCharCode(b), "")
-  );
+  const encoded = toBase64(content);
 
   const body: Record<string, string> = {
     message: `Update blog manifest: ${newPost.title}`,
     content: encoded,
     branch: ghOpts.branch,
   };
-  if (existingSha) {
-    body.sha = existingSha;
-  }
+  if (existingSha) body.sha = existingSha;
 
   const putRes = await fetch(`${base}/contents/${manifestPath}`, {
     method: "PUT",
@@ -242,26 +469,77 @@ async function updatePostsManifest(
 
   if (!putRes.ok) {
     const err = await putRes.text();
-    throw new Error(`GitHub manifest update ${putRes.status}: ${err}`);
+    throw new Error(`Manifest update ${putRes.status}: ${err}`);
   }
 }
 
-async function commitFileToGitHub(opts: {
-  token: string;
-  repo: string;
-  branch: string;
-  path: string;
-  content: string;
-  message: string;
-}): Promise<void> {
-  const base = `https://api.github.com/repos/${opts.repo}`;
-  const headers = {
-    Authorization: `Bearer ${opts.token}`,
-    Accept: "application/vnd.github+json",
-    "Content-Type": "application/json",
-  };
+// ---------------------------------------------------------------------------
+// Sitemap
+// ---------------------------------------------------------------------------
 
-  // Check if file already exists (need its SHA to update)
+async function updateSitemap(ghOpts: GHOpts, newSlug: string): Promise<void> {
+  const base = `https://api.github.com/repos/${ghOpts.repo}`;
+  const headers = ghHeaders(ghOpts.token);
+  const sitemapPath = "blog/sitemap.xml";
+  const newLoc = `${SITE_BASE}/blog/posts/${newSlug}.html`;
+
+  let xml = "";
+  let existingSha: string | undefined;
+
+  const getRes = await fetch(
+    `${base}/contents/${sitemapPath}?ref=${ghOpts.branch}`,
+    { headers }
+  );
+  if (getRes.ok) {
+    const data = (await getRes.json()) as { sha?: string; content?: string };
+    existingSha = data.sha;
+    if (data.content) {
+      xml = atob(data.content.replace(/\n/g, ""));
+    }
+  }
+
+  if (xml.includes(newLoc)) return;
+
+  if (xml) {
+    const entry = `  <url><loc>${newLoc}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>`;
+    xml = xml.replace("</urlset>", `${entry}\n</urlset>`);
+  } else {
+    xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>${SITE_BASE}/blog/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>${newLoc}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+</urlset>`;
+  }
+
+  const body: Record<string, string> = {
+    message: `Sitemap: add ${newSlug}`,
+    content: toBase64(xml),
+    branch: ghOpts.branch,
+  };
+  if (existingSha) body.sha = existingSha;
+
+  const putRes = await fetch(`${base}/contents/${sitemapPath}`, {
+    method: "PUT",
+    headers,
+    body: JSON.stringify(body),
+  });
+
+  if (!putRes.ok) {
+    const err = await putRes.text();
+    throw new Error(`Sitemap update ${putRes.status}: ${err}`);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// GitHub file commit (text)
+// ---------------------------------------------------------------------------
+
+async function commitFileToGitHub(
+  opts: GHOpts & { path: string; content: string; message: string }
+): Promise<void> {
+  const base = `https://api.github.com/repos/${opts.repo}`;
+  const headers = ghHeaders(opts.token);
+
   let existingSha: string | undefined;
   const getRes = await fetch(
     `${base}/contents/${opts.path}?ref=${opts.branch}`,
@@ -272,21 +550,12 @@ async function commitFileToGitHub(opts: {
     existingSha = data.sha;
   }
 
-  // Base64-encode content
-  const encoded = btoa(
-    new TextEncoder()
-      .encode(opts.content)
-      .reduce((s, b) => s + String.fromCharCode(b), "")
-  );
-
   const body: Record<string, string> = {
     message: opts.message,
-    content: encoded,
+    content: toBase64(opts.content),
     branch: opts.branch,
   };
-  if (existingSha) {
-    body.sha = existingSha;
-  }
+  if (existingSha) body.sha = existingSha;
 
   const putRes = await fetch(`${base}/contents/${opts.path}`, {
     method: "PUT",
@@ -296,6 +565,33 @@ async function commitFileToGitHub(opts: {
 
   if (!putRes.ok) {
     const err = await putRes.text();
-    throw new Error(`GitHub API ${putRes.status}: ${err}`);
+    throw new Error(`GitHub commit ${putRes.status}: ${err}`);
   }
+}
+
+// ---------------------------------------------------------------------------
+// Utilities
+// ---------------------------------------------------------------------------
+
+function ghHeaders(token: string): Record<string, string> {
+  return {
+    Authorization: `Bearer ${token}`,
+    Accept: "application/vnd.github+json",
+    "Content-Type": "application/json",
+  };
+}
+
+function toBase64(text: string): string {
+  return btoa(
+    new TextEncoder()
+      .encode(text)
+      .reduce((s, b) => s + String.fromCharCode(b), "")
+  );
+}
+
+function jsonResponse(data: unknown, status: number): Response {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
 }

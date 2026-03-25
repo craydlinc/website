@@ -160,6 +160,14 @@ function postShell(title, metaDesc, bodyHtml, canonicalUrl, datePublished, origi
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-XXXXXXXXXX");
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${escHtml(title)} | CRAYDL Blog</title>
@@ -204,6 +212,9 @@ function postShell(title, metaDesc, bodyHtml, canonicalUrl, datePublished, origi
     </div>
   </footer>
   <script src="../../js/main.js"></script>
+  <!-- HubSpot -->
+  <script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/47055408.js"></script>
+  <script src="../../js/utm-persist.js"></script>
 </body>
 </html>`;
 }
@@ -267,11 +278,33 @@ ${thumb}
   const indexPage = `<!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-XXXXXXXXXX");
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Custom Home Building Blog | CRAYDL</title>
   <meta name="description" content="Expert insights on custom home building, BIM, VDC, pre-construction, and luxury residential construction from CRAYDL.">
   <link rel="canonical" href="https://www.craydl.com/blog/">
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CRAYDL">
+  <meta property="og:title" content="Custom Home Building Blog | CRAYDL">
+  <meta property="og:description" content="Expert insights on custom home building, BIM, VDC, pre-construction, and luxury residential construction from CRAYDL.">
+  <meta property="og:url" content="https://www.craydl.com/blog/">
+  <meta property="og:image" content="https://www.craydl.com/assets/tour-indianola.png">
+  <meta property="og:image:width" content="800">
+  <meta property="og:image:height" content="520">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Custom Home Building Blog | CRAYDL">
+  <meta name="twitter:description" content="Expert insights on custom home building, BIM, VDC, pre-construction, and luxury residential construction from CRAYDL.">
+  <meta name="twitter:image" content="https://www.craydl.com/assets/tour-indianola.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Urbanist:wght@900&display=swap" rel="stylesheet">
