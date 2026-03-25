@@ -103,7 +103,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       heroImagePath = await downloadAndCommitImage(
         ghOpts,
         payload.heroImageUrl,
-        `blog/images/${slug}-hero`
+        `articles/images/${slug}-hero`
       );
     }
 
@@ -111,7 +111,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       infographicImagePath = await downloadAndCommitImage(
         ghOpts,
         payload.infographicImageUrl,
-        `blog/images/${slug}-infographic`
+        `articles/images/${slug}-infographic`
       );
     }
 
@@ -140,7 +140,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       lang: payload.languageCode || "en",
     });
 
-    const filePath = `blog/posts/${slug}.html`;
+    const filePath = `articles/posts/${slug}.html`;
 
     await commitFileToGitHub({
       ...ghOpts,
@@ -170,7 +170,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     await updateSitemap(ghOpts, slug);
 
     // 10. Return published URL
-    const publishedUrl = `${SITE_BASE}/blog/posts/${slug}.html`;
+    const publishedUrl = `${SITE_BASE}/articles/posts/${slug}.html`;
     return jsonResponse({ url: publishedUrl }, 200);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
@@ -356,11 +356,11 @@ function buildBlogPostHTML(p: {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${esc(p.title)} | CRAYDL Blog</title>
   <meta name="description" content="${esc(p.metaDesc)}">${p.keywords ? `\n  <meta name="keywords" content="${esc(p.keywords)}">` : ""}
-  <link rel="canonical" href="${SITE_BASE}/blog/posts/${p.slug}.html">
+  <link rel="canonical" href="${SITE_BASE}/articles/posts/${p.slug}.html">
   <meta property="og:type" content="article">
   <meta property="og:title" content="${esc(p.title)}">
   <meta property="og:description" content="${esc(p.metaDesc)}">
-  <meta property="og:url" content="${SITE_BASE}/blog/posts/${p.slug}.html">${p.heroAbsoluteUrl ? `\n  <meta property="og:image" content="${esc(p.heroAbsoluteUrl)}">` : ""}
+  <meta property="og:url" content="${SITE_BASE}/articles/posts/${p.slug}.html">${p.heroAbsoluteUrl ? `\n  <meta property="og:image" content="${esc(p.heroAbsoluteUrl)}">` : ""}
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${esc(p.title)}">
   <meta name="twitter:description" content="${esc(p.metaDesc)}">${p.heroAbsoluteUrl ? `\n  <meta name="twitter:image" content="${esc(p.heroAbsoluteUrl)}">` : ""}${faqLD}
@@ -424,7 +424,7 @@ async function updatePostsManifest(
 ): Promise<void> {
   const base = `https://api.github.com/repos/${ghOpts.repo}`;
   const headers = ghHeaders(ghOpts.token);
-  const manifestPath = "blog/posts.json";
+  const manifestPath = "articles/posts.json";
 
   let posts: PostEntry[] = [];
   let existingSha: string | undefined;
@@ -480,8 +480,8 @@ async function updatePostsManifest(
 async function updateSitemap(ghOpts: GHOpts, newSlug: string): Promise<void> {
   const base = `https://api.github.com/repos/${ghOpts.repo}`;
   const headers = ghHeaders(ghOpts.token);
-  const sitemapPath = "blog/sitemap.xml";
-  const newLoc = `${SITE_BASE}/blog/posts/${newSlug}.html`;
+  const sitemapPath = "articles/sitemap.xml";
+  const newLoc = `${SITE_BASE}/articles/posts/${newSlug}.html`;
 
   let xml = "";
   let existingSha: string | undefined;
@@ -506,7 +506,7 @@ async function updateSitemap(ghOpts: GHOpts, newSlug: string): Promise<void> {
   } else {
     xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>${SITE_BASE}/blog/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>${SITE_BASE}/articles/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>${newLoc}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
 </urlset>`;
   }

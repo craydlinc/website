@@ -8,7 +8,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
-const BLOG_DIR = path.join(ROOT, 'blog');
+const BLOG_DIR = path.join(ROOT, 'articles');
 const POSTS_DIR = path.join(BLOG_DIR, 'posts');
 
 const BASE = 'https://craydl.com';
@@ -235,7 +235,7 @@ async function main() {
     const title = plainTitle(post);
     const date = (post.date || '').split('T')[0];
     const originalUrl = post.link || `${BASE}/${slug}/`;
-    const newCanonical = `https://www.craydl.com/blog/posts/${slug}.html`;
+    const newCanonical = `https://www.craydl.com/articles/posts/${slug}.html`;
     const meta = excerptFromPost(post, 155);
     const content = post.content?.rendered || '';
 
@@ -290,13 +290,13 @@ ${thumb}
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Custom Home Building Blog | CRAYDL</title>
   <meta name="description" content="Expert insights on custom home building, BIM, VDC, pre-construction, and luxury residential construction from CRAYDL.">
-  <link rel="canonical" href="https://www.craydl.com/blog/">
+  <link rel="canonical" href="https://www.craydl.com/articles/">
   <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CRAYDL">
   <meta property="og:title" content="Custom Home Building Blog | CRAYDL">
   <meta property="og:description" content="Expert insights on custom home building, BIM, VDC, pre-construction, and luxury residential construction from CRAYDL.">
-  <meta property="og:url" content="https://www.craydl.com/blog/">
+  <meta property="og:url" content="https://www.craydl.com/articles/">
   <meta property="og:image" content="https://www.craydl.com/assets/tour-indianola.png">
   <meta property="og:image:width" content="800">
   <meta property="og:image:height" content="520">
@@ -329,7 +329,7 @@ ${thumb}
           </ul>
         </div>
         <a href="../contact.html">Contact</a>
-        <a href="/blog/" aria-current="page">Blog</a>
+        <a href="/articles/" aria-current="page">Blog</a>
       </nav>
       <div class="header-right">
         <a href="tel:480-716-5884" class="header-phone">480-716-5884</a>
@@ -394,16 +394,16 @@ ${listHtml}
 
   const siteBase = 'https://www.craydl.com';
   const locs = [
-    `${siteBase}/blog/`,
-    ...indexItems.map((p) => `${siteBase}/blog/${p.url}`),
+    `${siteBase}/articles/`,
+    ...indexItems.map((p) => `${siteBase}/articles/${p.url}`),
   ];
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${locs.map((loc) => `  <url><loc>${loc}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>`).join('\n')}
 </urlset>`;
   fs.writeFileSync(path.join(BLOG_DIR, 'sitemap.xml'), sitemap, 'utf8');
-  console.log('Wrote blog/sitemap.xml');
-  console.log('Wrote blog/index.html and', posts.length, 'post pages under blog/posts/');
+  console.log('Wrote articles/sitemap.xml');
+  console.log('Wrote articles/index.html and', posts.length, 'post pages under articles/posts/');
 }
 
 main().catch((e) => {

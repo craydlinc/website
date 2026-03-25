@@ -1,11 +1,11 @@
-// CloudFront Function: redirects + directory index rewrite (/blog/ → /blog/index.html)
+// CloudFront Function: redirects + directory index rewrite (/articles/ → /articles/index.html, /blog/ → /articles/)
 // Attached to viewer-request event on the CloudFront distribution.
 // CloudFront Functions use ES 5.1 syntax (no let/const, no arrow functions, no template literals).
 
 // --- Exact page redirects (old WordPress path → new path) ---
 var pageRedirects = {
-  '/custom-home-building-blog':       '/blog/',
-  '/custom-home-building-blog/':      '/blog/',
+  '/custom-home-building-blog':       '/articles/',
+  '/custom-home-building-blog/':      '/articles/',
   '/contact-craydl':                  '/contact.html',
   '/contact-craydl/':                 '/contact.html',
   '/about-craydl':                    '/contact.html',
@@ -49,10 +49,12 @@ var pageRedirects = {
   '/interior-designer-intake-form':   '/contact.html',
   '/interior-designer-intake-form/':  '/contact.html',
   '/thank-you-for-downloading':       '/thank-you.html',
-  '/thank-you-for-downloading/':      '/thank-you.html'
+  '/thank-you-for-downloading/':      '/thank-you.html',
+  '/blog':                            '/articles/',
+  '/blog/':                           '/articles/'
 };
 
-// Blog post slugs that exist on the new site (WordPress: /slug/ → new: /blog/posts/slug.html)
+// Blog post slugs that exist on the new site (WordPress: /slug/ → new: /articles/posts/slug.html)
 var blogSlugs = [
   'architecture-vs-interior-design-home-design',
   'benefits-accessory-dwelling-units-adus',
@@ -118,23 +120,32 @@ function handler(event) {
     };
   }
 
-  // 2. Check blog post redirects: /slug/ → /blog/posts/slug.html
+  // 2. Redirect old /blog/* paths to /articles/*
+  if (uri.indexOf('/blog/') === 0) {
+    return {
+      statusCode: 301,
+      statusDescription: 'Moved Permanently',
+      headers: { location: { value: uri.replace('/blog/', '/articles/') } }
+    };
+  }
+
+  // 3. Check blog post redirects: /slug/ → /articles/posts/slug.html
   //    Strip leading slash and trailing slash to get the slug
   var slug = uri.replace(/^\//, '').replace(/\/$/, '');
   if (slug && blogLookup.hasOwnProperty(slug)) {
     return {
       statusCode: 301,
       statusDescription: 'Moved Permanently',
-      headers: { location: { value: '/blog/posts/' + slug + '.html' } }
+      headers: { location: { value: '/articles/posts/' + slug + '.html' } }
     };
   }
 
-  // 3. Catch-all: redirect /category/* /tag/* /author/* to /blog/
+  // 3. Catch-all: redirect /category/* /tag/* /author/* to /articles/
   if (uri.indexOf('/category/') === 0 || uri.indexOf('/tag/') === 0 || uri.indexOf('/author/') === 0) {
     return {
       statusCode: 301,
       statusDescription: 'Moved Permanently',
-      headers: { location: { value: '/blog/' } }
+      headers: { location: { value: '/articles/' } }
     };
   }
 
