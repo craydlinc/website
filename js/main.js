@@ -341,4 +341,48 @@
       if (el && el.tagName === 'DETAILS') el.open = true;
     }, 0);
   });
+  /* Generic image zoom — creates a fullscreen overlay on click */
+  var zoomButtons = document.querySelectorAll('.homeowner-process__zoom');
+  var zoomOverlay = null;
+
+  function closeZoomOverlay() {
+    if (zoomOverlay) {
+      zoomOverlay.remove();
+      zoomOverlay = null;
+      document.body.style.overflow = '';
+    }
+  }
+
+  zoomButtons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var img = btn.querySelector('img');
+      if (!img) return;
+
+      closeZoomOverlay();
+
+      zoomOverlay = document.createElement('div');
+      zoomOverlay.className = 'image-zoom-overlay';
+      zoomOverlay.setAttribute('role', 'dialog');
+      zoomOverlay.setAttribute('aria-label', 'Full screen image');
+      zoomOverlay.innerHTML =
+        '<button type="button" class="image-zoom-overlay__close" aria-label="Close">&times;</button>' +
+        '<img src="' + img.src + '" alt="' + (img.alt || '') + '" class="image-zoom-overlay__img">';
+
+      document.body.appendChild(zoomOverlay);
+      document.body.style.overflow = 'hidden';
+
+      zoomOverlay.querySelector('.image-zoom-overlay__close').focus();
+      zoomOverlay.addEventListener('click', function (e) {
+        if (e.target === zoomOverlay || e.target.classList.contains('image-zoom-overlay__close')) {
+          closeZoomOverlay();
+          btn.focus();
+        }
+      });
+    });
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && zoomOverlay) closeZoomOverlay();
+  });
+
 })();

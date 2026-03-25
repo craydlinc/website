@@ -961,18 +961,52 @@ img { max-width: 100%; height: auto; display: block; }
 .homeowner-process__step-action {
   margin: var(--space-md) 0 0;
 }
-.homeowner-process__figure {
+.homeowner-process__gallery {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
   margin: var(--space-md) 0 0;
-  max-width: min(56rem, 100%);
+}
+@media (max-width: 640px) {
+  .homeowner-process__gallery {
+    grid-template-columns: 1fr;
+  }
+}
+.homeowner-process__figure {
+  margin: 0;
+}
+.homeowner-process__figure figcaption {
+  font-size: 0.85rem;
+  color: var(--color-bronze);
+  margin-top: var(--space-xs);
+  text-align: center;
+}
+.homeowner-process__zoom {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: zoom-in;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.homeowner-process__zoom:hover .homeowner-process__screenshot {
+  transform: scale(1.02);
+  box-shadow:
+    0 0 0 1px var(--line-bronze-soft),
+    0 14px 40px rgba(0, 0, 0, 0.18);
 }
 .homeowner-process__screenshot {
   width: 100%;
   height: auto;
+  display: block;
   border-radius: var(--radius);
   border: 1px solid var(--line-silt);
   box-shadow:
     0 0 0 1px var(--line-bronze-soft),
     0 10px 32px rgba(0, 0, 0, 0.12);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 .homeowner-process-benefits {
   list-style: none;
@@ -2059,6 +2093,40 @@ a.card.project-type-tile h3 { margin: 0; }
 .section-title .section-intro { margin-left: auto; margin-right: auto; }
 .card-list, .services-list { margin: 0; padding-left: 1.25rem; color: var(--color-text-on-dark); }
 .services-list { max-width: 560px; margin-inline: auto; }
+
+/* Fullscreen image zoom overlay */
+.image-zoom-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  cursor: zoom-out;
+}
+.image-zoom-overlay__img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.5);
+}
+.image-zoom-overlay__close {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 2.5rem;
+  cursor: pointer;
+  line-height: 1;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+.image-zoom-overlay__close:hover { opacity: 1; }
 
 /* Utilities */
 .text-center { text-align: center; }
