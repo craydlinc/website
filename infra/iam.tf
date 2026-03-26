@@ -177,6 +177,18 @@ resource "aws_iam_role_policy" "github_actions" {
           "lambda:GetFunction"
         ]
         Resource = "arn:aws:lambda:${var.aws_region}:*:function:${local.project}-media-processor"
+      },
+      {
+        Sid    = "CloudFrontFunctions"
+        Effect = "Allow"
+        Action = [
+          "cloudfront:CreateFunction",
+          "cloudfront:UpdateFunction",
+          "cloudfront:PublishFunction",
+          "cloudfront:DescribeFunction",
+          "cloudfront:GetFunction"
+        ]
+        Resource = "arn:aws:cloudfront::*:function/${local.project}-redirects"
       }
     ]
   })
