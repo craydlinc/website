@@ -158,7 +158,16 @@ function handler(event) {
     };
   }
 
-  // 5. Old WordPress feed/API paths → homepage
+  // 5. Old WordPress uploads → relevant pages
+  if (uri.indexOf('/wp-content/') === 0) {
+    return {
+      statusCode: 301,
+      statusDescription: 'Moved Permanently',
+      headers: { location: { value: '/interior-designers.html' } }
+    };
+  }
+
+  // 6. Old WordPress feed/API paths → homepage
   if (uri.indexOf('/feed') === 0 || uri.indexOf('/wp-json/') === 0 || uri.indexOf('/wp-admin') === 0 || uri.indexOf('/wp-login') === 0) {
     return {
       statusCode: 301,
@@ -167,7 +176,7 @@ function handler(event) {
     };
   }
 
-  // 6. Rewrite directory paths to index.html (S3 doesn't serve directory indexes with OAC)
+  // 7. Rewrite directory paths to index.html (S3 doesn't serve directory indexes with OAC)
   if (uri.charAt(uri.length - 1) === '/') {
     request.uri = uri + 'index.html';
     return request;
