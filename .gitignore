@@ -11,7 +11,7 @@ infra/.terraform.lock.hcl
 *.tfstate.*
 *.tfplan
 
-# Large media — upload videos directly to S3 DAM, not through git
+# Large media — upload videos to R2 (see scripts/upload-interior-demos-r2.ps1) or S3 DAM, not through git
 **/*.mp4
 !assets/craydl-mock-walkthrough-ig.mp4
 **/*.mov

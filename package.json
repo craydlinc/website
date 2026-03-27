@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "start": "serve . -l 3000",
-    "import-substack": "node scripts/import-substack.mjs"
+    "import-substack": "node scripts/import-substack.mjs",
+    "upload-r2-interior-demos": "powershell -ExecutionPolicy Bypass -File ./scripts/upload-interior-demos-r2.ps1"
   },
   "devDependencies": {
     "serve": "^14.2.4"
