@@ -138,14 +138,20 @@
           <div class="card">
             <h3>Interior CD support</h3>
             <p>Interior design production documentation generated from the coordinated model.</p>
+            <div class="card-video-demos card-video-demos--grid">
+              <a href="https://pub-bc5bb2b7e1b547788ec5def65ace864a.r2.dev/documents/id-construction-drawings-ffe-schedule-sample.pdf" class="btn btn-outline btn--demo-clip" data-pdf-preview-open data-pdf-title="Construction drawings &amp; FFE schedule (sample)" data-pdf-src="https://pub-bc5bb2b7e1b547788ec5def65ace864a.r2.dev/documents/id-construction-drawings-ffe-schedule-sample.pdf" data-pdf-fallback-src="assets/documents/id-construction-drawings-ffe-schedule-sample.pdf" role="button">Sample CD &amp; FFE</a>
+            </div>
           </div>
           <div class="card">
             <h3>Scan-to-BIM</h3>
             <p>We document existing conditions with LiDAR so you stay in design mode.</p>
           </div>
           <div class="card">
-            <h3>Optioneering with cost signal</h3>
+            <h3>Optionality</h3>
             <p>Compare schemes with clearer pricing and constructability feedback.</p>
+            <div class="card-video-demos card-video-demos--grid card-video-demos--single">
+              <a href="developers.html?from=interior-designers#see-options" class="btn btn-outline btn--demo-clip">See Options</a>
+            </div>
           </div>
         </div>
       </div>
@@ -303,6 +309,28 @@
       <div class="image-lightbox__frame image-lightbox__frame--video">
         <h2 id="developers-video-lightbox-title" class="video-lightbox__title">Video</h2>
         <video id="developers-video-lightbox-player" class="image-lightbox__video" controls playsinline preload="metadata" title="Capability demo"></video>
+      </div>
+    </div>
+  </div>
+
+  <div
+    id="interior-cd-pdf-lightbox"
+    class="image-lightbox pdf-lightbox"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="interior-cd-pdf-lightbox-title"
+    aria-hidden="true"
+    hidden>
+    <button type="button" class="image-lightbox__backdrop" tabindex="-1" aria-hidden="true" data-lightbox-dismiss></button>
+    <div class="image-lightbox__panel">
+      <button type="button" class="image-lightbox__close" aria-label="Close document preview" data-lightbox-dismiss>&times;</button>
+      <div class="image-lightbox__frame image-lightbox__frame--pdf">
+        <h2 id="interior-cd-pdf-lightbox-title" class="video-lightbox__title">Document</h2>
+        <iframe id="interior-cd-pdf-lightbox-frame" class="image-lightbox__pdf" title="PDF preview" src="about:blank"></iframe>
+        <p class="pdf-lightbox__actions">
+          <a id="interior-cd-pdf-lightbox-open-tab" class="btn btn-outline" href="#" target="_blank" rel="noopener noreferrer">Open in new tab</a>
+          <button type="button" class="btn btn-outline pdf-lightbox__try-fallback" id="interior-cd-pdf-try-fallback" hidden>Try local copy</button>
+        </p>
       </div>
     </div>
   </div>

@@ -33,11 +33,16 @@ if (-not (Test-Path -LiteralPath $WranglerCwd)) {
 }
 
 $objects = @(
-  @{ Local = 'interior-mockingbird-backyard.mp4'; Key = 'videos/interior-mockingbird-backyard.mp4' },
-  @{ Local = 'interior-visualization-home-tour.mp4'; Key = 'videos/interior-visualization-home-tour.mp4' },
-  @{ Local = 'interior-game-room-theatre-4.mp4'; Key = 'videos/interior-game-room-theatre-4.mp4' },
-  @{ Local = 'interior-theatre-game-room-2.mp4'; Key = 'videos/interior-theatre-game-room-2.mp4' },
-  @{ Local = 'interior-arcware-multiplayer-roadmap.mp4'; Key = 'videos/interior-arcware-multiplayer-roadmap.mp4' }
+  @{ Local = 'interior-mockingbird-backyard.mp4'; Key = 'videos/interior-mockingbird-backyard.mp4'; ContentType = 'video/mp4' },
+  @{ Local = 'interior-visualization-home-tour.mp4'; Key = 'videos/interior-visualization-home-tour.mp4'; ContentType = 'video/mp4' },
+  @{ Local = 'interior-game-room-theatre-4.mp4'; Key = 'videos/interior-game-room-theatre-4.mp4'; ContentType = 'video/mp4' },
+  @{ Local = 'interior-theatre-game-room-2.mp4'; Key = 'videos/interior-theatre-game-room-2.mp4'; ContentType = 'video/mp4' },
+  @{ Local = 'interior-arcware-multiplayer-roadmap.mp4'; Key = 'videos/interior-arcware-multiplayer-roadmap.mp4'; ContentType = 'video/mp4' }
+)
+
+$DocDir = Join-Path $RepoRoot 'assets\documents'
+$docObjects = @(
+  @{ Local = 'id-construction-drawings-ffe-schedule-sample.pdf'; Key = 'documents/id-construction-drawings-ffe-schedule-sample.pdf'; ContentType = 'application/pdf' }
 )
 
 Push-Location $WranglerCwd
@@ -49,10 +54,23 @@ try {
       continue
     }
     $dest = "$BucketName/$($o.Key)"
+    $ct = $o.ContentType
+    if (-not $ct) { $ct = 'video/mp4' }
     Write-Host "Uploading $($o.Key) ..."
-    npx wrangler r2 object put $dest --file="$file" --content-type "video/mp4" --remote
+    npx wrangler r2 object put $dest --file="$file" --content-type "$ct" --remote
   }
-  Write-Host "Done. Keys are under videos/; public URLs match interior-designers.html."
+  foreach ($o in $docObjects) {
+    $file = Join-Path $DocDir $o.Local
+    if (-not (Test-Path -LiteralPath $file)) {
+      Write-Warning "Skipping missing document: $file"
+      continue
+    }
+    $dest = "$BucketName/$($o.Key)"
+    $ct = $o.ContentType
+    Write-Host "Uploading $($o.Key) ..."
+    npx wrangler r2 object put $dest --file="$file" --content-type "$ct" --remote
+  }
+  Write-Host "Done. Keys: videos/* and documents/*; public URLs match interior-designers.html."
 }
 finally {
   Pop-Location

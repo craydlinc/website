@@ -223,6 +223,74 @@
     });
   }
 
+  var interiorCdPdfLightbox = document.getElementById('interior-cd-pdf-lightbox');
+  var interiorCdPdfTitle = document.getElementById('interior-cd-pdf-lightbox-title');
+  var interiorCdPdfFrame = document.getElementById('interior-cd-pdf-lightbox-frame');
+  var interiorCdPdfOpenTab = document.getElementById('interior-cd-pdf-lightbox-open-tab');
+  var interiorCdPdfTryFallback = document.getElementById('interior-cd-pdf-try-fallback');
+  var lastPdfPreviewTrigger = null;
+  var lastPdfPrimarySrc = null;
+  var lastPdfFallbackSrc = null;
+
+  function closeInteriorCdPdfLightbox() {
+    if (!interiorCdPdfLightbox || interiorCdPdfLightbox.hidden) return false;
+    interiorCdPdfLightbox.hidden = true;
+    interiorCdPdfLightbox.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    if (interiorCdPdfFrame) interiorCdPdfFrame.setAttribute('src', 'about:blank');
+    if (interiorCdPdfOpenTab) interiorCdPdfOpenTab.setAttribute('href', '#');
+    if (interiorCdPdfTryFallback) interiorCdPdfTryFallback.hidden = true;
+    lastPdfPrimarySrc = null;
+    lastPdfFallbackSrc = null;
+    if (lastPdfPreviewTrigger) lastPdfPreviewTrigger.focus();
+    return true;
+  }
+
+  function openInteriorCdPdfLightbox(primarySrc, fallbackSrc, title, trigger) {
+    if (!interiorCdPdfLightbox || !interiorCdPdfFrame) return;
+    lastPdfPreviewTrigger = trigger || null;
+    lastPdfPrimarySrc = primarySrc || null;
+    lastPdfFallbackSrc = fallbackSrc || null;
+    if (interiorCdPdfTitle) interiorCdPdfTitle.textContent = title || 'Document';
+    if (interiorCdPdfOpenTab && primarySrc) {
+      interiorCdPdfOpenTab.setAttribute('href', primarySrc);
+    }
+    if (interiorCdPdfTryFallback) {
+      interiorCdPdfTryFallback.hidden = !fallbackSrc;
+    }
+    interiorCdPdfLightbox.hidden = false;
+    interiorCdPdfLightbox.removeAttribute('aria-hidden');
+    document.body.style.overflow = 'hidden';
+    if (primarySrc) interiorCdPdfFrame.setAttribute('src', primarySrc);
+    var closePdfBtn = interiorCdPdfLightbox.querySelector('.image-lightbox__close');
+    if (closePdfBtn) closePdfBtn.focus();
+  }
+
+  document.querySelectorAll('[data-pdf-preview-open]').forEach(function (btn) {
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      var title = btn.getAttribute('data-pdf-title') || 'Document';
+      var src = btn.getAttribute('data-pdf-src');
+      var fallback = btn.getAttribute('data-pdf-fallback-src');
+      if (src) openInteriorCdPdfLightbox(src, fallback, title, btn);
+      else if (fallback) openInteriorCdPdfLightbox(fallback, null, title, btn);
+    });
+  });
+
+  if (interiorCdPdfTryFallback) {
+    interiorCdPdfTryFallback.addEventListener('click', function () {
+      if (!lastPdfFallbackSrc || !interiorCdPdfFrame) return;
+      interiorCdPdfFrame.setAttribute('src', lastPdfFallbackSrc);
+      if (interiorCdPdfOpenTab) interiorCdPdfOpenTab.setAttribute('href', lastPdfFallbackSrc);
+    });
+  }
+
+  if (interiorCdPdfLightbox) {
+    interiorCdPdfLightbox.addEventListener('click', function (e) {
+      if (e.target.closest(lightboxDismissSelector)) closeInteriorCdPdfLightbox();
+    });
+  }
+
   var closeHeroLightbox = wireImageLightbox(heroLightbox, heroZoomTrigger);
   var closeTimelineLightbox = wireImageLightbox(timelineLightbox, timelineZoomTrigger);
   var closeDevelopersLightbox1 = wireImageLightbox(developersLightbox1, developersTrigger1);
@@ -236,6 +304,7 @@
       }
       if (closeDevelopersLightbox1()) return;
       if (closeDevelopersLightbox2()) return;
+      if (closeInteriorCdPdfLightbox()) return;
       if (closeDevelopersVideoLightbox()) return;
       if (closeTimelineLightbox()) return;
       closeNavDropdowns();
@@ -415,5 +484,14 @@
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && zoomOverlay) closeZoomOverlay();
   });
+
+  var interiorContextBanner = document.getElementById('developers-contextual-return-interior');
+  if (interiorContextBanner) {
+    try {
+      if (new URLSearchParams(window.location.search).get('from') === 'interior-designers') {
+        interiorContextBanner.hidden = false;
+      }
+    } catch (err) { /* ignore */ }
+  }
 
 })();
