@@ -1,5 +1,5 @@
 <# 
-  Upload interior-designers demo MP4s to the same R2 bucket that serves pub-*.r2.dev (see index.html / interior-designers.html).
+  Upload interior-designers demo MP4s and the interior CD sample PDF to the same R2 bucket that serves pub-*.r2.dev (see index.html / interior-designers.html).
 
   Prerequisites: Node.js, and either `wrangler login` or CLOUDFLARE_API_TOKEN with R2 write access.
 
@@ -10,7 +10,7 @@
     $env:CRAYDL_R2_BUCKET = 'YOUR_BUCKET_NAME'
     .\scripts\upload-interior-demos-r2.ps1
 
-  Source files: assets/videos/interior-*.mp4 (gitignored; generate from your masters if missing).
+  Source files: assets/videos/interior-*.mp4 (gitignored; generate from your masters if missing); assets/documents/id-construction-drawings-ffe-schedule-sample.pdf
 #>
 param(
   [string]$BucketName = $env:CRAYDL_R2_BUCKET

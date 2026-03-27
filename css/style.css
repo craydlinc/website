@@ -419,6 +419,7 @@ img { max-width: 100%; height: auto; display: block; }
   font-weight: 600;
   font-size: 0.95rem;
   text-align: center;
+  text-decoration: none;
   border-radius: var(--radius);
   border: none;
   cursor: pointer;
