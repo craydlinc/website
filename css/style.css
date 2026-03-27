@@ -1254,17 +1254,48 @@ img { max-width: 100%; height: auto; display: block; }
   margin-top: var(--space-lg);
 }
 
-/* Interior designers — clip demos inside benefit card */
+/* Interior designers — clip demos inside benefit card (compact grid, light outline) */
 .card-video-demos {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
   margin-top: var(--space-md);
-}
-.card-video-demos .btn {
   width: 100%;
+}
+.card-video-demos--grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.4rem 0.45rem;
+  align-items: stretch;
+}
+@media (max-width: 22rem) {
+  .card-video-demos--grid {
+    grid-template-columns: 1fr;
+  }
+}
+.card-video-demos .btn--demo-clip {
+  width: 100%;
+  margin: 0;
+  box-sizing: border-box;
   justify-content: center;
   text-align: center;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.25;
+  border-width: 1px;
+}
+#id-benefits .card-video-demos .btn-outline.btn--demo-clip {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.95);
+  background: transparent;
+}
+#id-benefits .card-video-demos .btn-outline.btn--demo-clip:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border-color: #fff;
+  text-decoration: none;
+}
+#id-benefits .card-video-demos .btn-outline.btn--demo-clip:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.9);
+  outline-offset: 2px;
 }
 
 /* Developers page — “What is getting built” grid & options toggle */

@@ -86,6 +86,7 @@
   var developersVideoPlayer = document.getElementById('developers-video-lightbox-player');
   var lastDevelopersVideoTrigger = null;
   var developersPlaylistUrls = null;
+  var developersPlaylistFallbackUrls = null;
   var developersPlaylistIndex = 0;
   var developersPlaylistBaseTitle = null;
 
@@ -103,10 +104,11 @@
     if (!developersPlaylistUrls || !developersVideoPlayer) return;
     developersPlaylistIndex += 1;
     if (developersPlaylistIndex < developersPlaylistUrls.length) {
-      developersVideoPlayer.src = developersPlaylistUrls[developersPlaylistIndex];
+      var pu = developersPlaylistUrls[developersPlaylistIndex];
+      var fu = developersPlaylistFallbackUrls && developersPlaylistFallbackUrls[developersPlaylistIndex];
       setDevelopersVideoHeading(developersPlaylistBaseTitle, developersPlaylistIndex, developersPlaylistUrls.length);
       developersVideoPlayer.setAttribute('title', (developersPlaylistBaseTitle || 'Video') + ' — part ' + (developersPlaylistIndex + 1));
-      developersVideoPlayer.play().catch(function () {});
+      setVideoSrcWithOptionalFallback(pu, fu || null);
     } else {
       clearDevelopersPlaylistState();
     }
@@ -115,10 +117,26 @@
   function clearDevelopersPlaylistState() {
     if (developersVideoPlayer) {
       developersVideoPlayer.removeEventListener('ended', onDevelopersVideoEnded);
+      developersVideoPlayer.onerror = null;
     }
     developersPlaylistUrls = null;
+    developersPlaylistFallbackUrls = null;
     developersPlaylistIndex = 0;
     developersPlaylistBaseTitle = null;
+  }
+
+  function setVideoSrcWithOptionalFallback(primarySrc, fallbackSrc) {
+    if (!developersVideoPlayer) return;
+    developersVideoPlayer.onerror = null;
+    developersVideoPlayer.src = primarySrc;
+    if (fallbackSrc && fallbackSrc !== primarySrc) {
+      developersVideoPlayer.onerror = function () {
+        developersVideoPlayer.onerror = null;
+        developersVideoPlayer.src = fallbackSrc;
+        developersVideoPlayer.play().catch(function () {});
+      };
+    }
+    developersVideoPlayer.play().catch(function () {});
   }
 
   function closeDevelopersVideoLightbox() {
@@ -128,6 +146,7 @@
     developersVideoLightbox.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
     if (developersVideoPlayer) {
+      developersVideoPlayer.onerror = null;
       developersVideoPlayer.pause();
       developersVideoPlayer.removeAttribute('src');
       developersVideoPlayer.load();
@@ -136,53 +155,65 @@
     return true;
   }
 
-  function openDevelopersVideoLightbox(src, title, trigger) {
+  function openDevelopersVideoLightbox(src, title, trigger, fallbackSrc) {
     if (!developersVideoLightbox || !developersVideoPlayer) return;
     clearDevelopersPlaylistState();
     lastDevelopersVideoTrigger = trigger || null;
     setDevelopersVideoHeading(title || 'Video', 0, 1);
     developersVideoPlayer.setAttribute('title', title || 'Capability demo');
-    developersVideoPlayer.src = src;
     developersVideoLightbox.hidden = false;
     developersVideoLightbox.removeAttribute('aria-hidden');
     document.body.style.overflow = 'hidden';
     var closeVBtn = developersVideoLightbox.querySelector('.image-lightbox__close');
     if (closeVBtn) closeVBtn.focus();
-    developersVideoPlayer.play().catch(function () {});
+    setVideoSrcWithOptionalFallback(src, fallbackSrc || null);
   }
 
-  function openDevelopersVideoPlaylist(urls, title, trigger) {
+  function openDevelopersVideoPlaylist(urls, title, trigger, fallbackUrls) {
     if (!developersVideoLightbox || !developersVideoPlayer || !urls || urls.length === 0) return;
     clearDevelopersPlaylistState();
     lastDevelopersVideoTrigger = trigger || null;
     developersPlaylistUrls = urls;
     developersPlaylistIndex = 0;
     developersPlaylistBaseTitle = title || 'Video';
+    developersPlaylistFallbackUrls = null;
+    if (fallbackUrls && fallbackUrls.length === urls.length) {
+      developersPlaylistFallbackUrls = fallbackUrls;
+    }
     setDevelopersVideoHeading(developersPlaylistBaseTitle, 0, urls.length);
     developersVideoPlayer.setAttribute('title', (developersPlaylistBaseTitle || 'Video') + ' — part 1');
-    developersVideoPlayer.src = urls[0];
     developersVideoLightbox.hidden = false;
     developersVideoLightbox.removeAttribute('aria-hidden');
     document.body.style.overflow = 'hidden';
     var closeVBtn = developersVideoLightbox.querySelector('.image-lightbox__close');
     if (closeVBtn) closeVBtn.focus();
     developersVideoPlayer.addEventListener('ended', onDevelopersVideoEnded);
-    developersVideoPlayer.play().catch(function () {});
+    var fu0 = developersPlaylistFallbackUrls ? developersPlaylistFallbackUrls[0] : null;
+    setVideoSrcWithOptionalFallback(urls[0], fu0);
   }
 
   document.querySelectorAll('[data-developers-video-open]').forEach(function (btn) {
     btn.addEventListener('click', function () {
       var title = btn.getAttribute('data-video-title') || 'Video';
       var playlist = btn.getAttribute('data-video-playlist');
+      var fallbackSrc = btn.getAttribute('data-video-fallback-src');
+      var fallbackPlaylist = btn.getAttribute('data-video-fallback-playlist');
       if (playlist) {
         var urls = playlist.split('|').map(function (s) {
           return s.trim();
         }).filter(Boolean);
-        if (urls.length) openDevelopersVideoPlaylist(urls, title, btn);
+        var fbUrls = null;
+        if (fallbackPlaylist) {
+          fbUrls = fallbackPlaylist.split('|').map(function (s) {
+            return s.trim();
+          }).filter(Boolean);
+          if (fbUrls.length !== urls.length) fbUrls = null;
+        }
+        if (urls.length) openDevelopersVideoPlaylist(urls, title, btn, fbUrls);
         return;
       }
       var src = btn.getAttribute('data-video-src');
-      if (src) openDevelopersVideoLightbox(src, title, btn);
+      if (src) openDevelopersVideoLightbox(src, title, btn, fallbackSrc);
     });
   });
 
