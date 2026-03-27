@@ -130,6 +130,7 @@
             <h3>3D/VR that sells</h3>
             <p>Walk clients through furniture and finishes in true spatial context.</p>
             <div class="card-video-demos card-video-demos--grid">
+              <button type="button" class="btn btn-outline btn--demo-clip" data-vr-tour-open data-vr-src="https://kuula.co/share/collection/7Hvq6?logo=0&info=0&fs=1&vr=1&gyro=0&initload=0&thumbs=1" data-vr-title="HOME VR TOUR">HOME VR TOUR</button>
               <button type="button" class="btn btn-outline btn--demo-clip" data-developers-video-open data-video-src="https://pub-bc5bb2b7e1b547788ec5def65ace864a.r2.dev/Interior%20Designers/Videos/Visualizaton%20Video_1.mp4" data-video-title="Full Home Tour">Full Home Tour</button>
               <button type="button" class="btn btn-outline btn--demo-clip" data-developers-video-open data-video-playlist-loop data-video-playlist="https://pub-bc5bb2b7e1b547788ec5def65ace864a.r2.dev/Interior%20Designers/Videos/Visualizaton%20Video_1.mp4|https://pub-bc5bb2b7e1b547788ec5def65ace864a.r2.dev/Interior%20Designers/Videos/Pool%20east.mp4|https://pub-bc5bb2b7e1b547788ec5def65ace864a.r2.dev/Interior%20Designers/Videos/Options%20%26%20Feel.mp4" data-video-title="Backyard">Backyard</button>
               <button type="button" class="btn btn-outline btn--demo-clip" data-developers-video-open data-video-playlist-loop data-video-playlist="https://pub-bc5bb2b7e1b547788ec5def65ace864a.r2.dev/General/Game%20Room/Game%20Room-Theatre%20(3).mp4|https://pub-bc5bb2b7e1b547788ec5def65ace864a.r2.dev/General/Game%20Room/Theatre-Game%20Room.mp4|https://pub-bc5bb2b7e1b547788ec5def65ace864a.r2.dev/General/Game%20Room/Outdoor%20at%20Gameroom.mp4" data-video-title="GameRoom">GameRoom</button>
@@ -337,6 +338,24 @@
           <a id="interior-cd-pdf-lightbox-open-tab" class="btn btn-outline" href="#" target="_blank" rel="noopener noreferrer">Open in new tab</a>
           <button type="button" class="btn btn-outline pdf-lightbox__try-fallback" id="interior-cd-pdf-try-fallback" hidden>Try local copy</button>
         </p>
+      </div>
+    </div>
+  </div>
+
+  <div
+    id="vr-tour-lightbox"
+    class="image-lightbox vr-lightbox"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="vr-tour-lightbox-title"
+    aria-hidden="true"
+    hidden>
+    <button type="button" class="image-lightbox__backdrop" tabindex="-1" aria-hidden="true" data-lightbox-dismiss></button>
+    <div class="image-lightbox__panel">
+      <button type="button" class="image-lightbox__close" aria-label="Close VR tour" data-lightbox-dismiss>&times;</button>
+      <div class="image-lightbox__frame image-lightbox__frame--vr">
+        <h2 id="vr-tour-lightbox-title" class="video-lightbox__title">VR Tour</h2>
+        <iframe id="vr-tour-lightbox-frame" class="image-lightbox__vr" title="VR tour" src="about:blank" allow="xr-spatial-tracking; gyroscope; accelerometer; fullscreen" allowfullscreen></iframe>
       </div>
     </div>
   </div>

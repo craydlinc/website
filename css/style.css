@@ -1253,7 +1253,8 @@ img { max-width: 100%; height: auto; display: block; }
   max-width: min(100%, 72rem);
 }
 
-.image-lightbox__pdf {
+.image-lightbox__pdf,
+.image-lightbox__vr {
   width: min(100%, 72rem);
   flex: 1 1 auto;
   min-height: min(72vh, calc(100dvh - 9rem));

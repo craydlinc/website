@@ -302,6 +302,48 @@
     });
   }
 
+  /* --- VR Tour lightbox --- */
+  var vrTourLightbox = document.getElementById('vr-tour-lightbox');
+  var vrTourFrame = document.getElementById('vr-tour-lightbox-frame');
+  var vrTourTitle = document.getElementById('vr-tour-lightbox-title');
+  var lastVrTourTrigger = null;
+
+  function closeVrTourLightbox() {
+    if (!vrTourLightbox || vrTourLightbox.hidden) return false;
+    vrTourLightbox.hidden = true;
+    vrTourLightbox.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    if (vrTourFrame) vrTourFrame.setAttribute('src', 'about:blank');
+    if (lastVrTourTrigger) lastVrTourTrigger.focus();
+    return true;
+  }
+
+  function openVrTourLightbox(src, title, trigger) {
+    if (!vrTourLightbox || !vrTourFrame) return;
+    lastVrTourTrigger = trigger || null;
+    if (vrTourTitle) vrTourTitle.textContent = title || 'VR Tour';
+    vrTourLightbox.hidden = false;
+    vrTourLightbox.removeAttribute('aria-hidden');
+    document.body.style.overflow = 'hidden';
+    vrTourFrame.setAttribute('src', src);
+    var closeBtn = vrTourLightbox.querySelector('.image-lightbox__close');
+    if (closeBtn) closeBtn.focus();
+  }
+
+  document.querySelectorAll('[data-vr-tour-open]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var title = btn.getAttribute('data-vr-title') || 'VR Tour';
+      var src = btn.getAttribute('data-vr-src');
+      if (src) openVrTourLightbox(src, title, btn);
+    });
+  });
+
+  if (vrTourLightbox) {
+    vrTourLightbox.addEventListener('click', function (e) {
+      if (e.target.closest(lightboxDismissSelector)) closeVrTourLightbox();
+    });
+  }
+
   var closeHeroLightbox = wireImageLightbox(heroLightbox, heroZoomTrigger);
   var closeTimelineLightbox = wireImageLightbox(timelineLightbox, timelineZoomTrigger);
   var closeDevelopersLightbox1 = wireImageLightbox(developersLightbox1, developersTrigger1);
@@ -315,6 +357,7 @@
       }
       if (closeDevelopersLightbox1()) return;
       if (closeDevelopersLightbox2()) return;
+      if (closeVrTourLightbox()) return;
       if (closeInteriorCdPdfLightbox()) return;
       if (closeDevelopersVideoLightbox()) return;
       if (closeTimelineLightbox()) return;
