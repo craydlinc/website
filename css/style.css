@@ -1886,6 +1886,16 @@ a.card.project-type-tile h3 { margin: 0; }
 .testimonial blockquote { font-size: 1.1rem; font-style: italic; margin: 0 0 var(--space-sm); color: var(--color-text-on-dark); }
 .testimonial .author { font-weight: 600; color: var(--color-powder-blue); margin: 0 0 0.25em; }
 .testimonial .location { font-size: 0.9rem; color: var(--color-sage); margin: 0; }
+.testimonial__headshot {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto var(--space-sm);
+  display: block;
+  border: 2px solid var(--color-silt);
+}
+.testimonial--with-photo { margin-top: var(--space-lg); }
 
 /* Footer – Beige text, aligned grid */
 .site-footer {
