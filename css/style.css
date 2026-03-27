@@ -1254,6 +1254,19 @@ img { max-width: 100%; height: auto; display: block; }
   margin-top: var(--space-lg);
 }
 
+/* Interior designers — clip demos inside benefit card */
+.card-video-demos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+.card-video-demos .btn {
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+}
+
 /* Developers page — “What is getting built” grid & options toggle */
 .developers-built-grid {
   display: grid;

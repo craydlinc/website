@@ -128,7 +128,7 @@ export default {
         ? `../../${infographicImagePath}`
         : null;
 
-      // 7. Build and commit blog post HTML
+      // 7. Build blog post HTML (canonical URL is /articles/posts/)
       const html = buildBlogPostHTML({
         title: payload.title,
         body: payload.content_html,
@@ -144,16 +144,25 @@ export default {
         lang: payload.languageCode || "en",
       });
 
-      const filePath = `blog/posts/${slug}.html`;
+      // 8. Commit HTML to both /articles/posts/ (canonical) and /blog/posts/ (legacy)
+      const articlePath = `articles/posts/${slug}.html`;
+      const blogPath = `blog/posts/${slug}.html`;
 
       await commitFileToGitHub({
         ...ghOpts,
-        path: filePath,
+        path: articlePath,
         content: html,
-        message: `Blog post [AutoSEO #${payload.id}]: ${payload.title}`,
+        message: `Article [AutoSEO #${payload.id}]: ${payload.title}`,
       });
 
-      // 8. Update posts.json manifest (dedup by autoseo_id + slug)
+      await commitFileToGitHub({
+        ...ghOpts,
+        path: blogPath,
+        content: html,
+        message: `Article (blog copy) [AutoSEO #${payload.id}]: ${payload.title}`,
+      });
+
+      // 9. Update posts.json manifest (dedup by autoseo_id + slug)
       const excerpt =
         payload.metaDescription ||
         payload.content_html.replace(/<[^>]*>/g, "").slice(0, 200).trim() +
@@ -168,11 +177,14 @@ export default {
         autoseo_id: payload.id,
       });
 
-      // 9. Update sitemap
-      await updateSitemap(ghOpts, slug);
+      // 10. Update all three sitemaps with canonical /articles/posts/ URL
+      await updateAllSitemaps(ghOpts, slug);
 
-      // 10. Return published URL
-      const publishedUrl = `${SITE_BASE}/blog/posts/${slug}.html`;
+      // 11. Add slug to redirects.js blogSlugs array
+      await addSlugToRedirects(ghOpts, slug);
+
+      // 12. Return published URL (canonical)
+      const publishedUrl = `${SITE_BASE}/articles/posts/${slug}.html`;
       return jsonResponse({ url: publishedUrl }, 200);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
@@ -290,7 +302,7 @@ async function commitBinaryToGitHub(
 }
 
 // ===========================================================================
-// Blog post HTML builder
+// Blog post HTML builder — canonical URL is /articles/posts/
 // ===========================================================================
 
 function buildBlogPostHTML(p: {
@@ -314,6 +326,13 @@ function buildBlogPostHTML(p: {
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;");
 
+  const escJson = (s: string) =>
+    s.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+
+  const canonicalUrl = `${SITE_BASE}/articles/posts/${p.slug}.html`;
+  const ogImage = p.heroAbsoluteUrl || `${SITE_BASE}/assets/tour-indianola.png`;
+
+  // FAQ JSON-LD
   const faqLD =
     p.faqSchema && p.faqSchema.length
       ? `\n  <script type="application/ld+json">${JSON.stringify({
@@ -326,6 +345,43 @@ function buildBlogPostHTML(p: {
           })),
         })}</script>`
       : "";
+
+  // BlogPosting JSON-LD
+  const blogPostingLD = `\n  <script type="application/ld+json">${JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: p.title,
+    description: p.metaDesc,
+    url: canonicalUrl,
+    datePublished: p.date,
+    author: {
+      "@type": "Person",
+      name: "Adam Katz",
+      url: `${SITE_BASE}/contact.html`,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "CRAYDL",
+      url: SITE_BASE,
+      logo: {
+        "@type": "ImageObject",
+        url: `${SITE_BASE}/assets/logo-header-dark.png`,
+      },
+    },
+    image: ogImage,
+    mainEntityOfPage: { "@type": "WebPage", "@id": canonicalUrl },
+  })}</script>`;
+
+  // BreadcrumbList JSON-LD
+  const breadcrumbLD = `\n  <script type="application/ld+json">${JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_BASE}/` },
+      { "@type": "ListItem", position: 2, name: "Articles", item: `${SITE_BASE}/articles/` },
+      { "@type": "ListItem", position: 3, name: p.title, item: canonicalUrl },
+    ],
+  })}</script>`;
 
   const heroBlock = p.heroImageSrc
     ? `\n      <figure class="blog-hero-image">
@@ -342,18 +398,37 @@ function buildBlogPostHTML(p: {
   return `<!DOCTYPE html>
 <html lang="${p.lang}">
 <head>
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-XXXXXXXXXX");
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${esc(p.title)} | CRAYDL Blog</title>
   <meta name="description" content="${esc(p.metaDesc)}">${p.keywords ? `\n  <meta name="keywords" content="${esc(p.keywords)}">` : ""}
-  <link rel="canonical" href="${SITE_BASE}/blog/posts/${p.slug}.html">
+  <link rel="canonical" href="${canonicalUrl}">
+  <!-- Open Graph -->
   <meta property="og:type" content="article">
+  <meta property="og:site_name" content="CRAYDL">
   <meta property="og:title" content="${esc(p.title)}">
   <meta property="og:description" content="${esc(p.metaDesc)}">
-  <meta property="og:url" content="${SITE_BASE}/blog/posts/${p.slug}.html">${p.heroAbsoluteUrl ? `\n  <meta property="og:image" content="${esc(p.heroAbsoluteUrl)}">` : ""}
+  <meta property="og:url" content="${canonicalUrl}">
+  <meta property="og:image" content="${esc(ogImage)}">
+  <meta property="og:image:width" content="800">
+  <meta property="og:image:height" content="520">
+  <meta property="article:published_time" content="${p.date}">
+  <meta property="article:author" content="Adam Katz">
+
+  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${esc(p.title)}">
-  <meta name="twitter:description" content="${esc(p.metaDesc)}">${p.heroAbsoluteUrl ? `\n  <meta name="twitter:image" content="${esc(p.heroAbsoluteUrl)}">` : ""}${faqLD}
+  <meta name="twitter:description" content="${esc(p.metaDesc)}">
+  <meta name="twitter:image" content="${esc(ogImage)}">
+  <!-- Structured Data -->${blogPostingLD}${breadcrumbLD}${faqLD}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Urbanist:wght@900&display=swap" rel="stylesheet">
@@ -366,11 +441,11 @@ function buildBlogPostHTML(p: {
       <a href="../../index.html" class="brand-logo" aria-label="CRAYDL home">
         <img src="../../assets/logo-header-dark.png" alt="CRAYDL" width="180" height="60" class="brand-logo__img">
       </a>
-      <button type="button" class="nav-toggle" aria-label="Toggle menu">☰</button>
+      <button type="button" class="nav-toggle" aria-label="Toggle menu">\u2630</button>
       <nav class="nav-main" id="nav-main">
         <a href="../../services.html">Services</a>
         <a href="../../contact.html">Contact</a>
-        <a href="../index.html">Blog</a>
+        <a href="../index.html">Articles</a>
       </nav>
       <div class="header-right">
         <a href="tel:480-716-5884" class="header-phone">480-716-5884</a>
@@ -463,14 +538,35 @@ async function updatePostsManifest(
 }
 
 // ===========================================================================
-// Sitemap
+// Sitemaps — update all three with canonical /articles/posts/ URL
 // ===========================================================================
 
-async function updateSitemap(ghOpts: GHOpts, newSlug: string): Promise<void> {
+async function updateAllSitemaps(
+  ghOpts: GHOpts,
+  newSlug: string
+): Promise<void> {
+  const newLoc = `${SITE_BASE}/articles/posts/${newSlug}.html`;
+
+  // Update all three sitemaps
+  const sitemapPaths = [
+    "sitemap.xml",
+    "articles/sitemap.xml",
+    "blog/sitemap.xml",
+  ];
+
+  for (const sitemapPath of sitemapPaths) {
+    await updateSingleSitemap(ghOpts, sitemapPath, newLoc, newSlug);
+  }
+}
+
+async function updateSingleSitemap(
+  ghOpts: GHOpts,
+  sitemapPath: string,
+  newLoc: string,
+  newSlug: string
+): Promise<void> {
   const base = `https://api.github.com/repos/${ghOpts.repo}`;
   const headers = ghHeaders(ghOpts.token);
-  const sitemapPath = "blog/sitemap.xml";
-  const newLoc = `${SITE_BASE}/blog/posts/${newSlug}.html`;
 
   let xml = "";
   let existingSha: string | undefined;
@@ -487,6 +583,7 @@ async function updateSitemap(ghOpts: GHOpts, newSlug: string): Promise<void> {
     }
   }
 
+  // Skip if this URL is already in the sitemap
   if (xml.includes(newLoc)) return;
 
   if (xml) {
@@ -495,13 +592,13 @@ async function updateSitemap(ghOpts: GHOpts, newSlug: string): Promise<void> {
   } else {
     xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>${SITE_BASE}/blog/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>${SITE_BASE}/articles/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>${newLoc}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
 </urlset>`;
   }
 
   const body: Record<string, string> = {
-    message: `Sitemap: add ${newSlug}`,
+    message: `Sitemap (${sitemapPath}): add ${newSlug}`,
     content: toBase64(xml),
     branch: ghOpts.branch,
   };
@@ -515,7 +612,64 @@ async function updateSitemap(ghOpts: GHOpts, newSlug: string): Promise<void> {
 
   if (!putRes.ok) {
     const err = await putRes.text();
-    throw new Error(`Sitemap update ${putRes.status}: ${err}`);
+    throw new Error(`Sitemap update ${putRes.status} (${sitemapPath}): ${err}`);
+  }
+}
+
+// ===========================================================================
+// Redirects — add new slug to blogSlugs in redirects.js
+// ===========================================================================
+
+async function addSlugToRedirects(
+  ghOpts: GHOpts,
+  newSlug: string
+): Promise<void> {
+  const base = `https://api.github.com/repos/${ghOpts.repo}`;
+  const headers = ghHeaders(ghOpts.token);
+  const redirectsPath = "infra/redirects.js";
+
+  const getRes = await fetch(
+    `${base}/contents/${redirectsPath}?ref=${ghOpts.branch}`,
+    { headers }
+  );
+  if (!getRes.ok) {
+    throw new Error(`Failed to read redirects.js: ${getRes.status}`);
+  }
+
+  const data = (await getRes.json()) as { sha: string; content: string };
+  const js = atob(data.content.replace(/\n/g, ""));
+
+  // Check if slug already exists
+  if (js.includes(`'${newSlug}'`)) return;
+
+  // Insert the new slug at the end of the blogSlugs array (before the closing bracket)
+  const marker = "];";
+  const slugsEnd = js.indexOf(marker, js.indexOf("var blogSlugs"));
+  if (slugsEnd === -1) {
+    throw new Error("Could not find blogSlugs array end in redirects.js");
+  }
+
+  const updated =
+    js.slice(0, slugsEnd) +
+    `  '${newSlug}',\n` +
+    js.slice(slugsEnd);
+
+  const body: Record<string, string> = {
+    message: `Add redirect slug: ${newSlug}`,
+    content: toBase64(updated),
+    branch: ghOpts.branch,
+    sha: data.sha,
+  };
+
+  const putRes = await fetch(`${base}/contents/${redirectsPath}`, {
+    method: "PUT",
+    headers,
+    body: JSON.stringify(body),
+  });
+
+  if (!putRes.ok) {
+    const err = await putRes.text();
+    throw new Error(`Redirects update ${putRes.status}: ${err}`);
   }
 }
 

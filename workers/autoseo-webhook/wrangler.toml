@@ -12,3 +12,6 @@ GITHUB_REPO = "craydlinc/website"
 GITHUB_BRANCH = "main"
 
 # GITHUB_TOKEN is set as a secret via: wrangler secret put GITHUB_TOKEN
+
+[observability]
+enabled = true
