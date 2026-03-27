@@ -89,6 +89,7 @@
   var developersPlaylistFallbackUrls = null;
   var developersPlaylistIndex = 0;
   var developersPlaylistBaseTitle = null;
+  var developersPlaylistLoop = false;
 
   function setDevelopersVideoHeading(baseTitle, index, total) {
     if (!developersVideoTitle) return;
@@ -109,6 +110,13 @@
       setDevelopersVideoHeading(developersPlaylistBaseTitle, developersPlaylistIndex, developersPlaylistUrls.length);
       developersVideoPlayer.setAttribute('title', (developersPlaylistBaseTitle || 'Video') + ' — part ' + (developersPlaylistIndex + 1));
       setVideoSrcWithOptionalFallback(pu, fu || null);
+    } else if (developersPlaylistLoop && developersPlaylistUrls.length > 0) {
+      developersPlaylistIndex = 0;
+      var pu0 = developersPlaylistUrls[0];
+      var fu0 = developersPlaylistFallbackUrls && developersPlaylistFallbackUrls[0];
+      setDevelopersVideoHeading(developersPlaylistBaseTitle, 0, developersPlaylistUrls.length);
+      developersVideoPlayer.setAttribute('title', (developersPlaylistBaseTitle || 'Video') + ' — part 1');
+      setVideoSrcWithOptionalFallback(pu0, fu0 || null);
     } else {
       clearDevelopersPlaylistState();
     }
@@ -123,6 +131,7 @@
     developersPlaylistFallbackUrls = null;
     developersPlaylistIndex = 0;
     developersPlaylistBaseTitle = null;
+    developersPlaylistLoop = false;
   }
 
   function setVideoSrcWithOptionalFallback(primarySrc, fallbackSrc) {
@@ -169,10 +178,11 @@
     setVideoSrcWithOptionalFallback(src, fallbackSrc || null);
   }
 
-  function openDevelopersVideoPlaylist(urls, title, trigger, fallbackUrls) {
+  function openDevelopersVideoPlaylist(urls, title, trigger, fallbackUrls, loop) {
     if (!developersVideoLightbox || !developersVideoPlayer || !urls || urls.length === 0) return;
     clearDevelopersPlaylistState();
     lastDevelopersVideoTrigger = trigger || null;
+    developersPlaylistLoop = !!loop;
     developersPlaylistUrls = urls;
     developersPlaylistIndex = 0;
     developersPlaylistBaseTitle = title || 'Video';
@@ -209,7 +219,8 @@
           }).filter(Boolean);
           if (fbUrls.length !== urls.length) fbUrls = null;
         }
-        if (urls.length) openDevelopersVideoPlaylist(urls, title, btn, fbUrls);
+        var loopPl = btn.hasAttribute('data-video-playlist-loop');
+        if (urls.length) openDevelopersVideoPlaylist(urls, title, btn, fbUrls, loopPl);
         return;
       }
       var src = btn.getAttribute('data-video-src');
