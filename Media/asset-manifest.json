@@ -116,6 +116,13 @@
       "audience": "interior_designer",
       "type": "video",
       "asset_description": "interior iteration_lookandfeel"
+    },
+    {
+      "file": "assets/documents/id-construction-drawings-ffe-schedule-sample.pdf",
+      "audience": "interior_designer",
+      "type": "document",
+      "asset_description": "Construction drawings and FFE schedule sample (interior CD support)",
+      "public_url": "https://pub-bc5bb2b7e1b547788ec5def65ace864a.r2.dev/documents/id-construction-drawings-ffe-schedule-sample.pdf"
     }
   ]
 }

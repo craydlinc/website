@@ -4,24 +4,24 @@
   Prerequisites: Node.js, and either `wrangler login` or CLOUDFLARE_API_TOKEN with R2 write access.
 
   Usage (repo root):
-    .\scripts\upload-interior-demos-r2.ps1 -BucketName YOUR_BUCKET_NAME
-
-  Or:
-    $env:CRAYDL_R2_BUCKET = 'YOUR_BUCKET_NAME'
     .\scripts\upload-interior-demos-r2.ps1
+    .\scripts\upload-interior-demos-r2.ps1 -DocumentsOnly   # PDF only (skip large MP4s)
+
+  Default bucket: craydl-media. Override with -BucketName or $env:CRAYDL_R2_BUCKET.
+
+  Note: wrangler r2 object put rejects files larger than 300 MiB; oversized MP4s are skipped with a warning (use Dashboard, S3 API, or rclone for those).
 
   Source files: assets/videos/interior-*.mp4 (gitignored; generate from your masters if missing); assets/documents/id-construction-drawings-ffe-schedule-sample.pdf
 #>
 param(
-  [string]$BucketName = $env:CRAYDL_R2_BUCKET
+  [string]$BucketName,
+  [switch]$DocumentsOnly
 )
 
 $ErrorActionPreference = 'Stop'
 
-if (-not $BucketName) {
-  Write-Error "Set -BucketName or environment variable CRAYDL_R2_BUCKET to your R2 bucket name (Dashboard → R2 → bucket with public r2.dev access)."
-  exit 1
-}
+if (-not $BucketName) { $BucketName = $env:CRAYDL_R2_BUCKET }
+if (-not $BucketName) { $BucketName = 'craydl-media' }
 
 $RepoRoot = Resolve-Path (Join-Path $PSScriptRoot '..')
 $VideoDir = Join-Path $RepoRoot 'assets/videos'
@@ -45,19 +45,29 @@ $docObjects = @(
   @{ Local = 'id-construction-drawings-ffe-schedule-sample.pdf'; Key = 'documents/id-construction-drawings-ffe-schedule-sample.pdf'; ContentType = 'application/pdf' }
 )
 
+$WranglerR2MaxBytes = 300MB
+
 Push-Location $WranglerCwd
 try {
-  foreach ($o in $objects) {
-    $file = Join-Path $VideoDir $o.Local
-    if (-not (Test-Path -LiteralPath $file)) {
-      Write-Warning "Skipping missing file: $file"
-      continue
+  if (-not $DocumentsOnly) {
+    foreach ($o in $objects) {
+      $file = Join-Path $VideoDir $o.Local
+      if (-not (Test-Path -LiteralPath $file)) {
+        Write-Warning "Skipping missing file: $file"
+        continue
+      }
+      $len = (Get-Item -LiteralPath $file).Length
+      if ($len -gt $WranglerR2MaxBytes) {
+        Write-Warning "Skipping $($o.Key) ($([math]::Round($len / 1MB, 1)) MiB): wrangler limit is 300 MiB. Upload via Cloudflare Dashboard or S3-compatible API."
+        continue
+      }
+      $dest = "$BucketName/$($o.Key)"
+      $ct = $o.ContentType
+      if (-not $ct) { $ct = 'video/mp4' }
+      Write-Host "Uploading $($o.Key) ..."
+      npx wrangler r2 object put $dest --file="$file" --content-type "$ct" --remote
+      if ($LASTEXITCODE -ne 0) { throw "wrangler r2 object put failed (exit $LASTEXITCODE) for $($o.Key)" }
     }
-    $dest = "$BucketName/$($o.Key)"
-    $ct = $o.ContentType
-    if (-not $ct) { $ct = 'video/mp4' }
-    Write-Host "Uploading $($o.Key) ..."
-    npx wrangler r2 object put $dest --file="$file" --content-type "$ct" --remote
   }
   foreach ($o in $docObjects) {
     $file = Join-Path $DocDir $o.Local
@@ -69,8 +79,9 @@ try {
     $ct = $o.ContentType
     Write-Host "Uploading $($o.Key) ..."
     npx wrangler r2 object put $dest --file="$file" --content-type "$ct" --remote
+    if ($LASTEXITCODE -ne 0) { throw "wrangler r2 object put failed (exit $LASTEXITCODE) for $($o.Key)" }
   }
-  Write-Host "Done. Keys: videos/* and documents/*; public URLs match interior-designers.html."
+  Write-Host "Done. Keys: videos/* and/or documents/*; public URLs match interior-designers.html."
 }
 finally {
   Pop-Location
