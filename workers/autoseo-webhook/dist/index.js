@@ -1,70 +1,19 @@
-// ---------------------------------------------------------------------------
-// CRAYDL AutoSEO Webhook Worker
-// Receives articles from GetAutoSEO, downloads images, commits to GitHub
-// ---------------------------------------------------------------------------
+var __defProp = Object.defineProperty;
+var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 
-const WEBHOOK_TOKEN = "aseo_wh_5f8efdc75e5ef72eec175cb21cf8480d";
-const SITE_BASE = "https://www.craydl.com";
-
-export interface Env {
-  GITHUB_TOKEN: string;
-  GITHUB_REPO: string;
-  GITHUB_BRANCH: string;
-}
-
-interface AutoSEOPayload {
-  event: string;
-  id: number;
-  title: string;
-  slug: string;
-  metaDescription: string;
-  content_html: string;
-  content_markdown: string;
-  heroImageUrl: string | null;
-  heroImageAlt: string | null;
-  infographicImageUrl: string | null;
-  keywords: string[];
-  metaKeywords: string | null;
-  faqSchema: Array<{ question: string; answer: string }> | null;
-  languageCode: string;
-  status: string;
-  publishedAt: string;
-  updatedAt: string;
-  createdAt: string;
-}
-
-interface PostEntry {
-  slug: string;
-  title: string;
-  date: string;
-  excerpt: string;
-  image: string | null;
-  autoseo_id?: number;
-}
-
-type GHOpts = { token: string; repo: string; branch: string };
-
-// ---------------------------------------------------------------------------
-// Worker entry
-// ---------------------------------------------------------------------------
-
-export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
-    // Only accept POST
+// src/index.ts
+var WEBHOOK_TOKEN = "aseo_wh_5f8efdc75e5ef72eec175cb21cf8480d";
+var SITE_BASE = "https://www.craydl.com";
+var index_default = {
+  async fetch(request, env) {
     if (request.method !== "POST") {
       return jsonResponse({ error: "Method not allowed" }, 405);
     }
-
-    // 1. Read raw body for HMAC verification
     const rawBody = await request.text();
-
-    // 2. Validate bearer token
     const auth = request.headers.get("Authorization");
     if (!auth || auth !== `Bearer ${WEBHOOK_TOKEN}`) {
       return jsonResponse({ error: "Unauthorized" }, 401);
     }
-
-    // 3. Verify HMAC-SHA256 signature if present
     const signature = request.headers.get("X-AutoSEO-Signature");
     if (signature) {
       const valid = await verifyHMAC(rawBody, signature, WEBHOOK_TOKEN);
@@ -72,37 +21,26 @@ export default {
         return jsonResponse({ error: "Invalid signature" }, 401);
       }
     }
-
-    // 4. Parse payload
-    let payload: AutoSEOPayload;
+    let payload;
     try {
       payload = JSON.parse(rawBody);
     } catch {
       return jsonResponse({ error: "Invalid JSON" }, 400);
     }
-
-    // 5. Handle test event
     if (payload.event === "test") {
       return jsonResponse({ url: `${SITE_BASE}/test` }, 200);
     }
-
     const branch = env.GITHUB_BRANCH || "main";
-    const ghOpts: GHOpts = {
+    const ghOpts = {
       token: env.GITHUB_TOKEN,
       repo: env.GITHUB_REPO,
-      branch,
+      branch
     };
-
     try {
       const slug = payload.slug;
-      const date = payload.publishedAt
-        ? payload.publishedAt.slice(0, 10)
-        : new Date().toISOString().slice(0, 10);
-
-      // 6. Download and commit images
-      let heroImagePath: string | null = null;
-      let infographicImagePath: string | null = null;
-
+      const date = payload.publishedAt ? payload.publishedAt.slice(0, 10) : (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
+      let heroImagePath = null;
+      let infographicImagePath = null;
       if (payload.heroImageUrl) {
         heroImagePath = await downloadAndCommitImage(
           ghOpts,
@@ -110,7 +48,6 @@ export default {
           `blog/images/${slug}-hero`
         );
       }
-
       if (payload.infographicImageUrl) {
         infographicImagePath = await downloadAndCommitImage(
           ghOpts,
@@ -118,17 +55,9 @@ export default {
           `blog/images/${slug}-infographic`
         );
       }
-
-      // Image paths for HTML and manifest
       const heroSrc = heroImagePath ? `../../${heroImagePath}` : null;
-      const heroAbsolute = heroImagePath
-        ? `${SITE_BASE}/${heroImagePath}`
-        : null;
-      const infographicSrc = infographicImagePath
-        ? `../../${infographicImagePath}`
-        : null;
-
-      // 7. Build blog post HTML (canonical URL is /blog/posts/)
+      const heroAbsolute = heroImagePath ? `${SITE_BASE}/${heroImagePath}` : null;
+      const infographicSrc = infographicImagePath ? `../../${infographicImagePath}` : null;
       const html = buildBlogPostHTML({
         title: payload.title,
         body: payload.content_html,
@@ -141,44 +70,29 @@ export default {
         infographicSrc,
         faqSchema: payload.faqSchema,
         keywords: payload.metaKeywords,
-        lang: payload.languageCode || "en",
+        lang: payload.languageCode || "en"
       });
-
-      // 8. Commit HTML to /blog/posts/ only (SEO content, not listed on articles page)
       const blogPath = `blog/posts/${slug}.html`;
-
       await commitFileToGitHub({
         ...ghOpts,
         path: blogPath,
         content: html,
-        message: `SEO post [AutoSEO #${payload.id}]: ${payload.title}`,
+        message: `SEO post [AutoSEO #${payload.id}]: ${payload.title}`
       });
-
-      // 9. Update posts.json manifest (dedup by autoseo_id + slug)
-      const excerpt =
-        payload.metaDescription ||
-        payload.content_html.replace(/<[^>]*>/g, "").slice(0, 200).trim() +
-          "\u2026";
-
+      const excerpt = payload.metaDescription || payload.content_html.replace(/<[^>]*>/g, "").slice(0, 200).trim() + "\u2026";
       await updatePostsManifest(ghOpts, {
         slug,
         title: payload.title,
         date,
         excerpt,
         image: heroAbsolute,
-        autoseo_id: payload.id,
+        autoseo_id: payload.id
       });
-
-      // 10. Update sitemaps with canonical /blog/posts/ URL
       await updateAllSitemaps(ghOpts, slug);
-
-      // 11. Add slug to redirects.js seoSlugs array
       await addSlugToRedirects(ghOpts, slug);
-
-      // 12. Return published URL (canonical)
       const publishedUrl = `${SITE_BASE}/blog/posts/${slug}.html`;
       return jsonResponse({ url: publishedUrl }, 200);
-    } catch (err: unknown) {
+    } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       console.error("Webhook error:", message);
       return jsonResponse(
@@ -186,18 +100,9 @@ export default {
         500
       );
     }
-  },
-} satisfies ExportedHandler<Env>;
-
-// ===========================================================================
-// HMAC-SHA256 verification
-// ===========================================================================
-
-async function verifyHMAC(
-  body: string,
-  signatureHex: string,
-  secret: string
-): Promise<boolean> {
+  }
+};
+async function verifyHMAC(body, signatureHex, secret) {
   const enc = new TextEncoder();
   const key = await crypto.subtle.importKey(
     "raw",
@@ -207,10 +112,7 @@ async function verifyHMAC(
     ["sign"]
   );
   const sig = await crypto.subtle.sign("HMAC", key, enc.encode(body));
-  const computed = Array.from(new Uint8Array(sig))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-
+  const computed = Array.from(new Uint8Array(sig)).map((b) => b.toString(16).padStart(2, "0")).join("");
   if (computed.length !== signatureHex.length) return false;
   let diff = 0;
   for (let i = 0; i < computed.length; i++) {
@@ -218,128 +120,72 @@ async function verifyHMAC(
   }
   return diff === 0;
 }
-
-// ===========================================================================
-// Image download + commit to GitHub
-// ===========================================================================
-
-async function downloadAndCommitImage(
-  ghOpts: GHOpts,
-  imageUrl: string,
-  pathPrefix: string
-): Promise<string> {
+__name(verifyHMAC, "verifyHMAC");
+async function downloadAndCommitImage(ghOpts, imageUrl, pathPrefix) {
   const res = await fetch(imageUrl);
   if (!res.ok) {
     throw new Error(`Image download failed (${res.status}): ${imageUrl}`);
   }
-
   const contentType = res.headers.get("content-type") || "image/jpeg";
-  const ext = contentType.includes("png")
-    ? ".png"
-    : contentType.includes("webp")
-      ? ".webp"
-      : contentType.includes("gif")
-        ? ".gif"
-        : ".jpg";
-
+  const ext = contentType.includes("png") ? ".png" : contentType.includes("webp") ? ".webp" : contentType.includes("gif") ? ".gif" : ".jpg";
   const filePath = `${pathPrefix}${ext}`;
   const buffer = await res.arrayBuffer();
   const bytes = new Uint8Array(buffer);
-
   let binary = "";
   for (let i = 0; i < bytes.length; i++) {
     binary += String.fromCharCode(bytes[i]);
   }
   const b64 = btoa(binary);
-
   await commitBinaryToGitHub(ghOpts, filePath, b64);
   return filePath;
 }
-
-async function commitBinaryToGitHub(
-  ghOpts: GHOpts,
-  path: string,
-  contentBase64: string
-): Promise<void> {
+__name(downloadAndCommitImage, "downloadAndCommitImage");
+async function commitBinaryToGitHub(ghOpts, path, contentBase64) {
   const base = `https://api.github.com/repos/${ghOpts.repo}`;
   const headers = ghHeaders(ghOpts.token);
-
-  let existingSha: string | undefined;
+  let existingSha;
   const getRes = await fetch(
     `${base}/contents/${path}?ref=${ghOpts.branch}`,
     { headers }
   );
   if (getRes.ok) {
-    const data = (await getRes.json()) as { sha?: string };
+    const data = await getRes.json();
     existingSha = data.sha;
   }
-
-  const body: Record<string, string> = {
+  const body = {
     message: `Add image: ${path}`,
     content: contentBase64,
-    branch: ghOpts.branch,
+    branch: ghOpts.branch
   };
   if (existingSha) body.sha = existingSha;
-
   const putRes = await fetch(`${base}/contents/${path}`, {
     method: "PUT",
     headers,
-    body: JSON.stringify(body),
+    body: JSON.stringify(body)
   });
-
   if (!putRes.ok) {
     const err = await putRes.text();
     throw new Error(`Image commit ${putRes.status}: ${err}`);
   }
 }
-
-// ===========================================================================
-// Blog post HTML builder — canonical URL is /blog/posts/
-// ===========================================================================
-
-function buildBlogPostHTML(p: {
-  title: string;
-  body: string;
-  metaDesc: string;
-  date: string;
-  slug: string;
-  heroImageSrc: string | null;
-  heroImageAlt: string | null;
-  heroAbsoluteUrl: string | null;
-  infographicSrc: string | null;
-  faqSchema: Array<{ question: string; answer: string }> | null;
-  keywords: string | null;
-  lang: string;
-}): string {
-  const esc = (s: string) =>
-    s
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;");
-
-  const escJson = (s: string) =>
-    s.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
-
+__name(commitBinaryToGitHub, "commitBinaryToGitHub");
+function buildBlogPostHTML(p) {
+  const esc = /* @__PURE__ */ __name((s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"), "esc");
+  const escJson = /* @__PURE__ */ __name((s) => s.replace(/\\/g, "\\\\").replace(/"/g, '\\"'), "escJson");
   const canonicalUrl = `${SITE_BASE}/blog/posts/${p.slug}.html`;
   const ogImage = p.heroAbsoluteUrl || `${SITE_BASE}/assets/tour-indianola.png`;
-
-  // FAQ JSON-LD
-  const faqLD =
-    p.faqSchema && p.faqSchema.length
-      ? `\n  <script type="application/ld+json">${JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: p.faqSchema.map((f) => ({
-            "@type": "Question",
-            name: f.question,
-            acceptedAnswer: { "@type": "Answer", text: f.answer },
-          })),
-        })}</script>`
-      : "";
-
-  // BlogPosting JSON-LD
-  const blogPostingLD = `\n  <script type="application/ld+json">${JSON.stringify({
+  const faqLD = p.faqSchema && p.faqSchema.length ? `
+  <script type="application/ld+json">${JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: p.faqSchema.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer }
+    }))
+  })}<\/script>` : "";
+  const blogPostingLD = `
+  <script type="application/ld+json">${JSON.stringify({
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: p.title,
@@ -349,7 +195,7 @@ function buildBlogPostHTML(p: {
     author: {
       "@type": "Person",
       name: "Adam Katz",
-      url: `${SITE_BASE}/contact.html`,
+      url: `${SITE_BASE}/contact.html`
     },
     publisher: {
       "@type": "Organization",
@@ -357,51 +203,46 @@ function buildBlogPostHTML(p: {
       url: SITE_BASE,
       logo: {
         "@type": "ImageObject",
-        url: `${SITE_BASE}/assets/logo-header-dark.png`,
-      },
+        url: `${SITE_BASE}/assets/logo-header-dark.png`
+      }
     },
     image: ogImage,
-    mainEntityOfPage: { "@type": "WebPage", "@id": canonicalUrl },
-  })}</script>`;
-
-  // BreadcrumbList JSON-LD
-  const breadcrumbLD = `\n  <script type="application/ld+json">${JSON.stringify({
+    mainEntityOfPage: { "@type": "WebPage", "@id": canonicalUrl }
+  })}<\/script>`;
+  const breadcrumbLD = `
+  <script type="application/ld+json">${JSON.stringify({
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_BASE}/` },
       { "@type": "ListItem", position: 2, name: "Blog", item: `${SITE_BASE}/blog/` },
-      { "@type": "ListItem", position: 3, name: p.title, item: canonicalUrl },
-    ],
-  })}</script>`;
-
-  const heroBlock = p.heroImageSrc
-    ? `\n      <figure class="blog-hero-image">
+      { "@type": "ListItem", position: 3, name: p.title, item: canonicalUrl }
+    ]
+  })}<\/script>`;
+  const heroBlock = p.heroImageSrc ? `
+      <figure class="blog-hero-image">
         <img src="${esc(p.heroImageSrc)}" alt="${esc(p.heroImageAlt || p.title)}" width="1200" height="630" loading="eager" decoding="async" class="blog-hero-img">
-      </figure>`
-    : "";
-
-  const infographicBlock = p.infographicSrc
-    ? `\n      <figure class="blog-infographic">
+      </figure>` : "";
+  const infographicBlock = p.infographicSrc ? `
+      <figure class="blog-infographic">
         <img src="${esc(p.infographicSrc)}" alt="Infographic: ${esc(p.title)}" loading="lazy" decoding="async" class="blog-infographic-img">
-      </figure>`
-    : "";
-
+      </figure>` : "";
   return `<!DOCTYPE html>
 <html lang="${p.lang}">
 <head>
   <!-- Google Analytics 4 -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"><\/script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag("js", new Date());
     gtag("config", "G-XXXXXXXXXX");
-  </script>
+  <\/script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${esc(p.title)} | CRAYDL Blog</title>
-  <meta name="description" content="${esc(p.metaDesc)}">${p.keywords ? `\n  <meta name="keywords" content="${esc(p.keywords)}">` : ""}
+  <meta name="description" content="${esc(p.metaDesc)}">${p.keywords ? `
+  <meta name="keywords" content="${esc(p.keywords)}">` : ""}
   <link rel="canonical" href="${canonicalUrl}">
   <!-- Open Graph -->
   <meta property="og:type" content="article">
@@ -462,121 +303,83 @@ ${p.body}
       </div>
     </div>
   </footer>
-  <script src="../../js/main.js"></script>
+  <script src="../../js/main.js"><\/script>
   <!-- Start of HubSpot Embed Code -->
-  <script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/47055408.js"></script>
+  <script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/47055408.js"><\/script>
   <!-- End of HubSpot Embed Code -->
 </body>
 </html>`;
 }
-
-// ===========================================================================
-// Posts manifest (posts.json) — dedup by autoseo_id + slug
-// ===========================================================================
-
-async function updatePostsManifest(
-  ghOpts: GHOpts,
-  newPost: PostEntry
-): Promise<void> {
+__name(buildBlogPostHTML, "buildBlogPostHTML");
+async function updatePostsManifest(ghOpts, newPost) {
   const base = `https://api.github.com/repos/${ghOpts.repo}`;
   const headers = ghHeaders(ghOpts.token);
   const manifestPath = "blog/posts.json";
-
-  let posts: PostEntry[] = [];
-  let existingSha: string | undefined;
-
+  let posts = [];
+  let existingSha;
   const getRes = await fetch(
     `${base}/contents/${manifestPath}?ref=${ghOpts.branch}`,
     { headers }
   );
   if (getRes.ok) {
-    const data = (await getRes.json()) as { sha?: string; content?: string };
+    const data = await getRes.json();
     existingSha = data.sha;
     if (data.content) {
-      posts = JSON.parse(atob(data.content.replace(/\n/g, ""))) as PostEntry[];
+      posts = JSON.parse(atob(data.content.replace(/\n/g, "")));
     }
   }
-
-  // Dedup: remove existing entry with same autoseo_id OR same slug
   posts = posts.filter(
-    (p) =>
-      p.slug !== newPost.slug &&
-      !(newPost.autoseo_id && p.autoseo_id === newPost.autoseo_id)
+    (p) => p.slug !== newPost.slug && !(newPost.autoseo_id && p.autoseo_id === newPost.autoseo_id)
   );
-
   posts.unshift(newPost);
   posts.sort((a, b) => b.date.localeCompare(a.date));
-
   const content = JSON.stringify(posts, null, 2);
   const encoded = toBase64(content);
-
-  const body: Record<string, string> = {
+  const body = {
     message: `Update blog manifest: ${newPost.title}`,
     content: encoded,
-    branch: ghOpts.branch,
+    branch: ghOpts.branch
   };
   if (existingSha) body.sha = existingSha;
-
   const putRes = await fetch(`${base}/contents/${manifestPath}`, {
     method: "PUT",
     headers,
-    body: JSON.stringify(body),
+    body: JSON.stringify(body)
   });
-
   if (!putRes.ok) {
     const err = await putRes.text();
     throw new Error(`Manifest update ${putRes.status}: ${err}`);
   }
 }
-
-// ===========================================================================
-// Sitemaps — update root and blog sitemaps with canonical /blog/posts/ URL
-// ===========================================================================
-
-async function updateAllSitemaps(
-  ghOpts: GHOpts,
-  newSlug: string
-): Promise<void> {
+__name(updatePostsManifest, "updatePostsManifest");
+async function updateAllSitemaps(ghOpts, newSlug) {
   const newLoc = `${SITE_BASE}/blog/posts/${newSlug}.html`;
-
-  // Update root and blog sitemaps only (not articles)
   const sitemapPaths = [
     "sitemap.xml",
-    "blog/sitemap.xml",
+    "blog/sitemap.xml"
   ];
-
   for (const sitemapPath of sitemapPaths) {
     await updateSingleSitemap(ghOpts, sitemapPath, newLoc, newSlug);
   }
 }
-
-async function updateSingleSitemap(
-  ghOpts: GHOpts,
-  sitemapPath: string,
-  newLoc: string,
-  newSlug: string
-): Promise<void> {
+__name(updateAllSitemaps, "updateAllSitemaps");
+async function updateSingleSitemap(ghOpts, sitemapPath, newLoc, newSlug) {
   const base = `https://api.github.com/repos/${ghOpts.repo}`;
   const headers = ghHeaders(ghOpts.token);
-
   let xml = "";
-  let existingSha: string | undefined;
-
+  let existingSha;
   const getRes = await fetch(
     `${base}/contents/${sitemapPath}?ref=${ghOpts.branch}`,
     { headers }
   );
   if (getRes.ok) {
-    const data = (await getRes.json()) as { sha?: string; content?: string };
+    const data = await getRes.json();
     existingSha = data.sha;
     if (data.content) {
       xml = atob(data.content.replace(/\n/g, ""));
     }
   }
-
-  // Skip if this URL is already in the sitemap
   if (xml.includes(newLoc)) return;
-
   if (xml) {
     const entry = `  <url><loc>${newLoc}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>`;
     xml = xml.replace("</urlset>", `${entry}\n</urlset>`);
@@ -587,38 +390,27 @@ async function updateSingleSitemap(
   <url><loc>${newLoc}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
 </urlset>`;
   }
-
-  const body: Record<string, string> = {
+  const body = {
     message: `Sitemap (${sitemapPath}): add ${newSlug}`,
     content: toBase64(xml),
-    branch: ghOpts.branch,
+    branch: ghOpts.branch
   };
   if (existingSha) body.sha = existingSha;
-
   const putRes = await fetch(`${base}/contents/${sitemapPath}`, {
     method: "PUT",
     headers,
-    body: JSON.stringify(body),
+    body: JSON.stringify(body)
   });
-
   if (!putRes.ok) {
     const err = await putRes.text();
     throw new Error(`Sitemap update ${putRes.status} (${sitemapPath}): ${err}`);
   }
 }
-
-// ===========================================================================
-// Redirects — add new slug to seoSlugs in redirects.js
-// ===========================================================================
-
-async function addSlugToRedirects(
-  ghOpts: GHOpts,
-  newSlug: string
-): Promise<void> {
+__name(updateSingleSitemap, "updateSingleSitemap");
+async function addSlugToRedirects(ghOpts, newSlug) {
   const base = `https://api.github.com/repos/${ghOpts.repo}`;
   const headers = ghHeaders(ghOpts.token);
   const redirectsPath = "infra/redirects.js";
-
   const getRes = await fetch(
     `${base}/contents/${redirectsPath}?ref=${ghOpts.branch}`,
     { headers }
@@ -626,107 +418,83 @@ async function addSlugToRedirects(
   if (!getRes.ok) {
     throw new Error(`Failed to read redirects.js: ${getRes.status}`);
   }
-
-  const data = (await getRes.json()) as { sha: string; content: string };
+  const data = await getRes.json();
   const js = atob(data.content.replace(/\n/g, ""));
-
-  // Check if slug already exists
   if (js.includes(`'${newSlug}'`)) return;
-
-  // Insert the new slug at the end of the seoSlugs array (before the closing bracket)
   const marker = "];";
   const slugsEnd = js.indexOf(marker, js.indexOf("var seoSlugs"));
   if (slugsEnd === -1) {
     throw new Error("Could not find seoSlugs array end in redirects.js");
   }
-
-  const updated =
-    js.slice(0, slugsEnd) +
-    `  '${newSlug}',\n` +
-    js.slice(slugsEnd);
-
-  const body: Record<string, string> = {
+  const updated = js.slice(0, slugsEnd) + `  '${newSlug}',\n` + js.slice(slugsEnd);
+  const body = {
     message: `Add redirect slug: ${newSlug}`,
     content: toBase64(updated),
     branch: ghOpts.branch,
-    sha: data.sha,
+    sha: data.sha
   };
-
   const putRes = await fetch(`${base}/contents/${redirectsPath}`, {
     method: "PUT",
     headers,
-    body: JSON.stringify(body),
+    body: JSON.stringify(body)
   });
-
   if (!putRes.ok) {
     const err = await putRes.text();
     throw new Error(`Redirects update ${putRes.status}: ${err}`);
   }
 }
-
-// ===========================================================================
-// GitHub file commit (text content)
-// ===========================================================================
-
-async function commitFileToGitHub(
-  opts: GHOpts & { path: string; content: string; message: string }
-): Promise<void> {
+__name(addSlugToRedirects, "addSlugToRedirects");
+async function commitFileToGitHub(opts) {
   const base = `https://api.github.com/repos/${opts.repo}`;
   const headers = ghHeaders(opts.token);
-
-  let existingSha: string | undefined;
+  let existingSha;
   const getRes = await fetch(
     `${base}/contents/${opts.path}?ref=${opts.branch}`,
     { headers }
   );
   if (getRes.ok) {
-    const data = (await getRes.json()) as { sha?: string };
+    const data = await getRes.json();
     existingSha = data.sha;
   }
-
-  const body: Record<string, string> = {
+  const body = {
     message: opts.message,
     content: toBase64(opts.content),
-    branch: opts.branch,
+    branch: opts.branch
   };
   if (existingSha) body.sha = existingSha;
-
   const putRes = await fetch(`${base}/contents/${opts.path}`, {
     method: "PUT",
     headers,
-    body: JSON.stringify(body),
+    body: JSON.stringify(body)
   });
-
   if (!putRes.ok) {
     const err = await putRes.text();
     throw new Error(`GitHub commit ${putRes.status}: ${err}`);
   }
 }
-
-// ===========================================================================
-// Utilities
-// ===========================================================================
-
-function ghHeaders(token: string): Record<string, string> {
+__name(commitFileToGitHub, "commitFileToGitHub");
+function ghHeaders(token) {
   return {
     Authorization: `Bearer ${token}`,
     Accept: "application/vnd.github+json",
     "Content-Type": "application/json",
-    "User-Agent": "craydl-autoseo-webhook",
+    "User-Agent": "craydl-autoseo-webhook"
   };
 }
-
-function toBase64(text: string): string {
+__name(ghHeaders, "ghHeaders");
+function toBase64(text) {
   return btoa(
-    new TextEncoder()
-      .encode(text)
-      .reduce((s, b) => s + String.fromCharCode(b), "")
+    new TextEncoder().encode(text).reduce((s, b) => s + String.fromCharCode(b), "")
   );
 }
-
-function jsonResponse(data: unknown, status: number): Response {
+__name(toBase64, "toBase64");
+function jsonResponse(data, status) {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json" }
   });
 }
+__name(jsonResponse, "jsonResponse");
+export {
+  index_default as default
+};
