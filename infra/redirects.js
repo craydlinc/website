@@ -1,8 +1,8 @@
-// CloudFront Function: redirects + directory index rewrite (/articles/ â /articles/index.html, /blog/ â /articles/)
+// CloudFront Function: redirects + directory index rewrite (/articles/ Ã¢ÂÂ /articles/index.html, /blog/ Ã¢ÂÂ /articles/)
 // Attached to viewer-request event on the CloudFront distribution.
 // CloudFront Functions use ES 5.1 syntax (no let/const, no arrow functions, no template literals).
 
-// --- Exact page redirects (old WordPress path â new path) ---
+// --- Exact page redirects (old WordPress path Ã¢ÂÂ new path) ---
 var pageRedirects = {
   '/custom-home-building-blog':       '/articles/',
   '/custom-home-building-blog/':      '/articles/',
@@ -54,7 +54,7 @@ var pageRedirects = {
   '/blog/':                           '/articles/'
 };
 
-// Article slugs: personal/Substack content (WordPress: /slug/ â /articles/posts/slug.html)
+// Article slugs: personal/Substack content (WordPress: /slug/ Ã¢ÂÂ /articles/posts/slug.html)
 var articleSlugs = [
   'architecture-vs-interior-design-home-design',
   'benefits-accessory-dwelling-units-adus',
@@ -82,9 +82,10 @@ var articleSlugs = [
   'the-largest-homebuilder-youve-never-heard-of',
   'why-custom-home-projects-stall'
    'digital-twin-construction-the-2026-guide-to-virtual-building-excellence',
+   'mastering-quantity-takeoffs-the-ultimate-guide-to-construction-estimation-in-2026',
 ];
 
-// SEO slugs: AutoSEO-generated content (WordPress: /slug/ â /blog/posts/slug.html)
+// SEO slugs: AutoSEO-generated content (WordPress: /slug/ Ã¢ÂÂ /blog/posts/slug.html)
 var seoSlugs = [
   'beyond-the-render-mastering-the-digital-twin-model-in-2026',
   'bim-for-residential-architects-the-2026-guide-to-digital-precision-and-design-freedom',
@@ -129,7 +130,7 @@ function handler(event) {
     };
   }
 
-  // 2. Redirect /articles/posts/{seo-slug}.html â /blog/posts/{slug}.html (moved AutoSEO content)
+  // 2. Redirect /articles/posts/{seo-slug}.html Ã¢ÂÂ /blog/posts/{slug}.html (moved AutoSEO content)
   if (uri.indexOf('/articles/posts/') === 0 && uri.indexOf('.html') !== -1) {
     var artSlug = uri.replace('/articles/posts/', '').replace('.html', '');
     if (artSlug && seoLookup.hasOwnProperty(artSlug)) {
@@ -150,7 +151,7 @@ function handler(event) {
     };
   }
 
-  // 4. Check old WordPress slug redirects: /slug/ â appropriate destination
+  // 4. Check old WordPress slug redirects: /slug/ Ã¢ÂÂ appropriate destination
   var slug = uri.replace(/^\//, '').replace(/\/$/, '');
   if (slug && articleLookup.hasOwnProperty(slug)) {
     return {
@@ -176,7 +177,7 @@ function handler(event) {
     };
   }
 
-  // 6. HubSpot legacy paths: /en/* â homepage
+  // 6. HubSpot legacy paths: /en/* Ã¢ÂÂ homepage
   if (uri.indexOf('/en/') === 0 || uri === '/en') {
     return {
       statusCode: 301,
@@ -185,7 +186,7 @@ function handler(event) {
     };
   }
 
-  // 7. Old WordPress uploads â relevant pages
+  // 7. Old WordPress uploads Ã¢ÂÂ relevant pages
   if (uri.indexOf('/wp-content/') === 0) {
     return {
       statusCode: 301,
@@ -194,7 +195,7 @@ function handler(event) {
     };
   }
 
-  // 8. Old WordPress feed/API paths â homepage
+  // 8. Old WordPress feed/API paths Ã¢ÂÂ homepage
   if (uri.indexOf('/feed') === 0 || uri.indexOf('/wp-json/') === 0 || uri.indexOf('/wp-admin') === 0 || uri.indexOf('/wp-login') === 0) {
     return {
       statusCode: 301,
@@ -209,6 +210,6 @@ function handler(event) {
     return request;
   }
 
-  // No redirect needed â pass through to S3
+  // No redirect needed Ã¢ÂÂ pass through to S3
   return request;
 }
