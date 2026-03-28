@@ -54,13 +54,11 @@ var pageRedirects = {
   '/blog/':                           '/articles/'
 };
 
-// Blog post slugs that exist on the new site (WordPress: /slug/ → new: /articles/posts/slug.html)
-var blogSlugs = [
+// Article slugs: personal/Substack content (WordPress: /slug/ → /articles/posts/slug.html)
+var articleSlugs = [
   'architecture-vs-interior-design-home-design',
   'benefits-accessory-dwelling-units-adus',
-  'beyond-the-render-mastering-the-digital-twin-model-in-2026',
   'bi-bim-for-custom-home-builders',
-  'bim-for-residential-architects-the-2026-guide-to-digital-precision-and-design-freedom',
   'bim-in-interior-design-implementation',
   'bim-in-residential-construction-outcomes',
   'bim-vdc-custom-home-design-build',
@@ -69,41 +67,51 @@ var blogSlugs = [
   'builders-speeding-up-home-design-projects',
   'california-wildfires-impact-arizona-nevada-real-estate',
   'choose-right-builder-custom-home',
-  'clash-detection-in-bim-eliminating-construction-conflicts-in-luxury-residential-projects',
   'craydl-bim-services-for-architects',
   'custom-luxury-homes-ai',
   'designing-building-custom-hillside-homes',
+  'drafting-chaos-architecture-firms',
+  'embracing-change-architecture-construction',
+  'future-of-connected-construction',
+  'home-renovation-feasibility',
+  'intelligent-home-construction-bim',
+  'programmatic-approach-home-construction',
+  'programmatic-home-construction-good-program',
+  'revolutionizing-preconstruction-the-visionary-founder-of-craydl',
+  'super-bim-scan-to-bim-construction-audit-arizona',
+  'the-largest-homebuilder-youve-never-heard-of',
+  'why-custom-home-projects-stall'
+];
+
+// SEO slugs: AutoSEO-generated content (WordPress: /slug/ → /blog/posts/slug.html)
+var seoSlugs = [
+  'beyond-the-render-mastering-the-digital-twin-model-in-2026',
+  'bim-for-residential-architects-the-2026-guide-to-digital-precision-and-design-freedom',
+  'clash-detection-in-bim-eliminating-construction-conflicts-in-luxury-residential-projects',
   'digital-twin-construction-management-the-2026-guide-to-precision-building',
   'digital-twin-for-luxury-real-estate-the-2026-pre-construction-standard',
   'digital-twin-meaning-the-2026-guide-to-virtual-prototypes-in-construction',
   'digital-twin-technology-the-2026-guide-to-luxury-residential-construction',
   'digital-twinning-in-2026-the-new-standard-for-luxury-residential-construction',
-  'drafting-chaos-architecture-firms',
-  'embracing-change-architecture-construction',
-  'future-of-connected-construction',
-  'home-renovation-feasibility',
   'how-to-prevent-construction-change-orders-the-digital-first-strategy-for-2026',
-  'intelligent-home-construction-bim',
   'luxury-home-pre-construction-checklist-2026-the-digital-first-guide',
   'mastering-clash-detection-protecting-luxury-custom-builds-in-2026',
   'pre-construction-planning-the-digital-blueprint-for-luxury-residential-success',
-  'programmatic-approach-home-construction',
-  'programmatic-home-construction-good-program',
   'residential-bim-services-scottsdale-the-luxury-builders-2026-guide',
-  'revolutionizing-preconstruction-the-visionary-founder-of-craydl',
-  'super-bim-scan-to-bim-construction-audit-arizona',
-  'the-largest-homebuilder-youve-never-heard-of',
   'vdc-for-luxury-home-builders-the-2026-strategic-guide-to-virtual-precision',
   'vdc-services-for-custom-home-builders-the-2026-guide-to-zero-rework-luxury-construction',
   'virtual-reality-walkthroughs-the-future-of-luxury-pre-construction-in-2026',
-  'what-is-a-digital-twin-the-living-blueprint-of-modern-construction',
-  'why-custom-home-projects-stall'
+  'what-is-a-digital-twin-the-living-blueprint-of-modern-construction'
 ];
 
-// Build a lookup object for O(1) blog slug matching
-var blogLookup = {};
-for (var i = 0; i < blogSlugs.length; i++) {
-  blogLookup[blogSlugs[i]] = true;
+// Build lookup objects for O(1) slug matching
+var articleLookup = {};
+for (var i = 0; i < articleSlugs.length; i++) {
+  articleLookup[articleSlugs[i]] = true;
+}
+var seoLookup = {};
+for (var i = 0; i < seoSlugs.length; i++) {
+  seoLookup[seoSlugs[i]] = true;
 }
 
 function handler(event) {
@@ -120,8 +128,20 @@ function handler(event) {
     };
   }
 
-  // 2. Redirect old /blog/* paths to /articles/*
-  if (uri.indexOf('/blog/') === 0) {
+  // 2. Redirect /articles/posts/{seo-slug}.html → /blog/posts/{slug}.html (moved AutoSEO content)
+  if (uri.indexOf('/articles/posts/') === 0 && uri.indexOf('.html') !== -1) {
+    var artSlug = uri.replace('/articles/posts/', '').replace('.html', '');
+    if (artSlug && seoLookup.hasOwnProperty(artSlug)) {
+      return {
+        statusCode: 301,
+        statusDescription: 'Moved Permanently',
+        headers: { location: { value: '/blog/posts/' + artSlug + '.html' } }
+      };
+    }
+  }
+
+  // 3. Redirect old /blog/* paths to /articles/* (except /blog/posts/ which now hosts SEO content)
+  if (uri.indexOf('/blog/') === 0 && uri.indexOf('/blog/posts/') !== 0) {
     return {
       statusCode: 301,
       statusDescription: 'Moved Permanently',
@@ -129,18 +149,24 @@ function handler(event) {
     };
   }
 
-  // 3. Check blog post redirects: /slug/ → /articles/posts/slug.html
-  //    Strip leading slash and trailing slash to get the slug
+  // 4. Check old WordPress slug redirects: /slug/ → appropriate destination
   var slug = uri.replace(/^\//, '').replace(/\/$/, '');
-  if (slug && blogLookup.hasOwnProperty(slug)) {
+  if (slug && articleLookup.hasOwnProperty(slug)) {
     return {
       statusCode: 301,
       statusDescription: 'Moved Permanently',
       headers: { location: { value: '/articles/posts/' + slug + '.html' } }
     };
   }
+  if (slug && seoLookup.hasOwnProperty(slug)) {
+    return {
+      statusCode: 301,
+      statusDescription: 'Moved Permanently',
+      headers: { location: { value: '/blog/posts/' + slug + '.html' } }
+    };
+  }
 
-  // 3. Catch-all: redirect /category/* /tag/* /author/* to /articles/
+  // 5. Catch-all: redirect /category/* /tag/* /author/* to /articles/
   if (uri.indexOf('/category/') === 0 || uri.indexOf('/tag/') === 0 || uri.indexOf('/author/') === 0) {
     return {
       statusCode: 301,
@@ -149,7 +175,7 @@ function handler(event) {
     };
   }
 
-  // 4. HubSpot legacy paths: /en/* → homepage
+  // 6. HubSpot legacy paths: /en/* → homepage
   if (uri.indexOf('/en/') === 0 || uri === '/en') {
     return {
       statusCode: 301,
@@ -158,7 +184,7 @@ function handler(event) {
     };
   }
 
-  // 5. Old WordPress uploads → relevant pages
+  // 7. Old WordPress uploads → relevant pages
   if (uri.indexOf('/wp-content/') === 0) {
     return {
       statusCode: 301,
@@ -167,7 +193,7 @@ function handler(event) {
     };
   }
 
-  // 6. Old WordPress feed/API paths → homepage
+  // 8. Old WordPress feed/API paths → homepage
   if (uri.indexOf('/feed') === 0 || uri.indexOf('/wp-json/') === 0 || uri.indexOf('/wp-admin') === 0 || uri.indexOf('/wp-login') === 0) {
     return {
       statusCode: 301,
@@ -176,7 +202,7 @@ function handler(event) {
     };
   }
 
-  // 7. Rewrite directory paths to index.html (S3 doesn't serve directory indexes with OAC)
+  // 9. Rewrite directory paths to index.html (S3 doesn't serve directory indexes with OAC)
   if (uri.charAt(uri.length - 1) === '/') {
     request.uri = uri + 'index.html';
     return request;

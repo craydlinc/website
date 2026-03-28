@@ -128,7 +128,7 @@ export default {
         ? `../../${infographicImagePath}`
         : null;
 
-      // 7. Build blog post HTML (canonical URL is /articles/posts/)
+      // 7. Build blog post HTML (canonical URL is /blog/posts/)
       const html = buildBlogPostHTML({
         title: payload.title,
         body: payload.content_html,
@@ -144,22 +144,14 @@ export default {
         lang: payload.languageCode || "en",
       });
 
-      // 8. Commit HTML to both /articles/posts/ (canonical) and /blog/posts/ (legacy)
-      const articlePath = `articles/posts/${slug}.html`;
+      // 8. Commit HTML to /blog/posts/ only (SEO content, not listed on articles page)
       const blogPath = `blog/posts/${slug}.html`;
-
-      await commitFileToGitHub({
-        ...ghOpts,
-        path: articlePath,
-        content: html,
-        message: `Article [AutoSEO #${payload.id}]: ${payload.title}`,
-      });
 
       await commitFileToGitHub({
         ...ghOpts,
         path: blogPath,
         content: html,
-        message: `Article (blog copy) [AutoSEO #${payload.id}]: ${payload.title}`,
+        message: `SEO post [AutoSEO #${payload.id}]: ${payload.title}`,
       });
 
       // 9. Update posts.json manifest (dedup by autoseo_id + slug)
@@ -177,14 +169,14 @@ export default {
         autoseo_id: payload.id,
       });
 
-      // 10. Update all three sitemaps with canonical /articles/posts/ URL
+      // 10. Update sitemaps with canonical /blog/posts/ URL
       await updateAllSitemaps(ghOpts, slug);
 
-      // 11. Add slug to redirects.js blogSlugs array
+      // 11. Add slug to redirects.js seoSlugs array
       await addSlugToRedirects(ghOpts, slug);
 
       // 12. Return published URL (canonical)
-      const publishedUrl = `${SITE_BASE}/articles/posts/${slug}.html`;
+      const publishedUrl = `${SITE_BASE}/blog/posts/${slug}.html`;
       return jsonResponse({ url: publishedUrl }, 200);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
@@ -302,7 +294,7 @@ async function commitBinaryToGitHub(
 }
 
 // ===========================================================================
-// Blog post HTML builder — canonical URL is /articles/posts/
+// Blog post HTML builder — canonical URL is /blog/posts/
 // ===========================================================================
 
 function buildBlogPostHTML(p: {
@@ -329,7 +321,7 @@ function buildBlogPostHTML(p: {
   const escJson = (s: string) =>
     s.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
 
-  const canonicalUrl = `${SITE_BASE}/articles/posts/${p.slug}.html`;
+  const canonicalUrl = `${SITE_BASE}/blog/posts/${p.slug}.html`;
   const ogImage = p.heroAbsoluteUrl || `${SITE_BASE}/assets/tour-indianola.png`;
 
   // FAQ JSON-LD
@@ -378,7 +370,7 @@ function buildBlogPostHTML(p: {
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_BASE}/` },
-      { "@type": "ListItem", position: 2, name: "Articles", item: `${SITE_BASE}/articles/` },
+      { "@type": "ListItem", position: 2, name: "Blog", item: `${SITE_BASE}/blog/` },
       { "@type": "ListItem", position: 3, name: p.title, item: canonicalUrl },
     ],
   })}</script>`;
@@ -538,19 +530,18 @@ async function updatePostsManifest(
 }
 
 // ===========================================================================
-// Sitemaps — update all three with canonical /articles/posts/ URL
+// Sitemaps — update root and blog sitemaps with canonical /blog/posts/ URL
 // ===========================================================================
 
 async function updateAllSitemaps(
   ghOpts: GHOpts,
   newSlug: string
 ): Promise<void> {
-  const newLoc = `${SITE_BASE}/articles/posts/${newSlug}.html`;
+  const newLoc = `${SITE_BASE}/blog/posts/${newSlug}.html`;
 
-  // Update all three sitemaps
+  // Update root and blog sitemaps only (not articles)
   const sitemapPaths = [
     "sitemap.xml",
-    "articles/sitemap.xml",
     "blog/sitemap.xml",
   ];
 
@@ -592,7 +583,7 @@ async function updateSingleSitemap(
   } else {
     xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>${SITE_BASE}/articles/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>${SITE_BASE}/blog/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>${newLoc}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
 </urlset>`;
   }
@@ -617,7 +608,7 @@ async function updateSingleSitemap(
 }
 
 // ===========================================================================
-// Redirects — add new slug to blogSlugs in redirects.js
+// Redirects — add new slug to seoSlugs in redirects.js
 // ===========================================================================
 
 async function addSlugToRedirects(
@@ -642,11 +633,11 @@ async function addSlugToRedirects(
   // Check if slug already exists
   if (js.includes(`'${newSlug}'`)) return;
 
-  // Insert the new slug at the end of the blogSlugs array (before the closing bracket)
+  // Insert the new slug at the end of the seoSlugs array (before the closing bracket)
   const marker = "];";
-  const slugsEnd = js.indexOf(marker, js.indexOf("var blogSlugs"));
+  const slugsEnd = js.indexOf(marker, js.indexOf("var seoSlugs"));
   if (slugsEnd === -1) {
-    throw new Error("Could not find blogSlugs array end in redirects.js");
+    throw new Error("Could not find seoSlugs array end in redirects.js");
   }
 
   const updated =
