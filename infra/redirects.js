@@ -1,60 +1,55 @@
-// CloudFront Function: redirects + directory index rewrite (/articles/ ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ /articles/index.html, /blog/ ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ /articles/)
-// Attached to viewer-request event on the CloudFront distribution.
-// CloudFront Functions use ES 5.1 syntax (no let/const, no arrow functions, no template literals).
-
-// --- Exact page redirects (old WordPress path ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ new path) ---
+// CloudFront Function: redirects + directory index rewrite (ES 5.1)
 var pageRedirects = {
-  '/custom-home-building-blog':       '/articles/',
-  '/custom-home-building-blog/':      '/articles/',
-  '/contact-craydl':                  '/contact.html',
-  '/contact-craydl/':                 '/contact.html',
-  '/about-craydl':                    '/contact.html',
-  '/about-craydl/':                   '/contact.html',
-  '/craydl-services':                 '/services.html',
-  '/craydl-services/':                '/services.html',
-  '/remodel':                         '/services.html',
-  '/remodel/':                        '/services.html',
-  '/new-construction':                '/services.html',
-  '/new-construction/':               '/services.html',
-  '/architects':                      '/architects.html',
-  '/architects/':                     '/architects.html',
-  '/builders':                        '/builders.html',
-  '/builders/':                       '/builders.html',
-  '/developers':                      '/developers.html',
-  '/developers/':                     '/developers.html',
-  '/interior-designers':              '/interior-designers.html',
-  '/interior-designers/':             '/interior-designers.html',
-  '/-interiordesigners':              '/interior-designers.html',
-  '/-interiordesigners/':             '/interior-designers.html',
-  '/homeowners':                      '/homeowners.html',
-  '/homeowners/':                     '/homeowners.html',
+  '/custom-home-building-blog': '/articles/',
+  '/custom-home-building-blog/': '/articles/',
+  '/contact-craydl': '/contact.html',
+  '/contact-craydl/': '/contact.html',
+  '/about-craydl': '/contact.html',
+  '/about-craydl/': '/contact.html',
+  '/craydl-services': '/services.html',
+  '/craydl-services/': '/services.html',
+  '/remodel': '/services.html',
+  '/remodel/': '/services.html',
+  '/new-construction': '/services.html',
+  '/new-construction/': '/services.html',
+  '/architects': '/architects.html',
+  '/architects/': '/architects.html',
+  '/builders': '/builders.html',
+  '/builders/': '/builders.html',
+  '/developers': '/developers.html',
+  '/developers/': '/developers.html',
+  '/interior-designers': '/interior-designers.html',
+  '/interior-designers/': '/interior-designers.html',
+  '/-interiordesigners': '/interior-designers.html',
+  '/-interiordesigners/': '/interior-designers.html',
+  '/homeowners': '/homeowners.html',
+  '/homeowners/': '/homeowners.html',
   '/confident-home-design-with-virtual-construction-craydl': '/homeowners.html',
   '/confident-home-design-with-virtual-construction-craydl/': '/homeowners.html',
-  '/owners-rep':                      '/owners-rep.html',
-  '/owners-rep/':                     '/owners-rep.html',
-  '/owners-representative':           '/owners-rep.html',
-  '/owners-representative/':          '/owners-rep.html',
-  '/who-we-serve':                    '/',
-  '/who-we-serve/':                   '/',
-  '/why-craydl':                      '/',
-  '/why-craydl/':                     '/',
-  '/project-samples':                 '/#new-home-tours',
-  '/project-samples/':                '/#new-home-tours',
-  '/calculator':                      'https://budget.craydl.com/',
-  '/calculator/':                     'https://budget.craydl.com/',
-  '/builder-intake-form':             '/contact.html',
-  '/builder-intake-form/':            '/contact.html',
-  '/homeowner-intake-form':           '/contact.html',
-  '/homeowner-intake-form/':          '/contact.html',
-  '/interior-designer-intake-form':   '/contact.html',
-  '/interior-designer-intake-form/':  '/contact.html',
-  '/thank-you-for-downloading':       '/thank-you.html',
-  '/thank-you-for-downloading/':      '/thank-you.html',
-  '/blog':                            '/articles/',
-  '/blog/':                           '/articles/'
+  '/owners-rep': '/owners-rep.html',
+  '/owners-rep/': '/owners-rep.html',
+  '/owners-representative': '/owners-rep.html',
+  '/owners-representative/': '/owners-rep.html',
+  '/who-we-serve': '/',
+  '/who-we-serve/': '/',
+  '/why-craydl': '/',
+  '/why-craydl/': '/',
+  '/project-samples': '/#new-home-tours',
+  '/project-samples/': '/#new-home-tours',
+  '/calculator': 'https://budget.craydl.com/',
+  '/calculator/': 'https://budget.craydl.com/',
+  '/builder-intake-form': '/contact.html',
+  '/builder-intake-form/': '/contact.html',
+  '/homeowner-intake-form': '/contact.html',
+  '/homeowner-intake-form/': '/contact.html',
+  '/interior-designer-intake-form': '/contact.html',
+  '/interior-designer-intake-form/': '/contact.html',
+  '/thank-you-for-downloading': '/thank-you.html',
+  '/thank-you-for-downloading/': '/thank-you.html',
+  '/blog': '/articles/',
+  '/blog/': '/articles/'
 };
 
-// Article slugs: personal/Substack content (WordPress: /slug/ ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ /articles/posts/slug.html)
 var articleSlugs = [
   'architecture-vs-interior-design-home-design',
   'benefits-accessory-dwelling-units-adus',
@@ -80,15 +75,14 @@ var articleSlugs = [
   'revolutionizing-preconstruction-the-visionary-founder-of-craydl',
   'super-bim-scan-to-bim-construction-audit-arizona',
   'the-largest-homebuilder-youve-never-heard-of',
-  'why-custom-home-projects-stall'
-   'digital-twin-construction-the-2026-guide-to-virtual-building-excellence',
-   'mastering-quantity-takeoffs-the-ultimate-guide-to-construction-estimation-in-2026',
-   'what-is-a-digital-twin-the-2026-guide-to-virtual-construction',
-   'the-premier-digital-twin-company-precision-pre-construction-for-luxury-estates',
-   'what-is-a-digital-twin-the-definitive-guide-to-virtual-construction-in-2026',
+  'why-custom-home-projects-stall',
+  'digital-twin-construction-the-2026-guide-to-virtual-building-excellence',
+  'mastering-quantity-takeoffs-the-ultimate-guide-to-construction-estimation-in-2026',
+  'what-is-a-digital-twin-the-2026-guide-to-virtual-construction',
+  'the-premier-digital-twin-company-precision-pre-construction-for-luxury-estates',
+  'what-is-a-digital-twin-the-definitive-guide-to-virtual-construction-in-2026'
 ];
 
-// SEO slugs: AutoSEO-generated content (WordPress: /slug/ ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ /blog/posts/slug.html)
 var seoSlugs = [
   'beyond-the-render-mastering-the-digital-twin-model-in-2026',
   'bim-for-residential-architects-the-2026-guide-to-digital-precision-and-design-freedom',
@@ -109,7 +103,6 @@ var seoSlugs = [
   'what-is-a-digital-twin-the-living-blueprint-of-modern-construction'
 ];
 
-// Build lookup objects for O(1) slug matching
 var articleLookup = {};
 for (var i = 0; i < articleSlugs.length; i++) {
   articleLookup[articleSlugs[i]] = true;
@@ -123,17 +116,14 @@ function handler(event) {
   var request = event.request;
   var uri = request.uri;
 
-  // 1. Check exact page redirects
   if (pageRedirects.hasOwnProperty(uri)) {
-    var target = pageRedirects[uri];
     return {
       statusCode: 301,
       statusDescription: 'Moved Permanently',
-      headers: { location: { value: target } }
+      headers: { location: { value: pageRedirects[uri] } }
     };
   }
 
-  // 2. Redirect /articles/posts/{seo-slug}.html ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ /blog/posts/{slug}.html (moved AutoSEO content)
   if (uri.indexOf('/articles/posts/') === 0 && uri.indexOf('.html') !== -1) {
     var artSlug = uri.replace('/articles/posts/', '').replace('.html', '');
     if (artSlug && seoLookup.hasOwnProperty(artSlug)) {
@@ -145,7 +135,6 @@ function handler(event) {
     }
   }
 
-  // 3. Redirect old /blog/* paths to /articles/* (except /blog/posts/ which now hosts SEO content)
   if (uri.indexOf('/blog/') === 0 && uri.indexOf('/blog/posts/') !== 0) {
     return {
       statusCode: 301,
@@ -154,7 +143,6 @@ function handler(event) {
     };
   }
 
-  // 4. Check old WordPress slug redirects: /slug/ ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ appropriate destination
   var slug = uri.replace(/^\//, '').replace(/\/$/, '');
   if (slug && articleLookup.hasOwnProperty(slug)) {
     return {
@@ -171,7 +159,6 @@ function handler(event) {
     };
   }
 
-  // 5. Catch-all: redirect /category/* /tag/* /author/* to /articles/
   if (uri.indexOf('/category/') === 0 || uri.indexOf('/tag/') === 0 || uri.indexOf('/author/') === 0) {
     return {
       statusCode: 301,
@@ -180,7 +167,6 @@ function handler(event) {
     };
   }
 
-  // 6. HubSpot legacy paths: /en/* ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ homepage
   if (uri.indexOf('/en/') === 0 || uri === '/en') {
     return {
       statusCode: 301,
@@ -189,7 +175,6 @@ function handler(event) {
     };
   }
 
-  // 7. Old WordPress uploads ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ relevant pages
   if (uri.indexOf('/wp-content/') === 0) {
     return {
       statusCode: 301,
@@ -198,7 +183,6 @@ function handler(event) {
     };
   }
 
-  // 8. Old WordPress feed/API paths ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ homepage
   if (uri.indexOf('/feed') === 0 || uri.indexOf('/wp-json/') === 0 || uri.indexOf('/wp-admin') === 0 || uri.indexOf('/wp-login') === 0) {
     return {
       statusCode: 301,
@@ -207,12 +191,10 @@ function handler(event) {
     };
   }
 
-  // 9. Rewrite directory paths to index.html (S3 doesn't serve directory indexes with OAC)
   if (uri.charAt(uri.length - 1) === '/') {
     request.uri = uri + 'index.html';
     return request;
   }
 
-  // No redirect needed ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ pass through to S3
   return request;
 }
