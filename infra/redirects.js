@@ -32,7 +32,13 @@ var R = { // old WordPress/HubSpot URLs → new pages
   '/custom-home': '/homeowners.html',
   '/questions-to-ask-your-builder': '/questions-to-ask-your-builder.html',
   '/what-craydl-brings-to-the-table-for-architects': '/architects.html',
-  '/revolutionizing-preconstruction-the-visionary-founder-of-craydl': '/contact.html'
+  '/revolutionizing-preconstruction-the-visionary-founder-of-craydl': '/contact.html',
+  // Google-indexed legacy URLs → targets requested for SEO recovery (override /articles/posts/ → /blog/ rule)
+  '/articles/posts/digital-twin-for-luxury-real-estate-the-2026-pre-construction-standard.html': '/services.html#scan-to-bim',
+  '/articles/posts/digital-twin-construction-management-the-2026-guide-to-precision-building.html': '/articles/index.html',
+  '/articles/posts/clash-detection-in-bim-eliminating-construction-conflicts-in-luxury-residential-projects.html': 'https://youtu.be/hk7hZQPC33c',
+  // WordPress permalink (was not always caught by bare-slug rule in edge cases)
+  '/choose-right-builder-custom-home': '/articles/posts/choose-right-builder-custom-home.html'
 };
 
 var articleSlugs = [
