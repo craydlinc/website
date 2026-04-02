@@ -30,6 +30,7 @@ var R = { // old WordPress/HubSpot URLs → new pages
   '/bim-services-for-architects': '/architects.html',
   '/custom-homes': '/homeowners.html',
   '/custom-home': '/homeowners.html',
+  '/questions-to-ask-your-builder': '/questions-to-ask-your-builder.html',
   '/what-craydl-brings-to-the-table-for-architects': '/architects.html',
   '/revolutionizing-preconstruction-the-visionary-founder-of-craydl': '/contact.html'
 };

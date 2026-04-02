@@ -42,7 +42,13 @@
       </a>
       <button type="button" class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
       <nav class="nav-main" id="nav-main">
-        <a href="../services.html">Services</a>
+        <div class="nav-dropdown">
+          <button type="button" class="nav-dropdown__trigger" aria-expanded="false" aria-controls="nav-services-menu" id="nav-services-trigger">Services</button>
+          <ul class="nav-dropdown__menu" id="nav-services-menu" role="list">
+            <li><a href="../services.html">CRAYDL Services</a></li>
+            <li><a href="../index.html#who-craydl-serves">Who CRAYDL Serves</a></li>
+          </ul>
+        </div>
         <div class="nav-dropdown">
           <button type="button" class="nav-dropdown__trigger" aria-expanded="false" aria-controls="nav-virtual-tours-menu" id="nav-virtual-tours-trigger">Virtual tours</button>
           <ul class="nav-dropdown__menu nav-dropdown__menu--caps" id="nav-virtual-tours-menu" role="list">

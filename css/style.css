@@ -1966,6 +1966,70 @@ a.card.project-type-tile h3 { margin: 0; }
   text-align: center;
 }
 
+/* Builder interview guide — numbered list, bronze badges (brand: Urbanist + alabaster band) */
+.builder-guide .container--readable {
+  width: min(40rem, 100%);
+  margin-inline: auto;
+}
+.builder-guide .page-hero .builder-guide-hero-sub {
+  max-width: 38rem;
+  margin-inline: auto;
+  margin-top: var(--space-sm);
+}
+.builder-guide .page-hero .builder-guide-hero-sub--lead {
+  margin-top: var(--space-md);
+}
+.builder-guide-list {
+  list-style: none;
+  padding: 0;
+  margin: var(--space-lg) 0 0;
+  counter-reset: guide-q;
+}
+.builder-guide-list > li {
+  counter-increment: guide-q;
+  position: relative;
+  padding: var(--space-md) 0 var(--space-lg);
+  padding-left: 2.85rem;
+  border-bottom: 1px solid var(--line-silt);
+}
+.builder-guide-list > li::before {
+  content: counter(guide-q);
+  position: absolute;
+  left: 0;
+  top: var(--space-md);
+  width: 2.1rem;
+  height: 2.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 0.9rem;
+  letter-spacing: -0.02em;
+  color: var(--color-alabaster);
+  background: var(--color-bronze);
+  border-radius: var(--radius);
+  box-shadow: 0 0 0 1px var(--line-bronze-soft);
+}
+.builder-guide-list > li:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.builder-guide-list h2 {
+  font-size: clamp(1.15rem, 2.2vw, 1.35rem);
+  margin: 0 0 var(--space-xs);
+}
+.builder-guide-list .builder-guide-lookfor {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin: var(--space-sm) 0 0.35em;
+  color: var(--color-bronze);
+}
+.builder-guide-list .builder-guide-good {
+  margin-top: var(--space-sm);
+  margin-bottom: 0;
+}
+
 /* Video / embed CTAs – match .btn-primary, single column, left-aligned with body copy */
 .section-media-cta {
   display: flex;
