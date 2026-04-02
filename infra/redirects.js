@@ -33,6 +33,16 @@ var R = { // old WordPress/HubSpot URLs → new pages
   '/questions-to-ask-your-builder': '/questions-to-ask-your-builder.html',
   '/what-craydl-brings-to-the-table-for-architects': '/architects.html',
   '/revolutionizing-preconstruction-the-visionary-founder-of-craydl': '/contact.html',
+  // Wix /post/ prefix URLs (Google Search Console reindex batch 2026-04)
+  '/post/revolutionizing-preconstruction-the-visionary-founder-of-craydl': '/articles/posts/revolutionizing-preconstruction-the-visionary-founder-of-craydl.html',
+  '/post/embracing-change-the-ultimate-in-sustainability-and-relevance': '/articles/posts/embracing-change-architecture-construction.html',
+  '/post/cornerstone-home-building-remodeling-information-management': '/articles/',
+  '/post/interior-design-meets-bim': '/articles/posts/bim-in-interior-design-implementation.html',
+  '/post/designing-building-new-homes-on-the-hillside': '/articles/posts/designing-building-custom-hillside-homes.html',
+  // Other legacy pages
+  '/bolt-performance': '/contact.html',
+  '/request-a-demo-page': '/book-now.html',
+  '/copy-of-privacy-policy': '/',
   // Google-indexed legacy URLs → targets requested for SEO recovery (override /articles/posts/ → /blog/ rule)
   '/articles/posts/digital-twin-for-luxury-real-estate-the-2026-pre-construction-standard.html': '/services.html#scan-to-bim',
   '/articles/posts/digital-twin-construction-management-the-2026-guide-to-precision-building.html': '/articles/index.html',

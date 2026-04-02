@@ -230,13 +230,13 @@ function buildBlogPostHTML(p) {
   return `<!DOCTYPE html>
 <html lang="${p.lang}">
 <head>
-  <!-- Google Analytics 4 -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"><\/script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-16675398368"><\/script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag("js", new Date());
-    gtag("config", "G-XXXXXXXXXX");
+    gtag("config", "AW-16675398368");
   <\/script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
