@@ -1691,6 +1691,10 @@ a.card.card--tile-link:hover .card__cta {
   color: var(--color-accent-hover);
   text-decoration: underline;
 }
+a.card.card--tile-link > p {
+  flex: 0 0 auto;
+  margin-bottom: var(--space-sm);
+}
 a.card.project-type-tile {
   text-decoration: none;
   color: inherit;
@@ -1705,7 +1709,7 @@ a.card.project-type-tile:focus-visible {
 a.card.project-type-tile h3 { margin: 0; }
 .tour-scroll-target { scroll-margin-top: 5.5rem; }
 .card h3 { margin: 0 0 var(--space-sm); color: var(--color-text-on-dark); }
-.card p { margin: 0 0 var(--space-md); color: var(--color-text-on-dark); font-size: 0.95rem; flex: 1; }
+.card p { margin: 0 0 var(--space-md); color: var(--color-text-on-dark); font-size: 0.95rem; }
 .card a { margin-top: auto; display: inline-block; }
 
 /* Homeowners “Great projects…” benefit tiles — ~50% scale, white outline CTAs on card chrome */
