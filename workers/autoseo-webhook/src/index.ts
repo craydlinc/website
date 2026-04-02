@@ -457,7 +457,7 @@ ${p.body}
   <footer class="site-footer">
     <div class="container">
       <div class="footer-bottom">
-        <p><a href="../../contact.html">Contact us</a> &middot; &copy; CRAYDL. Virtual Design Construction for custom homes.</p>
+        <p><a href="../../contact.html">Contact us</a> &middot;  <a href="/privacy-policy">Privacy Policy</a> &middot; &copy; CRAYDL. Virtual Design Construction for custom homes.</p>
         <p class="footer-tagline">See Before Building &middot; Est. 2021</p>
       </div>
     </div>

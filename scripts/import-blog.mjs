@@ -207,7 +207,7 @@ function postShell(title, metaDesc, bodyHtml, canonicalUrl, datePublished, origi
   <footer class="site-footer">
     <div class="container">
       <div class="footer-bottom">
-        <p><a href="../../contact.html">Contact us</a> · © CRAYDL.</p>
+        <p><a href="../../contact.html">Contact us</a> · <a href="/privacy-policy">Privacy Policy</a> · © CRAYDL.</p>
       </div>
     </div>
   </footer>
@@ -377,7 +377,7 @@ ${listHtml}
   <footer class="site-footer">
     <div class="container">
       <div class="footer-bottom">
-        <p><a href="../contact.html">Contact us</a> · <a href="https://share.google/x3mnlkSWDH6OtMTFJ" target="_blank" rel="noopener noreferrer" data-craydl-google="profile">Google listing</a> · <a href="https://share.google/x3mnlkSWDH6OtMTFJ" target="_blank" rel="noopener noreferrer" data-craydl-google="review">Review us</a> · © CRAYDL.</p>
+        <p><a href="../contact.html">Contact us</a> · <a href="https://share.google/x3mnlkSWDH6OtMTFJ" target="_blank" rel="noopener noreferrer" data-craydl-google="profile">Google listing</a> · <a href="https://share.google/x3mnlkSWDH6OtMTFJ" target="_blank" rel="noopener noreferrer" data-craydl-google="review">Review us</a> · <a href="/privacy-policy">Privacy Policy</a> · © CRAYDL.</p>
       </div>
     </div>
   </footer>
