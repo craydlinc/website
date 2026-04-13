@@ -1,0 +1,392 @@
+/* Case Study Pages — extends site design system */
+
+/* Hero banner */
+.cs-hero {
+  position: relative;
+  overflow: hidden;
+  min-height: 420px;
+  display: flex;
+  align-items: flex-end;
+  background: var(--color-charcoal);
+}
+.cs-hero__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 40%;
+  opacity: 0.55;
+}
+.cs-hero__overlay {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  padding: var(--space-2xl) 0 var(--space-xl);
+  background: linear-gradient(to top, rgba(43,45,47,0.92) 0%, rgba(43,45,47,0.4) 60%, transparent 100%);
+}
+.cs-hero__eyebrow {
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-sage);
+  margin: 0 0 var(--space-sm);
+}
+.cs-hero h1 {
+  color: var(--color-alabaster);
+  margin: 0;
+  max-width: 38ch;
+}
+
+/* Stats ribbon */
+.cs-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-md);
+  padding: var(--space-lg) 0;
+}
+.cs-stat {
+  text-align: center;
+  padding: var(--space-md) var(--space-sm);
+  border-radius: var(--radius);
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--line-silt-soft);
+  box-shadow: 0 0 0 1px var(--line-bronze-soft);
+}
+.cs-stat__value {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  line-height: 1.1;
+  color: var(--color-silt);
+  margin-bottom: 0.25rem;
+}
+.cs-stat__label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-text-muted);
+  line-height: 1.3;
+}
+
+/* Info sidebar / meta box */
+.cs-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-sm) var(--space-lg);
+  padding: var(--space-lg);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  border: 1px solid var(--line-silt-soft);
+  box-shadow: 0 0 0 1px var(--line-bronze-soft);
+  margin-bottom: var(--space-xl);
+}
+.cs-meta dt {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-sage);
+  margin-bottom: 0.25rem;
+}
+.cs-meta dd {
+  margin: 0 0 var(--space-sm);
+  color: var(--color-text-on-dark);
+  line-height: 1.5;
+}
+.cs-meta dd:last-of-type {
+  margin-bottom: 0;
+}
+
+/* Narrative prose */
+.cs-prose {
+  max-width: 68ch;
+  margin: 0 auto;
+}
+.cs-prose h2 {
+  margin-top: var(--space-xl);
+}
+.cs-prose h3 {
+  margin-top: var(--space-lg);
+  color: var(--color-silt);
+}
+.cs-prose p {
+  line-height: 1.7;
+}
+.cs-prose ul {
+  padding-left: 1.25em;
+  margin: 0 0 1em;
+}
+.cs-prose li {
+  margin-bottom: 0.5em;
+  line-height: 1.6;
+  color: var(--color-text-on-dark);
+}
+.section--light .cs-prose li {
+  color: var(--color-text-on-light);
+}
+
+/* Blockquote */
+.cs-quote {
+  border-left: 4px solid var(--color-bronze);
+  margin: var(--space-lg) 0;
+  padding: var(--space-md) var(--space-lg);
+  font-size: 1.15rem;
+  font-style: italic;
+  line-height: 1.6;
+  color: var(--color-alabaster);
+  background: var(--mist-alabaster);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+.section--light .cs-quote {
+  color: var(--color-text-on-light);
+  background: rgba(43, 45, 47, 0.04);
+  border-left-color: var(--color-bronze);
+}
+
+/* Image layouts */
+.cs-image {
+  margin: var(--space-lg) 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--line-silt-soft);
+  box-shadow:
+    0 0 0 1px var(--line-bronze-soft),
+    0 8px 24px rgba(0,0,0,0.15);
+}
+.cs-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.cs-image figcaption {
+  padding: var(--space-sm) var(--space-md);
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  background: var(--color-surface-elevated);
+  text-align: center;
+  border-top: 1px solid var(--line-silt-soft);
+}
+
+.cs-image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--space-md);
+  margin: var(--space-lg) 0;
+}
+.cs-image-grid .cs-image {
+  margin: 0;
+}
+
+/* Two-column comparison */
+.cs-comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+  margin: var(--space-lg) 0;
+}
+@media (max-width: 600px) {
+  .cs-comparison {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Logos row */
+.cs-logos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xl);
+  padding: var(--space-lg) 0;
+  flex-wrap: wrap;
+}
+.cs-logos img {
+  height: 60px;
+  width: auto;
+  object-fit: contain;
+  opacity: 0.9;
+}
+
+/* Products used pills */
+.cs-products {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin: var(--space-md) 0;
+}
+.cs-product-tag {
+  display: inline-block;
+  padding: 0.4rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-alabaster);
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--line-silt-soft);
+  border-radius: 999px;
+}
+
+/* Process table */
+.cs-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: var(--space-lg) 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--line-silt-soft);
+}
+.cs-table th,
+.cs-table td {
+  padding: var(--space-sm) var(--space-md);
+  text-align: left;
+  border-bottom: 1px solid var(--line-silt-soft);
+  vertical-align: top;
+}
+.cs-table th {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-sage);
+  background: var(--color-surface);
+}
+.cs-table td {
+  color: var(--color-text-on-dark);
+  background: var(--color-surface-elevated);
+  line-height: 1.6;
+}
+.cs-table tr:last-child td {
+  border-bottom: none;
+}
+.section--light .cs-table th {
+  color: var(--color-bronze);
+  background: rgba(43,45,47,0.06);
+}
+.section--light .cs-table td {
+  color: var(--color-text-on-light);
+  background: #fff;
+}
+
+/* Related case studies */
+.cs-related-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-lg);
+}
+.cs-related-card {
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--line-silt-soft);
+  box-shadow:
+    0 0 0 1px var(--line-bronze-soft),
+    0 8px 24px rgba(0,0,0,0.12);
+  background: var(--color-surface-elevated);
+  text-decoration: none;
+  display: block;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.cs-related-card:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 0 0 1px var(--line-bronze-soft),
+    0 16px 40px rgba(0,0,0,0.2);
+  text-decoration: none;
+}
+.cs-related-card img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
+}
+.cs-related-card__body {
+  padding: var(--space-md);
+}
+.cs-related-card__eyebrow {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-sage);
+  margin-bottom: 0.5rem;
+}
+.cs-related-card__title {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--color-alabaster);
+  line-height: 1.35;
+  margin: 0;
+}
+.cs-related-card:hover .cs-related-card__title {
+  color: var(--color-accent);
+}
+
+/* CTA banner */
+.cs-cta {
+  text-align: center;
+  padding: var(--space-2xl) 0;
+}
+.cs-cta h2 {
+  margin-bottom: var(--space-md);
+}
+.cs-cta p {
+  max-width: 48ch;
+  margin: 0 auto var(--space-lg);
+  font-size: 1.05rem;
+}
+
+/* Back link */
+.cs-back {
+  display: inline-block;
+  margin-bottom: var(--space-md);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Highlight box for key results */
+.cs-highlight {
+  padding: var(--space-lg);
+  border-radius: var(--radius);
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--line-silt-soft);
+  box-shadow: 0 0 0 1px var(--line-bronze-soft);
+  margin: var(--space-lg) 0;
+}
+.cs-highlight h3 {
+  color: var(--color-silt);
+  margin-top: 0;
+}
+.cs-highlight p:last-child {
+  margin-bottom: 0;
+}
+
+/* Problem/solution pattern */
+.cs-problem {
+  margin: var(--space-lg) 0;
+  padding: var(--space-lg);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  border-left: 4px solid var(--color-bronze);
+}
+.cs-problem h3 {
+  color: var(--color-alabaster);
+  margin-top: 0;
+}
+.cs-problem strong {
+  color: var(--color-silt);
+}
+
+@media (max-width: 768px) {
+  .cs-hero {
+    min-height: 300px;
+  }
+  .cs-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .cs-meta {
+    grid-template-columns: 1fr;
+  }
+  .cs-image-grid {
+    grid-template-columns: 1fr;
+  }
+}

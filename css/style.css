@@ -212,7 +212,7 @@ img { max-width: 100%; height: auto; display: block; }
 .nav-main a { color: var(--color-text-on-dark); font-weight: 500; padding: var(--space-xs) 0; white-space: nowrap; }
 .nav-main a:hover { color: var(--color-accent); text-decoration: none; }
 
-/* Case studies dropdown (HubSpot-hosted pages, opens in new tab) */
+/* Case studies dropdown */
 .nav-dropdown { position: relative; }
 .nav-dropdown__trigger {
   background: none;
