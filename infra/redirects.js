@@ -44,6 +44,7 @@ var R = { // old WordPress/HubSpot URLs → new pages
   '/request-a-demo-page': '/book-now.html',
   '/copy-of-privacy-policy': '/privacy-policy.html',
   '/privacy-policy': '/privacy-policy.html',
+  '/extension-privacy': '/extension-privacy.html',
   // Google-indexed legacy URLs → targets requested for SEO recovery (override /articles/posts/ → /blog/ rule)
   '/articles/posts/digital-twin-for-luxury-real-estate-the-2026-pre-construction-standard.html': '/services.html#scan-to-bim',
   '/articles/posts/digital-twin-construction-management-the-2026-guide-to-precision-building.html': '/articles/index.html',
