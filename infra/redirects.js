@@ -45,6 +45,16 @@ var R = { // old WordPress/HubSpot URLs → new pages
   '/copy-of-privacy-policy': '/privacy-policy.html',
   '/privacy-policy': '/privacy-policy.html',
   '/extension-privacy': '/extension-privacy.html',
+  // WordPress tag/author archives — specific mappings to topically-relevant pages
+  // so Google consolidates indexing signals to a clear canonical (overrides generic /tag/ and /author/ catch-alls below)
+  '/tag/architect-role-in-home-building': '/architects.html',
+  '/tag/craydl': '/',
+  '/tag/custom-home-contracts': '/questions-to-ask-your-builder.html',
+  '/tag/custom-home-planning': '/homeowners.html',
+  '/tag/bim-design-build': '/services.html',
+  '/tag/bim-for-interior-designers': '/interior-designers.html',
+  '/tag/data-driven-construction': '/builders.html',
+  '/author/blazeexperts': '/articles/',
   // Google-indexed legacy URLs → targets requested for SEO recovery (override /articles/posts/ → /blog/ rule)
   '/articles/posts/digital-twin-for-luxury-real-estate-the-2026-pre-construction-standard.html': '/services.html#scan-to-bim',
   '/articles/posts/digital-twin-construction-management-the-2026-guide-to-precision-building.html': '/articles/index.html',

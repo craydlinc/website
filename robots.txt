@@ -3,3 +3,4 @@ Allow: /
 
 Sitemap: https://www.craydl.com/sitemap.xml
 Sitemap: https://www.craydl.com/articles/sitemap.xml
+Sitemap: https://www.craydl.com/blog/sitemap.xml
