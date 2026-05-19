@@ -3,7 +3,7 @@
 // Receives articles from GetAutoSEO, downloads images, commits to GitHub
 // ---------------------------------------------------------------------------
 
-const WEBHOOK_TOKEN = "aseo_wh_5f8efdc75e5ef72eec175cb21cf8480d";
+const WEBHOOK_TOKEN = "aseo_wh_ddd1a6d8175c943619061af8675c2fa8";
 const SITE_BASE = "https://www.craydl.com";
 
 export interface Env {

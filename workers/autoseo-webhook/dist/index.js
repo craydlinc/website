@@ -2,7 +2,7 @@ var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 
 // src/index.ts
-var WEBHOOK_TOKEN = "aseo_wh_5f8efdc75e5ef72eec175cb21cf8480d";
+var WEBHOOK_TOKEN = "aseo_wh_ddd1a6d8175c943619061af8675c2fa8";
 var SITE_BASE = "https://www.craydl.com";
 var index_default = {
   async fetch(request, env) {
