@@ -1,5 +1,5 @@
 // CloudFront Function: redirects + directory index rewrite (cloudfront-js-2.0)
-var R = { // old WordPress/HubSpot URLs â new pages
+var R = { // old WordPress/HubSpot URLs Ã¢ÂÂ new pages
   '/custom-home-building-blog': '/articles/',
   '/contact-craydl': '/contact.html',
   '/about-craydl': '/',
@@ -45,7 +45,7 @@ var R = { // old WordPress/HubSpot URLs â new pages
   '/copy-of-privacy-policy': '/privacy-policy.html',
   '/privacy-policy': '/privacy-policy.html',
   '/extension-privacy': '/extension-privacy.html',
-  // WordPress tag/author archives â specific mappings to topically-relevant pages
+  // WordPress tag/author archives Ã¢ÂÂ specific mappings to topically-relevant pages
   // so Google consolidates indexing signals to a clear canonical (overrides generic /tag/ and /author/ catch-alls below)
   '/tag/architect-role-in-home-building': '/architects.html',
   '/tag/craydl': '/',
@@ -55,7 +55,7 @@ var R = { // old WordPress/HubSpot URLs â new pages
   '/tag/bim-for-interior-designers': '/interior-designers.html',
   '/tag/data-driven-construction': '/builders.html',
   '/author/blazeexperts': '/articles/',
-  // Google-indexed legacy URLs â targets requested for SEO recovery (override /articles/posts/ â /blog/ rule)
+  // Google-indexed legacy URLs Ã¢ÂÂ targets requested for SEO recovery (override /articles/posts/ Ã¢ÂÂ /blog/ rule)
   '/articles/posts/digital-twin-for-luxury-real-estate-the-2026-pre-construction-standard.html': '/services.html#scan-to-bim',
   '/articles/posts/digital-twin-construction-management-the-2026-guide-to-precision-building.html': '/articles/index.html',
   '/articles/posts/clash-detection-in-bim-eliminating-construction-conflicts-in-luxury-residential-projects.html': 'https://youtu.be/hk7hZQPC33c',
@@ -115,6 +115,7 @@ var seoSlugs = [
   'virtual-reality-walkthroughs-the-future-of-luxury-pre-construction-in-2026',
   'what-is-a-digital-twin-the-living-blueprint-of-modern-construction'
   'zz-autoseo-connectivity-check',
+  'program-management-vs-project-management-in-construction-a-2026-strategic-guide',
 ];
 
 var aL = {};
@@ -136,18 +137,18 @@ function handler(event) {
   // Hardcoded page redirects (match with or without trailing slash)
   if (R.hasOwnProperty(norm)) return r301(R[norm]);
 
-  // SEO articles incorrectly under /articles/posts/ â move to /blog/posts/
+  // SEO articles incorrectly under /articles/posts/ Ã¢ÂÂ move to /blog/posts/
   if (uri.indexOf('/articles/posts/') === 0 && uri.indexOf('.html') !== -1) {
     var artSlug = uri.replace('/articles/posts/', '').replace('.html', '');
     if (artSlug && sL.hasOwnProperty(artSlug)) return r301('/blog/posts/' + artSlug + '.html');
   }
 
-  // /blog/anything (not /blog/posts/) â /articles/
+  // /blog/anything (not /blog/posts/) Ã¢ÂÂ /articles/
   if (uri.indexOf('/blog/') === 0 && uri.indexOf('/blog/posts/') !== 0) {
     return r301(uri.replace('/blog/', '/articles/'));
   }
 
-  // Bare slug â article or SEO blog post
+  // Bare slug Ã¢ÂÂ article or SEO blog post
   var slug = uri.replace(/^\//, '').replace(/\/$/, '');
   if (slug && aL.hasOwnProperty(slug)) return r301('/articles/posts/' + slug + '.html');
   if (slug && sL.hasOwnProperty(slug)) return r301('/blog/posts/' + slug + '.html');
