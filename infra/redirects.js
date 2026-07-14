@@ -114,7 +114,6 @@ var seoSlugs = [
   'vdc-services-for-custom-home-builders-the-2026-guide-to-zero-rework-luxury-construction',
   'virtual-reality-walkthroughs-the-future-of-luxury-pre-construction-in-2026',
   'what-is-a-digital-twin-the-living-blueprint-of-modern-construction'
-  'zz-autoseo-connectivity-check',
   'program-management-vs-project-management-in-construction-a-2026-strategic-guide',
 ];
 

@@ -4,6 +4,7 @@
 // ---------------------------------------------------------------------------
 
 const SITE_BASE = "https://www.craydl.com";
+const WEBHOOK_PATH = "/api/autoseo-webhook";
 
 export interface Env {
   WEBHOOK_TOKEN: string;
@@ -52,6 +53,14 @@ type GHOpts = { token: string; repo: string; branch: string };
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
+    // Only serve the webhook path. Bots sweep new hostnames for /.env, /config.js
+    // and friends within minutes of the TLS cert hitting Certificate Transparency
+    // logs; answering 200 everywhere just advertises that something is home.
+    const path = new URL(request.url).pathname;
+    if (path !== WEBHOOK_PATH) {
+      return jsonResponse({ error: "Not found" }, 404);
+    }
+
     // Health check — lets GetAutoSEO validate the URL is a JSON API, not a web page.
     if (request.method === "GET") {
       return jsonResponse({ ok: true, service: "craydl-autoseo-webhook" }, 200);
@@ -97,6 +106,12 @@ export default {
     } catch {
       return jsonResponse({ error: "Invalid JSON" }, 400);
     }
+
+    console.log(
+      `event=${payload.event} id=${payload.id} slug=${payload.slug} ` +
+        `delivery=${request.headers.get("X-AutoSEO-Delivery") ?? "-"} ` +
+        `signed=${request.headers.get("X-AutoSEO-Signature") ? "yes" : "no"}`
+    );
 
     // 5. Handle test event
     if (payload.event === "test") {
@@ -194,6 +209,7 @@ export default {
 
       // 12. Return published URL (canonical)
       const publishedUrl = `${SITE_BASE}/blog/posts/${slug}.html`;
+      console.log(`published id=${payload.id} -> ${publishedUrl}`);
       return jsonResponse({ url: publishedUrl }, 200);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
