@@ -2,8 +2,12 @@ name = "craydl-autoseo-webhook"
 main = "src/index.ts"
 compatibility_date = "2024-12-01"
 
+# Custom domain. craydl.com itself is DNS-only in Cloudflare (it resolves straight
+# to CloudFront), so a path route like "craydl.com/api/webhooks*" never fires —
+# that traffic never touches Cloudflare's edge. A custom domain gives this Worker
+# its own proxied hostname and leaves www/apex CloudFront traffic alone.
 routes = [
-  { pattern = "craydl.com/api/webhooks*", zone_name = "craydl.com" }
+  { pattern = "api.craydl.com", custom_domain = true }
 ]
 workers_dev = true
 
@@ -11,7 +15,12 @@ workers_dev = true
 GITHUB_REPO = "craydlinc/website"
 GITHUB_BRANCH = "main"
 
-# GITHUB_TOKEN is set as a secret via: wrangler secret put GITHUB_TOKEN
+# Secrets — never commit these. Set via:
+#   wrangler secret put GITHUB_TOKEN    (fine-grained PAT, Contents: read/write on this repo only)
+#   wrangler secret put WEBHOOK_TOKEN   (shared secret with GetAutoSEO)
+#
+# To reject unsigned payloads, add REQUIRE_SIGNATURE = "true" under [vars] once
+# you've confirmed GetAutoSEO sends the X-AutoSEO-Signature header.
 
 [observability]
 enabled = true

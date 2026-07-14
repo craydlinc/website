@@ -3,13 +3,15 @@
 // Receives articles from GetAutoSEO, downloads images, commits to GitHub
 // ---------------------------------------------------------------------------
 
-const WEBHOOK_TOKEN = "aseo_wh_ddd1a6d8175c943619061af8675c2fa8";
 const SITE_BASE = "https://www.craydl.com";
 
 export interface Env {
+  WEBHOOK_TOKEN: string;
   GITHUB_TOKEN: string;
   GITHUB_REPO: string;
   GITHUB_BRANCH: string;
+  // Set to "true" to reject payloads that arrive without an HMAC signature.
+  REQUIRE_SIGNATURE?: string;
 }
 
 interface AutoSEOPayload {
@@ -50,7 +52,11 @@ type GHOpts = { token: string; repo: string; branch: string };
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
-    // Only accept POST
+    // Health check — lets GetAutoSEO validate the URL is a JSON API, not a web page.
+    if (request.method === "GET") {
+      return jsonResponse({ ok: true, service: "craydl-autoseo-webhook" }, 200);
+    }
+
     if (request.method !== "POST") {
       return jsonResponse({ error: "Method not allowed" }, 405);
     }
@@ -59,15 +65,26 @@ export default {
     const rawBody = await request.text();
 
     // 2. Validate bearer token
+    const webhookToken = env.WEBHOOK_TOKEN;
+    if (!webhookToken) {
+      console.error("WEBHOOK_TOKEN is not set; refusing all requests");
+      return jsonResponse({ error: "Server misconfigured" }, 500);
+    }
+
     const auth = request.headers.get("Authorization");
-    if (!auth || auth !== `Bearer ${WEBHOOK_TOKEN}`) {
+    if (!auth || !constantTimeEqual(auth, `Bearer ${webhookToken}`)) {
       return jsonResponse({ error: "Unauthorized" }, 401);
     }
 
-    // 3. Verify HMAC-SHA256 signature if present
+    // 3. Verify HMAC-SHA256 signature. Always checked when supplied; only
+    // *required* when REQUIRE_SIGNATURE is set, since an unsigned sender would
+    // otherwise be locked out.
     const signature = request.headers.get("X-AutoSEO-Signature");
+    if (env.REQUIRE_SIGNATURE === "true" && !signature) {
+      return jsonResponse({ error: "Missing signature" }, 401);
+    }
     if (signature) {
-      const valid = await verifyHMAC(rawBody, signature, WEBHOOK_TOKEN);
+      const valid = await verifyHMAC(rawBody, signature, webhookToken);
       if (!valid) {
         return jsonResponse({ error: "Invalid signature" }, 401);
       }
@@ -211,10 +228,15 @@ async function verifyHMAC(
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
 
-  if (computed.length !== signatureHex.length) return false;
+  return constantTimeEqual(computed, signatureHex);
+}
+
+// Compares without leaking match length via early return.
+function constantTimeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
   let diff = 0;
-  for (let i = 0; i < computed.length; i++) {
-    diff |= computed.charCodeAt(i) ^ signatureHex.charCodeAt(i);
+  for (let i = 0; i < a.length; i++) {
+    diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
   }
   return diff === 0;
 }
