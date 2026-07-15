@@ -113,9 +113,9 @@ var seoSlugs = [
   'vdc-for-luxury-home-builders-the-2026-strategic-guide-to-virtual-precision',
   'vdc-services-for-custom-home-builders-the-2026-guide-to-zero-rework-luxury-construction',
   'virtual-reality-walkthroughs-the-future-of-luxury-pre-construction-in-2026',
-  'what-is-a-digital-twin-the-living-blueprint-of-modern-construction'
+  'what-is-a-digital-twin-the-living-blueprint-of-modern-construction',
   'program-management-vs-project-management-in-construction-a-2026-strategic-guide',
-  'vdc-for-luxury-homes-scottsdale-the-high-velocity-framework-for-modern-construction',
+  'vdc-for-luxury-homes-scottsdale-the-high-velocity-framework-for-modern-construction'
 ];
 
 var aL = {};
