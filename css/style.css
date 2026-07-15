@@ -409,6 +409,14 @@ img { max-width: 100%; height: auto; display: block; }
     width: 1.28rem;
     height: 1.28rem;
   }
+  .header-login {
+    grid-column: 1 / -1;
+    grid-row: 4;
+    margin-left: 0;
+    justify-self: stretch;
+    text-align: center;
+    padding: 0.7rem 1.4rem;
+  }
 }
 
 /* Buttons – clear padding, no overlap with text */
@@ -441,6 +449,30 @@ img { max-width: 100%; height: auto; display: block; }
   border: 2px solid var(--color-alabaster);
 }
 .btn-outline:hover { background: var(--color-alabaster); color: var(--color-onyx); text-decoration: none; border-color: var(--color-alabaster); }
+
+/* Header login pill (black, matches mockup) */
+.header-login {
+  display: inline-block;
+  margin-left: auto;
+  padding: 0.55rem 1.4rem;
+  background: #000;
+  color: var(--color-alabaster);
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border-radius: 999px;
+  border: 1px solid rgba(242, 240, 230, 0.45);
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.header-login:hover,
+.header-login:focus-visible {
+  background: var(--color-alabaster);
+  color: var(--color-onyx);
+  border-color: var(--color-alabaster);
+  text-decoration: none;
+}
 
 /* Hero – stacked alignment, no overlap */
 .hero {
