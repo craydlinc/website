@@ -18,7 +18,7 @@ var R = {
   '/who-we-serve': '/',
   '/why-craydl': '/',
   '/project-samples': '/#new-home-tours',
-  '/calculator': 'https://budget.craydl.com/',
+  '/calculator': 'https://ccc.craydl.com/login',
   '/builder-intake-form': '/builders.html',
   '/homeowner-intake-form': '/contact.html',
   '/interior-designer-intake-form': '/contact.html',
