@@ -413,10 +413,9 @@ img { max-width: 100%; height: auto; display: block; }
     grid-column: 1 / -1;
     grid-row: 4;
     margin-left: 0;
-    justify-self: stretch;
-    text-align: center;
-    padding: 0.7rem 1.4rem;
+    justify-self: end;
   }
+  .header-login img { height: 42px; }
 }
 
 /* Buttons – clear padding, no overlap with text */
@@ -450,28 +449,25 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .btn-outline:hover { background: var(--color-alabaster); color: var(--color-onyx); text-decoration: none; border-color: var(--color-alabaster); }
 
-/* Header login pill (black, matches mockup) */
+/* Header login button (image) */
 .header-login {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   margin-left: auto;
-  padding: 0.55rem 1.4rem;
-  background: #000;
-  color: var(--color-alabaster);
-  font-weight: 700;
-  font-size: 0.78rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  border-radius: 999px;
-  border: 1px solid rgba(242, 240, 230, 0.45);
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  padding: 0;
+  border: none;
+  background: none;
+  line-height: 0;
 }
-.header-login:hover,
-.header-login:focus-visible {
-  background: var(--color-alabaster);
-  color: var(--color-onyx);
-  border-color: var(--color-alabaster);
-  text-decoration: none;
+.header-login img {
+  display: block;
+  height: 48px;
+  width: auto;
+  transition: opacity 0.2s;
+}
+.header-login:hover img,
+.header-login:focus-visible img {
+  opacity: 0.8;
 }
 
 /* Hero – stacked alignment, no overlap */
