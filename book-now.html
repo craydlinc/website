@@ -29,11 +29,18 @@
   <script src="js/ads-conversion.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="refresh" content="3;url=https://calendar.app.google/rkDgvXdgsLKhVG1s9">
   <title>Schedule a Meeting | CRAYDL</title>
+  <style>
+    body { margin: 0; font-family: sans-serif; }
+    .booking-embed { max-width: 900px; margin: 0 auto; padding: 1.5rem; }
+    iframe.booking-widget { width: 100%; border: none; overflow: hidden; min-height: 700px; }
+  </style>
 </head>
 <body>
-  <p style="padding: 2rem; text-align: center;">Redirecting to schedule a meeting&hellip; <a href="https://calendar.app.google/rkDgvXdgsLKhVG1s9">Click here if you are not redirected.</a></p>
-  <script>gtag_report_conversion('https://calendar.app.google/rkDgvXdgsLKhVG1s9');</script>
+  <div class="booking-embed">
+    <iframe class="booking-widget" src="https://api.leadconnectorhq.com/widget/booking/LAbd5bA0XCLXKkogNnar" scrolling="no" id="LAbd5bA0XCLXKkogNnar_booking"></iframe>
+  </div>
+  <script src="https://link.msgsndr.com/js/form_embed.js" type="text/javascript"></script>
+  <script>gtag_report_conversion();</script>
 </body>
 </html>
