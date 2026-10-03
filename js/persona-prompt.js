@@ -56,7 +56,6 @@
       '<div class="persona-dialog" role="dialog" aria-modal="true" aria-labelledby="persona-title">' +
         '<button type="button" class="persona-close" aria-label="Close">&times;</button>' +
         '<h2 id="persona-title" class="persona-title">Which best describes you?</h2>' +
-        '<p class="persona-sub">We’ll take you to what matters most for your role.</p>' +
         '<div class="persona-options"></div>' +
       '</div>';
 
