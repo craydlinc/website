@@ -1,6 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Persona redirect: returning visitors who picked a role go straight to their page.
+       Skipped when arriving from another page on this site, so the Home link still works.
+       ?persona=reset clears the choice. Prompt UI lives in js/persona-prompt.js. -->
+  <script>
+  (function () {
+    try {
+      var pages = { builder: 'builders.html', homeowner: 'homeowners.html', developer: 'developers.html', 'interior-designer': 'interior-designers.html', architect: 'architects.html' };
+      if (/[?&]persona=reset\b/.test(location.search)) { document.cookie = 'craydl_persona=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/'; return; }
+      var m = document.cookie.match(/(?:^|; )craydl_persona=([^;]*)/);
+      var page = m && pages[decodeURIComponent(m[1])];
+      var internal = document.referrer && document.referrer.indexOf(location.protocol + '//' + location.host) === 0;
+      if (page && !internal) location.replace(page + location.search + location.hash);
+    } catch (e) {}
+  })();
+  </script>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=AW-16675398368"></script>
   <script>
@@ -829,6 +844,7 @@
 
   <script src="js/main.js"></script>
   <script src="js/ads-conversion.js"></script>
+  <script src="js/persona-prompt.js"></script>
 
   <!-- Structured Data: LocalBusiness -->
   <script type="application/ld+json">
