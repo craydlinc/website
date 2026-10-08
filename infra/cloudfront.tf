@@ -57,18 +57,19 @@ resource "aws_cloudfront_distribution" "website" {
     max_ttl     = 31536000 # 1 year
   }
 
-  # SPA-style error handling: serve index.html for 404s
+  # S3 (via OAC) answers 403 for missing keys; serve a real 404 page so unknown
+  # URLs don't come back as 200 copies of the home page.
   custom_error_response {
     error_code            = 403
-    response_code         = 200
-    response_page_path    = "/index.html"
+    response_code         = 404
+    response_page_path    = "/404.html"
     error_caching_min_ttl = 10
   }
 
   custom_error_response {
     error_code            = 404
     response_code         = 404
-    response_page_path    = "/index.html"
+    response_page_path    = "/404.html"
     error_caching_min_ttl = 10
   }
 

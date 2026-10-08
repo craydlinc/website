@@ -496,7 +496,11 @@
     }, 0);
   });
   /* Generic image zoom — creates a fullscreen overlay on click */
-  var zoomButtons = document.querySelectorAll('.homeowner-process__zoom');
+  var zoomButtons = Array.prototype.slice.call(document.querySelectorAll('.homeowner-process__zoom'));
+  // Hero and roadmap images only have dedicated lightbox markup on the home page;
+  // everywhere else they fall back to this overlay.
+  if (heroZoomTrigger && !heroLightbox) zoomButtons.push(heroZoomTrigger);
+  if (timelineZoomTrigger && !timelineLightbox) zoomButtons.push(timelineZoomTrigger);
   var zoomOverlay = null;
 
   function closeZoomOverlay() {
@@ -519,8 +523,12 @@
       zoomOverlay.setAttribute('role', 'dialog');
       zoomOverlay.setAttribute('aria-label', 'Full screen image');
       zoomOverlay.innerHTML =
-        '<button type="button" class="image-zoom-overlay__close" aria-label="Close">&times;</button>' +
-        '<img src="' + img.src + '" alt="' + (img.alt || '') + '" class="image-zoom-overlay__img">';
+        '<button type="button" class="image-zoom-overlay__close" aria-label="Close">&times;</button>';
+      var zoomImg = document.createElement('img');
+      zoomImg.className = 'image-zoom-overlay__img';
+      zoomImg.src = img.currentSrc || img.src;
+      zoomImg.alt = img.alt || '';
+      zoomOverlay.appendChild(zoomImg);
 
       document.body.appendChild(zoomOverlay);
       document.body.style.overflow = 'hidden';

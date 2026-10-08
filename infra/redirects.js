@@ -43,18 +43,21 @@ var R = {
   '/copy-of-privacy-policy': '/privacy-policy.html',
   '/privacy-policy': '/privacy-policy.html',
   '/extension-privacy': '/extension-privacy.html',
-  '/tag/architect-role-in-home-building': '/architects.html',
-  '/tag/craydl': '/',
-  '/tag/custom-home-contracts': '/questions-to-ask-your-builder.html',
-  '/tag/custom-home-planning': '/homeowners.html',
-  '/tag/bim-design-build': '/services.html',
-  '/tag/bim-for-interior-designers': '/interior-designers.html',
-  '/tag/data-driven-construction': '/builders.html',
-  '/author/blazeexperts': '/articles/',
   '/articles/posts/digital-twin-for-luxury-real-estate-the-2026-pre-construction-standard.html': '/services.html#scan-to-bim',
   '/articles/posts/digital-twin-construction-management-the-2026-guide-to-precision-building.html': '/articles/index.html',
   '/articles/posts/clash-detection-in-bim-eliminating-construction-conflicts-in-luxury-residential-projects.html': 'https://youtu.be/hk7hZQPC33c',
-  '/choose-right-builder-custom-home': '/articles/posts/choose-right-builder-custom-home.html'
+  '/choose-right-builder-custom-home': '/articles/posts/choose-right-builder-custom-home.html',
+  '/casitas': '/articles/posts/benefits-accessory-dwelling-units-adus.html',
+  '/architecture-vs-interior-design-who-does-what': '/articles/posts/architecture-vs-interior-design-home-design.html',
+  '/designing-building-new-homes-on-the-hillside': '/articles/posts/designing-building-custom-hillside-homes.html',
+  '/super-bim-navigating-the-shadows-of-construction-overcharges-with-cutting-edge-tech': '/articles/posts/super-bim-scan-to-bim-construction-audit-arizona.html',
+  '/the-future-of-connected-construction': '/articles/posts/future-of-connected-construction.html',
+  '/why-should-carl-care-about-home-feasibility': '/articles/posts/home-renovation-feasibility.html',
+  '/post/leveraging-bi-and-bim-for-custom-home-builders': '/articles/posts/bi-bim-for-custom-home-builders.html',
+  '/builder-intake-form.html': '/builders.html',
+  '/services': '/services.html',
+  '/contact': '/contact.html',
+  '/book-now': '/book-now.html'
 };
 
 var articleSlugs = [
@@ -125,6 +128,15 @@ function handler(event) {
   var request = event.request;
   var uri = request.uri;
 
+  var host = request.headers.host ? request.headers.host.value : '';
+  if (host === 'craydl.com') {
+    var qs = [];
+    for (var k in request.querystring) qs.push(k + '=' + request.querystring[k].value);
+    return r301('https://www.craydl.com' + uri + (qs.length ? '?' + qs.join('&') : ''));
+  }
+
+  if (uri === '/articles') return r301('/articles/');
+
   var norm = (uri.length > 1 && uri.charAt(uri.length - 1) === '/') ? uri.slice(0, -1) : uri;
 
   if (R.hasOwnProperty(norm)) return r301(R[norm]);
@@ -147,30 +159,7 @@ function handler(event) {
     var ps = dm[1];
     if (aL.hasOwnProperty(ps)) return r301('/articles/posts/' + ps + '.html');
     if (sL.hasOwnProperty(ps)) return r301('/blog/posts/' + ps + '.html');
-    return r301('/articles/');
   }
-
-  if (uri.indexOf('/category/') === 0) {
-    var cp = uri.replace(/^\/category\//, '').replace(/\/$/, '').split('/');
-    var cs = cp[cp.length - 1];
-    if (cs && aL.hasOwnProperty(cs)) return r301('/articles/posts/' + cs + '.html');
-    if (cs && sL.hasOwnProperty(cs)) return r301('/blog/posts/' + cs + '.html');
-    return r301('/articles/');
-  }
-
-  if (uri.indexOf('/tag/') === 0 || uri.indexOf('/author/') === 0) return r301('/articles/');
-
-  if (uri.match(/^\/page\/\d+\/?$/)) return r301('/');
-
-  if (uri.indexOf('/en/') === 0 || uri === '/en') return r301('/');
-
-  if (uri.indexOf('/wp-content/') === 0) return r301('/');
-
-  if (uri.indexOf('/feed') === 0 || uri.indexOf('/wp-json/') === 0 || uri.indexOf('/wp-admin') === 0 || uri.indexOf('/wp-login') === 0 || uri.indexOf('/wp-includes/') === 0 || uri === '/xmlrpc.php' || uri.indexOf('/wp-cron') === 0 || uri.indexOf('/comments/') === 0 || uri.indexOf('/trackback/') === 0) {
-    return r301('/');
-  }
-
-  if (uri.indexOf('/attachment/') === 0) return r301('/');
 
   if (uri.charAt(uri.length - 1) === '/') {
     request.uri = uri + 'index.html';

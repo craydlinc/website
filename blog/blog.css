@@ -1,4 +1,4 @@
-/* Blog index + WordPress-migrated post content */
+/* Blog index + post content */
 
 /* ===== Hero ===== */
 .blog-hero {
@@ -367,47 +367,44 @@
   margin: 0 0 var(--space-sm);
 }
 
-/* WordPress content blocks */
-.blog-content.wp-content {
+/* Post content blocks */
+.blog-content.post-content {
   color: var(--color-beige);
   line-height: 1.65;
   font-size: 1.05rem;
 }
-.blog-content.wp-content h1,
-.blog-content.wp-content h2,
-.blog-content.wp-content h3,
-.blog-content.wp-content h4 {
+.blog-content.post-content h1,
+.blog-content.post-content h2,
+.blog-content.post-content h3,
+.blog-content.post-content h4 {
   font-family: var(--font-display);
   font-weight: 900;
   color: var(--color-beige);
   margin: 1.5em 0 0.5em;
   line-height: 1.25;
 }
-.blog-content.wp-content h2 { font-size: 1.5rem; }
-.blog-content.wp-content h3 { font-size: 1.25rem; }
-.blog-content.wp-content p { margin: 0 0 1em; }
-.blog-content.wp-content ul,
-.blog-content.wp-content ol {
+.blog-content.post-content h2 { font-size: 1.5rem; }
+.blog-content.post-content h3 { font-size: 1.25rem; }
+.blog-content.post-content p { margin: 0 0 1em; }
+.blog-content.post-content ul,
+.blog-content.post-content ol {
   margin: 0 0 1em;
   padding-left: 1.5rem;
 }
-.blog-content.wp-content a {
+.blog-content.post-content a {
   color: var(--color-powder-blue);
   word-break: break-word;
 }
-.blog-content.wp-content img,
-.blog-content.wp-content figure {
+.blog-content.post-content img,
+.blog-content.post-content figure {
   max-width: 100%;
   height: auto;
 }
-.blog-content.wp-content blockquote {
+.blog-content.post-content blockquote {
   border-left: 3px solid var(--color-powder-blue);
   margin: 1em 0;
   padding-left: 1rem;
   color: var(--color-text-muted);
-}
-.blog-content.wp-content .wp-block-image {
-  margin: 1.5em 0;
 }
 
 /* Substack-sourced body (RSS HTML) */
