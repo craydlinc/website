@@ -6,14 +6,8 @@ var R = {
   '/craydl-services': '/services.html',
   '/remodel': '/services.html',
   '/new-construction': '/services.html',
-  '/architects': '/architects.html',
-  '/builders': '/builders.html',
-  '/developers': '/developers.html',
-  '/interior-designers': '/interior-designers.html',
   '/-interiordesigners': '/interior-designers.html',
-  '/homeowners': '/homeowners.html',
   '/confident-home-design-with-virtual-construction-craydl': '/homeowners.html',
-  '/owners-rep': '/owners-rep.html',
   '/owners-representative': '/owners-rep.html',
   '/who-we-serve': '/',
   '/why-craydl': '/',
@@ -30,35 +24,22 @@ var R = {
   '/bim-services-for-architects': '/architects.html',
   '/custom-homes': '/homeowners.html',
   '/custom-home': '/homeowners.html',
-  '/questions-to-ask-your-builder': '/questions-to-ask-your-builder.html',
   '/what-craydl-brings-to-the-table-for-architects': '/architects.html',
   '/revolutionizing-preconstruction-the-visionary-founder-of-craydl': '/contact.html',
-  '/post/revolutionizing-preconstruction-the-visionary-founder-of-craydl': '/articles/posts/revolutionizing-preconstruction-the-visionary-founder-of-craydl.html',
-  '/post/embracing-change-the-ultimate-in-sustainability-and-relevance': '/articles/posts/embracing-change-architecture-construction.html',
-  '/post/cornerstone-home-building-remodeling-information-management': '/articles/',
-  '/post/interior-design-meets-bim': '/articles/posts/bim-in-interior-design-implementation.html',
-  '/post/designing-building-new-homes-on-the-hillside': '/articles/posts/designing-building-custom-hillside-homes.html',
   '/bolt-performance': '/contact.html',
   '/request-a-demo-page': '/book-now.html',
   '/copy-of-privacy-policy': '/privacy-policy.html',
-  '/privacy-policy': '/privacy-policy.html',
-  '/extension-privacy': '/extension-privacy.html',
   '/articles/posts/digital-twin-for-luxury-real-estate-the-2026-pre-construction-standard.html': '/services.html#scan-to-bim',
   '/articles/posts/digital-twin-construction-management-the-2026-guide-to-precision-building.html': '/articles/index.html',
   '/articles/posts/clash-detection-in-bim-eliminating-construction-conflicts-in-luxury-residential-projects.html': 'https://youtu.be/hk7hZQPC33c',
-  '/choose-right-builder-custom-home': '/articles/posts/choose-right-builder-custom-home.html',
   '/casitas': '/articles/posts/benefits-accessory-dwelling-units-adus.html',
   '/architecture-vs-interior-design-who-does-what': '/articles/posts/architecture-vs-interior-design-home-design.html',
-  '/designing-building-new-homes-on-the-hillside': '/articles/posts/designing-building-custom-hillside-homes.html',
   '/super-bim-navigating-the-shadows-of-construction-overcharges-with-cutting-edge-tech': '/articles/posts/super-bim-scan-to-bim-construction-audit-arizona.html',
-  '/the-future-of-connected-construction': '/articles/posts/future-of-connected-construction.html',
-  '/why-should-carl-care-about-home-feasibility': '/articles/posts/home-renovation-feasibility.html',
-  '/post/leveraging-bi-and-bim-for-custom-home-builders': '/articles/posts/bi-bim-for-custom-home-builders.html',
-  '/builder-intake-form.html': '/builders.html',
-  '/services': '/services.html',
-  '/contact': '/contact.html',
-  '/book-now': '/book-now.html'
+  '/builder-intake-form.html': '/builders.html'
 };
+
+// /<name> -> /<name>.html
+var pages = ['architects', 'builders', 'developers', 'interior-designers', 'homeowners', 'owners-rep', 'questions-to-ask-your-builder', 'privacy-policy', 'extension-privacy', 'services', 'contact', 'book-now'];
 
 var articleSlugs = [
   'architecture-vs-interior-design-home-design',
@@ -90,8 +71,44 @@ var articleSlugs = [
   'mastering-quantity-takeoffs-the-ultimate-guide-to-construction-estimation-in-2026',
   'what-is-a-digital-twin-the-2026-guide-to-virtual-construction',
   'the-premier-digital-twin-company-precision-pre-construction-for-luxury-estates',
-  'what-is-a-digital-twin-the-definitive-guide-to-virtual-construction-in-2026'
+  'what-is-a-digital-twin-the-definitive-guide-to-virtual-construction-in-2026',
+  'cornerstone-home-building-remodeling-information-management',
+  'as-built-conditions-in-custom-home-building',
+  'craydl-at-techomebuilder-summit-2023',
+  'fun-fact-friday-the-magic-of-lidar-cameras-in-home-construction',
+  'phil-orstrom-transforming-preconstruction-operations-with-craydl',
+  'pre-construction-budget-calculator-tool-a-builder-s-best-friend',
+  'revit-revolutionizing-home-building',
+  'transforming-construction-projects-a-homeowner-s-guide-to-scan-to-bim',
+  'walk-through-your-home-plan-3d-visualization-in-construction',
+  'what-is-bim'
 ];
+
+// Old article slugs (at / or /post/) whose article now has a different slug
+var P = {
+  'accessory-dwelling-units': 'benefits-accessory-dwelling-units-adus',
+  'architect-vs-designer': 'architecture-vs-interior-design-home-design',
+  'california-fires-impact-on-az-nv': 'california-wildfires-impact-arizona-nevada-real-estate',
+  'custom-luxury-homes-ai-what-s-coming': 'custom-luxury-homes-ai',
+  'designing-building-new-homes-on-the-hillside': 'designing-building-custom-hillside-homes',
+  'drafting-chaos-architectural-and-designer-work': 'drafting-chaos-architecture-firms',
+  'embracing-change-the-ultimate-in-sustainability-and-relevance': 'embracing-change-architecture-construction',
+  'good-program-good-outcome': 'programmatic-home-construction-good-program',
+  'hiring-a-builder': 'choose-right-builder-custom-home',
+  'home-construction': 'intelligent-home-construction-bim',
+  'interior-design-meets-bim': 'bim-in-interior-design-implementation',
+  'leveraging-bi-and-bim-for-custom-home-builders': 'bi-bim-for-custom-home-builders',
+  'navigating-the-complexities-of-custom-home-building-no-swedish-no-finish': 'why-custom-home-projects-stall',
+  'outcomes-a-strategic-approach-to-home-design-and-construction': 'bim-in-residential-construction-outcomes',
+  'programmatic-approach-building': 'programmatic-approach-home-construction',
+  'super-bim-tech-construction-overcharges': 'super-bim-scan-to-bim-construction-audit-arizona',
+  'the-art-science-of-design-build': 'bim-vdc-custom-home-design-build',
+  'the-future-of-connected-construction': 'future-of-connected-construction',
+  'the-largest-homebuilder-you-ve-never-heard-of': 'the-largest-homebuilder-youve-never-heard-of',
+  'there-s-bim-and-bim-mastery': 'bim-vs-traditional-methods',
+  'what-craydl-does-for-architects': 'craydl-bim-services-for-architects',
+  'why-should-carl-care-about-home-feasibility': 'home-renovation-feasibility'
+};
 
 var seoSlugs = [
   'beyond-the-render-mastering-the-digital-twin-model-in-2026',
@@ -119,6 +136,8 @@ var aL = {};
 for (var i = 0; i < articleSlugs.length; i++) { aL[articleSlugs[i]] = true; }
 var sL = {};
 for (var i = 0; i < seoSlugs.length; i++) { sL[seoSlugs[i]] = true; }
+var pL = {};
+for (var i = 0; i < pages.length; i++) { pL[pages[i]] = true; }
 
 function r301(loc) {
   return { statusCode: 301, statusDescription: 'Moved Permanently', headers: { location: { value: loc } } };
@@ -141,6 +160,13 @@ function handler(event) {
 
   if (R.hasOwnProperty(norm)) return r301(R[norm]);
 
+  var slug = norm.slice(1);
+  if (pL.hasOwnProperty(slug)) return r301(norm + '.html');
+
+  var op = slug.replace(/^post\//, '');
+  if (P.hasOwnProperty(op)) op = P[op];
+  if (aL.hasOwnProperty(op)) return r301('/articles/posts/' + op + '.html');
+
   if (uri.indexOf('/articles/posts/') === 0 && uri.indexOf('.html') !== -1) {
     var artSlug = uri.replace('/articles/posts/', '').replace('.html', '');
     if (artSlug && sL.hasOwnProperty(artSlug)) return r301('/blog/posts/' + artSlug + '.html');
@@ -150,8 +176,6 @@ function handler(event) {
     return r301(uri.replace('/blog/', '/articles/'));
   }
 
-  var slug = uri.replace(/^\//, '').replace(/\/$/, '');
-  if (slug && aL.hasOwnProperty(slug)) return r301('/articles/posts/' + slug + '.html');
   if (slug && sL.hasOwnProperty(slug)) return r301('/blog/posts/' + slug + '.html');
 
   var dm = uri.match(/^\/\d{4}\/\d{2}(?:\/\d{2})?\/([^\/]+)\/?$/);

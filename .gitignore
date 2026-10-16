@@ -14,6 +14,7 @@ infra/.terraform.lock.hcl
 # Large media — upload videos to R2 (see scripts/upload-interior-demos-r2.ps1) or S3 DAM, not through git
 **/*.mp4
 !assets/craydl-mock-walkthrough-ig.mp4
+!assets/videos/pre-construction-budget-calculator-tool.mp4
 **/*.mov
 **/*.webm
 **/*.avi
