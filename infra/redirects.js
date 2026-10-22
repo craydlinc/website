@@ -25,7 +25,6 @@ var R = {
   '/custom-homes': '/homeowners.html',
   '/custom-home': '/homeowners.html',
   '/what-craydl-brings-to-the-table-for-architects': '/architects.html',
-  '/revolutionizing-preconstruction-the-visionary-founder-of-craydl': '/contact.html',
   '/bolt-performance': '/contact.html',
   '/request-a-demo-page': '/book-now.html',
   '/copy-of-privacy-policy': '/privacy-policy.html',
@@ -84,7 +83,7 @@ var articleSlugs = [
   'what-is-bim'
 ];
 
-// Old article slugs (at / or /post/) whose article now has a different slug
+// Old article slugs (at /, /post/ or /en/) whose article now has a different slug
 var P = {
   'accessory-dwelling-units': 'benefits-accessory-dwelling-units-adus',
   'architect-vs-designer': 'architecture-vs-interior-design-home-design',
@@ -106,6 +105,8 @@ var P = {
   'the-future-of-connected-construction': 'future-of-connected-construction',
   'the-largest-homebuilder-you-ve-never-heard-of': 'the-largest-homebuilder-youve-never-heard-of',
   'there-s-bim-and-bim-mastery': 'bim-vs-traditional-methods',
+  'theres-bim-and-bim-mastery': 'bim-vs-traditional-methods',
+  'the-power-of-proper-bim-driving-superior-outcomes-through-value-engineering-and-accurate-estimating': 'bim-vs-traditional-methods',
   'what-craydl-does-for-architects': 'craydl-bim-services-for-architects',
   'why-should-carl-care-about-home-feasibility': 'home-renovation-feasibility'
 };
@@ -163,7 +164,7 @@ function handler(event) {
   var slug = norm.slice(1);
   if (pL.hasOwnProperty(slug)) return r301(norm + '.html');
 
-  var op = slug.replace(/^post\//, '');
+  var op = slug.replace(/^(post|en)\//, '');
   if (P.hasOwnProperty(op)) op = P[op];
   if (aL.hasOwnProperty(op)) return r301('/articles/posts/' + op + '.html');
 
