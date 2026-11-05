@@ -480,6 +480,27 @@
     }
   }
   window.addEventListener('hashchange', openFaqFromHash);
+
+  /* Keep a #hash target in view while images/video above it finish loading
+     (otherwise late layout shifts push it down the page). Stops on user input. */
+  (function holdHashTarget() {
+    var id = window.location.hash.slice(1);
+    var el = id && document.getElementById(id);
+    if (!el || el.tagName === 'DETAILS') return;
+    var stop = false;
+    function cancel() { stop = true; }
+    ['wheel', 'touchstart', 'keydown', 'mousedown'].forEach(function (ev) {
+      window.addEventListener(ev, cancel, { once: true, passive: true });
+    });
+    function realign() { if (!stop) el.scrollIntoView({ block: 'start' }); }
+    var start = Date.now();
+    (function tick() {
+      realign();
+      if (!stop && Date.now() - start < 4000) setTimeout(tick, 150);
+    })();
+    window.addEventListener('load', realign);
+  })();
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', openFaqFromHash);
   } else {

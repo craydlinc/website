@@ -1499,6 +1499,10 @@ a.hero-questions__item:focus-visible {
 #id-benefits {
   scroll-margin-top: 5.5rem;
 }
+/* Clear the sticky header when jumping to the audience menu */
+#who-craydl-serves {
+  scroll-margin-top: 10rem;
+}
 .contextual-return-banner {
   display: flex;
   flex-wrap: wrap;
