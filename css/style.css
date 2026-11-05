@@ -670,6 +670,12 @@ a.hero-questions__item:focus-visible {
   font-size: 1.05rem;
   line-height: 1.35;
 }
+.developers-headline {
+  max-width: 52rem;
+  margin: 0 auto var(--space-md);
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-weight: 400;
+}
 .section--light .home-video__question {
   color: var(--color-text-on-light);
 }
