@@ -541,6 +541,7 @@ img { max-width: 100%; height: auto; display: block; }
 .hero .eyebrow { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--color-sage); margin: 0 0 var(--space-sm); }
 .hero h1 { margin: 0 0 var(--space-md); max-width: min(40rem, 100%); }
 .hero .sub { font-size: 1.1rem; color: var(--color-text-on-dark); margin: 0 0 var(--space-lg); max-width: 42ch; line-height: 1.6; }
+.hero__subhead { font-size: 1.3rem; font-weight: 600; color: var(--color-text-on-dark); margin: 0 0 var(--space-lg); max-width: min(40rem, 100%); line-height: 1.4; }
 .hero__copy { width: 100%; max-width: 52rem; text-align: center; }
 .hero__copy .sub { max-width: none; margin: 0 0 var(--space-md); }
 .hero__copy .sub:last-child { margin-bottom: var(--space-lg); }
